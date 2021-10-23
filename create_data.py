@@ -1,0 +1,174 @@
+import random
+import string
+import names
+from django.utils.crypto import get_random_string
+import datetime
+import csv
+from nltk.corpus import gutenberg
+import re
+import uuid
+
+def generate_random_date(start_date, end_date):
+    """
+    returns a random date between a start date
+    and an end date in epoch time
+    """
+    time_between_dates = (end_date - start_date).total_seconds()
+    random_number_of_seconds = random.randrange(time_between_dates)
+    random_date = start_date + datetime.timedelta(seconds = random_number_of_seconds)
+    random_date_epoch_time = random_date.strftime('%s')
+    return random_date_epoch_time
+
+def generate_random_id():
+    return str(uuid.uuid4())[:12]
+
+def generate_random_bool():
+    random_bit = random.getrandbits(1)
+    random_boolean = bool(random_bit)
+    return random_boolean
+
+
+def clean_data(words):
+    """
+    This cleans the list of words.
+    """
+    new_words = []
+    for word in words:    
+        new_words.append(re.sub(r'[^a-zA-Z0-9]', "", word))
+    return new_words
+
+def get_random_words(num_words, joiner):
+    """
+    This generates a random sequence of words
+    """
+    # I just want to get a corpus of words
+    emma = gutenberg.words("austen-emma.txt")
+    emma = clean_data(emma)
+
+    return  joiner.join(random.choice(emma) for i in range(0, num_words))
+
+def get_random_categories(num_categories):
+    categories = ["Auto Parts and Accessories", "Automotive Tools & Supplies",
+                    "Other Vehicles and Trailers", "Motorcycles",
+                    "Powersport Vehicles", "Boats", "Top Vehicle Makes",
+                    "Fashion", "Women's Clothing", "Women's Shoes",
+                    "Women's Accessories", "Women's Bags & Handbangs",
+                    "Men's Clothing", "Men's Shoes", "Men's Accessories",
+                    "Kid's Clothing, Shoes, & Accessories", 
+                    "Baby Clothing, Shoes, & Accessories", "Jewelry",
+                    "Watches, Parts & Accessories"]
+    selected_categories = []
+    for i in range(0, num_categories):
+        selected_categories.append(random.choice(categories))
+    return selected_categories
+    
+
+def items():
+    """
+    Creates 30 items of data for the items database
+
+    Schema: id, name, description,
+            category, photos, sellerID,
+            price, isFlagged
+    """
+    # getting names of potential sellers
+    file = open("users.csv")
+    csvreader = csv.reader(file)
+    all_users = []
+    for row in csvreader:
+        all_users.append(row[2])
+    file.close()
+
+    all_items = []
+    for i in range(0, 30):
+        id = generate_random_id()
+        name = get_random_words(3, " ")
+        description = get_random_words(30, " ")
+        categories = get_random_categories(3)
+        photos = None
+        seller_id = random.choice(all_users)
+        price = round(random.uniform(10.00, 99.99), 2)
+        isFlagged = False
+        all_items.append([id, name, description, categories, photos,
+                            seller_id, price, isFlagged])
+    
+    with open('items.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all_items)
+    f.close()
+
+def users():
+    """
+    Creates 30 users
+
+    Schema: amount_of_money, username, id, password_hash
+    """
+    all_users = []
+    existing_usernames = set()
+    for i in range(0, 30):
+        amount_of_money = random.randint(100, 2000)
+
+        while (True):
+            username = get_random_words(3, "_")
+            if username not in existing_usernames:
+                existing_usernames.add(username)
+                break
+        id = generate_random_id()
+        password_hash = get_random_words(3, "")
+        all_users.append([amount_of_money, username, id, password_hash])
+
+    with open('users.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all_users)
+    f.close()
+
+def auctions():
+    """
+    generates data for auctions table
+
+    Schema: id, auctionstarttime, auctionendtime, 
+            itemid, isBuyNowEnabled, sellerID
+    """
+    # getting names of items
+    file = open("items.csv")
+    csvreader = csv.reader(file)
+    all_items = []
+    for row in csvreader:
+        all_items.append((row[0], row[5]))
+    file.close()
+
+    auctions = []
+    seen_items = set()
+    for i in range(0, 30):
+        id = generate_random_id()
+        auctionstarttime = generate_random_date(datetime.datetime(2021, 10, 23, 0, 0), 
+                                    datetime.datetime(2021, 12, 31, 0, 0))
+        auctiontime = random.randint(86400, 1814000)
+        auctionendtime = str(int(auctionstarttime) + auctiontime)
+        while (True):
+            itemid, sellerid = random.choice(all_items)
+            if itemid not in seen_items:
+                seen_items.add(itemid)
+                break
+        isBuyNowEnabled = generate_random_bool()
+        auctions.append([id, auctionstarttime, auctionendtime, itemid, 
+                        isBuyNowEnabled, sellerid])
+    with open('auctions.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(auctions)
+    f.close()
+
+
+
+def generate_all_data():
+    users()
+    items()
+    auctions()
+
+
+
+
+
+
+
+        
