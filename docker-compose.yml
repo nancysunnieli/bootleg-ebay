@@ -3,6 +3,7 @@ version: "3"
 services:
   user-db:
     image: mysql:8
+    platform: linux/x86_64
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=bootleg
@@ -11,6 +12,7 @@ services:
 
   advertisement-db:
     image: mysql:8
+    platform: linux/x86_64
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=bootleg
@@ -19,6 +21,7 @@ services:
 
   item-db:
     image: mongo:latest
+    platform: linux/x86_64
     restart: always
     ports:
       - 27017:27017
@@ -30,6 +33,7 @@ services:
 
   itemdb-mongo-express:
     image: mongo-express
+    platform: linux/x86_64
     restart: always
     ports:
       - 8081:8081
@@ -40,6 +44,7 @@ services:
 
   notif-db:
     image: mongo:latest
+    platform: linux/x86_64
     restart: always
     ports:
       - 27018:27017
@@ -51,6 +56,7 @@ services:
 
   notifdb-mongo-express:
     image: mongo-express
+    platform: linux/x86_64
     restart: always
     ports:
       - 8082:8081
@@ -61,6 +67,7 @@ services:
 
   auctions-db:
     image: mongo:latest
+    platform: linux/x86_64
     restart: always
     ports:
       - 27019:27017
@@ -72,6 +79,7 @@ services:
 
   auctions-mongo-express:
     image: mongo-express
+    platform: linux/x86_64
     restart: always
     ports:
       - 8083:8081
@@ -82,6 +90,7 @@ services:
 
   checkout-db:
     image: "redis:alpine"
+    platform: linux/x86_64
 
     command: redis-server --requirepass bootleg
 
