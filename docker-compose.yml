@@ -16,6 +16,8 @@ services:
   users-ms:
     # take the build from Dockerfile
     build: .
+    # image: bootleg-ebay_users-ms
+    tty: true 
     ports: 
       - 1001:1001
 
