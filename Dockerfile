@@ -18,5 +18,6 @@ RUN apt-get update && \
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 # EXPOSE 5000
-COPY . .
+# Do not copy because we should mount the volumes instead. See docker-compose
+# COPY . .
 # CMD ["flask", "run"]

@@ -16,10 +16,11 @@ services:
   users-ms:
     # take the build from Dockerfile
     build: .
-    # image: bootleg-ebay_users-ms
     tty: true 
     ports: 
       - 1001:1001
+    volumes:
+      - ./bootleg-ebay/users:/bootleg-ebay/users
 
   advertisements-db:
     image: mysql:8
