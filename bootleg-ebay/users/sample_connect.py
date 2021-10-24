@@ -19,7 +19,7 @@ try:
     with connect(
         # host="mysql:8://db",
         # host="mysql",
-        host="localhost",
+        host="users-db",
         port="3306",
         user="%s" % ("root"),
         password="%s" % ("bootleg"),
