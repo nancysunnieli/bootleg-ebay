@@ -13,6 +13,12 @@ services:
     ports:
       - 3307:3306
 
+  users-ms:
+    # take the build from Dockerfile
+    build: .
+    ports: 
+      - 1001:1001
+
   advertisements-db:
     image: mysql:8
     restart: always
