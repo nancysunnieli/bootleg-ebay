@@ -193,7 +193,7 @@ def flagged_items():
     csvreader = csv.reader(file)
     all_items = []
     for row in csvreader:
-        all_items.append(row[0])
+        all_items.append(row)
     file.close()
 
     flagReasons = ["Inappropriate", "Counterfeit"]
@@ -201,13 +201,21 @@ def flagged_items():
     all_flagged_items = []
     for i in range(0, 30):
         id = generate_random_id()
-        itemID = random.choice(all_items)
+        item = random.choice(all_items)
+        itemID = item[0]
+        item_index = all_items.index(item)
         flagReason = random.choice(flagReasons)
+        all_items[item_index][-1] = True
         all_flagged_items.append([id, itemID, flagReason])
         
     with open('flagged_items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
         writer.writerows(all_flagged_items)
+    f.close()
+
+    with open('items.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all_items)
     f.close()
 
 def bids():
@@ -370,7 +378,8 @@ def generate_all_data():
     advertisers()
     advertisements()
     notifications()
-    
+
+generate_all_data()
 
 
 
