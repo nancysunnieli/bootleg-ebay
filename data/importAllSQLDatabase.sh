@@ -3,5 +3,7 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-/bin/bash ../bootleg-ebay/advertisements/db/import.sh
-/bin/bash ../bootleg-ebay/users/db/import.sh
+/bin/bash ../bootleg-ebay/advertisements/db/import.sh &
+/bin/bash ../bootleg-ebay/users/db/import.sh &
+wait 
+echo "Done!"
