@@ -3,25 +3,30 @@ version: "3"
 services:
   user-db:
     image: mysql:8
-    platform: linux/x86_64
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_DATABASE=users
     volumes:
       - ./data/userdb:/var/lib/mysql
+      - ./bootleg-ebay/users/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 3307:3306
 
   advertisement-db:
     image: mysql:8
-    platform: linux/x86_64
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_DATABASE=advertisements
     volumes:
       - ./data/advertisementdb:/var/lib/mysql
+      - ./bootleg-ebay/advertisements/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 3308:3306
 
   item-db:
     image: mongo:latest
-    platform: linux/x86_64
     restart: always
     ports:
       - 27017:27017
@@ -33,7 +38,6 @@ services:
 
   itemdb-mongo-express:
     image: mongo-express
-    platform: linux/x86_64
     restart: always
     ports:
       - 8081:8081
@@ -44,7 +48,6 @@ services:
 
   notif-db:
     image: mongo:latest
-    platform: linux/x86_64
     restart: always
     ports:
       - 27018:27017
@@ -56,7 +59,6 @@ services:
 
   notifdb-mongo-express:
     image: mongo-express
-    platform: linux/x86_64
     restart: always
     ports:
       - 8082:8081
@@ -67,7 +69,6 @@ services:
 
   auctions-db:
     image: mongo:latest
-    platform: linux/x86_64
     restart: always
     ports:
       - 27019:27017
@@ -79,7 +80,6 @@ services:
 
   auctions-mongo-express:
     image: mongo-express
-    platform: linux/x86_64
     restart: always
     ports:
       - 8083:8081
@@ -90,7 +90,6 @@ services:
 
   checkout-db:
     image: "redis:alpine"
-    platform: linux/x86_64
 
     command: redis-server --requirepass bootleg
 
