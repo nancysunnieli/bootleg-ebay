@@ -107,8 +107,13 @@ def items():
         seller_id = random.choice(all_users)
         price = round(random.uniform(10.00, 99.99), 2)
         isFlagged = False
+        watch_list = []
+        while len(watch_list) != 3:
+            new = random.choice(all_users)
+            if new not in watch_list:
+                watch_list.append(new)
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged])
+                            seller_id, price, isFlagged, watch_list])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
