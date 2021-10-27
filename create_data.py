@@ -210,7 +210,7 @@ def flagged_items():
         itemID = item[0]
         item_index = all_items.index(item)
         flagReason = random.choice(flagReasons)
-        all_items[item_index][-1] = True
+        all_items[item_index][-2] = True
         all_flagged_items.append([id, itemID, flagReason])
         
     with open('flagged_items.csv', 'w', newline = "") as f:
