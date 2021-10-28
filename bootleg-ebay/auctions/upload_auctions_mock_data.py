@@ -23,8 +23,8 @@ def create_auctions_collection(data_file_path,
                 "auctionendtime": None, "itemid": None, 
                 "isBuyNowEnabled": None, "sellerID": None}
         auction["_id"] = row[0]
-        auction["auctionstarttime"] = row[1]
-        auction["auctionendtime"] = row[2]
+        auction["auctionstarttime"] = int(row[1])
+        auction["auctionendtime"] = int(row[2])
         auction["itemid"] = row[3]
         auction["isBuyNowEnabled"] = row[4]
         auction["sellerID"] = row[5]
@@ -49,8 +49,8 @@ def create_bids_collection(data_file_path,
                 "userID": None}
         bid["_id"] = row[0]
         bid["AuctionID"] = row[1]
-        bid["timestamp"] = row[2]
-        bid["amount"] = row[3]
+        bid["timestamp"] = int(row[2])
+        bid["amount"] = float(row[3])
         bid["userID"] = row[4]
         
         all_entries.append(bid)
