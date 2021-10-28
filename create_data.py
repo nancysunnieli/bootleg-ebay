@@ -227,7 +227,7 @@ def bids():
     """
     This generates the data for the bids table
     
-    schema: id, itemID, timestamp, amount, userID
+    schema: id, AuctionID, timestamp, amount, userID
     """
     # getting names of potential bidders
     file = open("users.csv")
@@ -242,14 +242,14 @@ def bids():
     csvreader = csv.reader(file)
     all_auctions = []
     for row in csvreader:
-        all_auctions.append((row[1], row[2], row[3], row[5]))
+        all_auctions.append((row[0], row[1], row[2], row[3], row[5]))
     file.close()
 
     all_bids = []
     existing_bids = {}
     for i in range(0, 30):
         bid_id = generate_random_id()
-        auctionstarttime, auctionendtime, itemid, sellerid = random.choice(all_auctions)
+        auctionID, auctionstarttime, auctionendtime, itemid, sellerid = random.choice(all_auctions)
         if itemid in existing_bids:
             previous_timestamp = existing_bids[itemid]["Time"]
             previous_bid = existing_bids[itemid]["Amount"]
@@ -268,7 +268,7 @@ def bids():
         existing_bids[itemid]["Time"] = timestamp
         existing_bids[itemid]["Amount"] = amount
         userid = random.choice(all_users)
-        all_bids.append([bid_id, itemid, timestamp, amount, userid])
+        all_bids.append([bid_id, auctionID, timestamp, amount, userid])
     
     with open('bids.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -384,7 +384,8 @@ def generate_all_data():
     advertisements()
     notifications()
 
-generate_all_data()
+if __name__ == '__main__':
+    generate_all_data()
 
 
 
