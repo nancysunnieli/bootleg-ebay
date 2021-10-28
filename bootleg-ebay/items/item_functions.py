@@ -4,6 +4,7 @@ import csv
 import uuid
 from items import Item
 import re
+import json
 
 
 client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27017")
@@ -22,11 +23,12 @@ def ViewFlaggedItems(limit = None, collection = items_collection):
     This returns all the flagged items
     """
     query = {"isFlagged": "True"}
+
     results = list(collection.find(query))
     if limit:
-        return results[:limit]
+        return json.dumps(results[:limit])
     else:
-        return results
+        return json.dumps(results)
 
 def EditCategories(item_id, updated_categories, collection = items_collection):
     query = { "_id" : item_id }
@@ -38,27 +40,26 @@ def EditCategories(item_id, updated_categories, collection = items_collection):
     else:
         return "Change was not Successful. Please Try Again."
 
-def AddItem(id, name, description, category, photos, 
-                sellerID, price, isFlagged, watchlist,
+def AddItem(name, description, category, photos, 
+                sellerID, price,
                 collection = items_collection):
     """
     This adds one item to our database
     """
     item = {"_id": None, "name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
-                "price": None, "isFlagged": None, "watchlist": None}
-    item["_id"] = id
+                "price": None, "isFlagged": False, "watchlist": None}
+    item["_id"] = generate_random_id()
     item["name"] = name
     item["description"] = description
     item["category"] = category
     item["photos"] = photos
     item["sellerID"] = sellerID
     item["price"] = price
-    item["isFlagged"] = isFlagged
-    item["watchlist"] = watchlist
+    item["watchlist"] = []
     result = collection.insert_one(item)
 
-    if len(list(collection.find({ "_id": id}))) == 1:
+    if len(list(collection.find({ "_id": item["_id"]}))) == 1:
         return "Item Successfully Inserted!"
     else:
         return "Item was not successfully inserted. Please Try Again."
@@ -118,7 +119,7 @@ def GetItem(id, collection = items_collection):
     given an item id, this function returns back the item
     """
     query = {"_id": id}
-    results = list(collection.find(query))
+    results = json.dumps(list(collection.find(query)))
     return results
 
 def AddFlaggedItem(id, item_id, flag_reason, collection = flagged_items_collection):
@@ -207,14 +208,14 @@ def searchItem(keywords, collection = items_collection):
         query["$or"].append({ "name" : {'$regex': word}})
         query["$or"].append({ "description" : {'$regex': word}})
     
-    results = list(collection.find(query))
+    results = json.dumps(list(collection.find(query)))
     return results
 
 # executing tests for my functions
 if __name__ == '__main__':
-    
+
     print("Search Item Test: ")
-    print(searchItem(["encouraging"]))
+    print(searchItem(["lemon"]))
     
     print("Add User To Watchlist Test: ")
     print(AddUserToWatchlist("48c00e9a-f5e", "d35d484e-d66"))
@@ -232,20 +233,13 @@ if __name__ == '__main__':
     print(ModifyItem("c7ed9ede-00e", "lemon bars"))
 
     print("Add Items: ")
-    print(AddItem("48c00e9a-f5e", "potato test",
+    print(AddItem("potato test",
             "re you do by for and not almost of  I to  an dark but not ran",
             ["Jewelry", "Watches"], "0aa271bf-1b4", "492674a4-bbe",
-            23.82, False, ['e987d79c-4e8', '371ce498-44a', '4c16a517-749']))
+            23.82))
 
     print("Edit Categories Test: ")
     print(EditCategories("48c00e9a-f5e", ["potato"]))
 
     print("View Flagged Items Test: ")
     print(ViewFlaggedItems())
-
-
-
-
-    
-
-    
