@@ -3,8 +3,6 @@ from flask import Flask, Response, request
 import json
 import socket
 import os
-import subprocess
-import re
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
