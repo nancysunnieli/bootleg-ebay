@@ -1,131 +1,95 @@
 import requests
 from flask import Flask, Response, request
 import json
+import socket
+
+socket_name = socket.gethostbyname(socket.gethostname())
+
 app = Flask(__name__)
 
-items = "localhost:8099"
 @app.route('/')
 def base():
     return Response(response = json.dumps({"Status": "UP"},
                     status = 200,
                     mimetype = 'application/json'))
 
+
+# The following functions call the items microservice
+
 @app.route('/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
-    r = requests.get(url = "localhost:8099")
-    return r.status_code
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/ViewFlaggedItems")
+    r = requests.get(url = socket_url)
+    return r.content
 
 @app.route('/SearchItem', methods=['POST'])
 def SearchItem():
-    pass
-    """
-    data = request.get_json()
-    keywords = data["keywords"]
-    return item_functions.searchItem(keywords)
-    """
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/SearchItem")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
 
 @app.route('/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
-    pass
-    """
-    data = request.get_json()
-    id = data["item_id"]
-    user_id = data["user_id"]
-    return item_functions.AddUserToWatchlist(id, user_id)
-    """
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/AddUserToWatchlist")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+
 @app.route('/RemoveItem', methods = ['POST'])
 def RemoveItem():
-    """
-    data = request.get_json()
-    id = data["item_id"]
-    return item_functions.RemoveItem(id)
-    """
-    pass
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/RemoveItem")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
 @app.route('/ReportItem', methods = ['POST'])
 def ReportItem():
-    """
-    data = request.get_json()
-    item = data["item_id"]
-    reason = data["reason"]
-    return item_functions.ReportItem(item, reason)
-    """
-    pass
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/ReportItem")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
 @app.route("/GetItem", methods = ['POST'])
 def GetItem():
-    """
-    data = request.get_json()
-    item = data["item_id"]
-    return item_functions.GetItem(item)
-    """
-    pass
+    socket_url = ("http://" + socket_name +
+                     ":8099" + "/GetItem")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
 @app.route("/ModifyItem", methods = ['POST'])
 def ModifyItem():
-    """
-    data = request.get_json()
-    id = data["item_id"]
+    socket_url = ("http://" + socket_name +
+                    ":8099" + "/ModifyItem")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
-    if "name" in data:
-        name = data["name"]
-    else:
-        name = None
-
-    if "description" in data:
-        description = data["description"]
-    else:
-        description = None
-    
-    if "category" in data:
-        category = data["category"]
-    else:
-        category = None
-    
-    if "photos" in data:
-        photos = data["photos"]
-    else:
-        photos = None
-    
-    if "price" in data:
-        price = data["price"]
-    else:
-        price = None
-
-    return item_functions.ModifyItem(id, name,
-                                    description, 
-                                    category, photos, 
-                                    price)
-    """
-    pass
 
 @app.route("/AddItem", methods = ['POST'])
 def AddItem():
-    """
-    data = request.get_json()
-    name = data["name"]
-    description = data["description"]
-    category = data["category"]
-    photos = data["photos"]
-    sellerID = data["sellerID"]
-    price = data["price"]
-
-    return item_functions.AddItem(name, description, category,
-                                photos, sellerID, price)
-    """
-    pass
+    socket_url = ("http://" + socket_name +
+                    ":8099" + "/AddItem")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
 @app.route("/EditCategories", methods = ['POST'])
 def EditCategories():
-    """
-    data = request.get_json()
-    id = data["item_id"]
-    category = data["category"]
-    return item_functions.EditCategories(id, category)
-    """
-    pass
-
+    socket_url = ("http://" + socket_name +
+                    ":8099" + "/EditCategories")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8098, host = "0.0.0.0")
+    app.run(debug = True, port = 8098, host = socket.gethostbyname(socket.gethostname()))
