@@ -2,6 +2,7 @@ from flask import Flask, Response, request
 import json
 app = Flask(__name__)
 import item_functions
+import socket
 
 @app.route('/')
 def base():
@@ -102,4 +103,4 @@ def EditCategories():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8099, host = "0.0.0.0")
+    app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()))
