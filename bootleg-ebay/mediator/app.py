@@ -92,4 +92,4 @@ def EditCategories():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8098, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 8098, host = socket_name)
