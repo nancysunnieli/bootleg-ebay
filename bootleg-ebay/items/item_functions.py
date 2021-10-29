@@ -5,17 +5,14 @@ import uuid
 from items import Item
 import re
 import json
+import socket
 
-
-client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27017")
+hostname = socket.gethostbyname(socket.gethostname())
+client = pymongo.MongoClient("mongodb://root:bootleg@" + hostname + ":27017")
 db = client["items"]
 items_collection = db["items"]
 flagged_items_collection = db["flagged_items"]
 photos_collection = db["photos"]
-
-
-def generate_random_id():
-    return str(uuid.uuid4())[:12]
 
 
 def ViewFlaggedItems(limit = None, collection = items_collection):
@@ -46,10 +43,9 @@ def AddItem(name, description, category, photos,
     """
     This adds one item to our database
     """
-    item = {"_id": None, "name": None, "description": None,
+    item = {"name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
                 "price": None, "isFlagged": False, "watchlist": None}
-    item["_id"] = generate_random_id()
     item["name"] = name
     item["description"] = description
     item["category"] = category
@@ -122,14 +118,14 @@ def GetItem(id, collection = items_collection):
     results = json.dumps(list(collection.find(query)))
     return results
 
-def AddFlaggedItem(id, item_id, flag_reason, collection = flagged_items_collection):
+def AddFlaggedItem(item_id, flag_reason, collection = flagged_items_collection):
     """
     This adds a new flag to the database
     """
-    item = {"_id": id, "itemID": item_id, "FlaggedReason": flag_reason}
-    collection.insert_one(item)
+    item = {"itemID": item_id, "FlaggedReason": flag_reason}
+    inserted_item = collection.insert_one(item)
 
-    if len(list(collection.find({"_id" : id}))) == 1:
+    if len(list(collection.find({"_id" : inserted_item.inserted_id }))) == 1:
         return "Flag Successfully Added!"
     else:
         return "Flag Failure. Please Try Again."
@@ -147,8 +143,7 @@ def ReportItem(id, flag_reason, item_collection = items_collection,
 
     
     # updates flagged items database
-    flag_id = generate_random_id()
-    result = AddFlaggedItem(flag_id, id, flag_reason)
+    result = AddFlaggedItem(id, flag_reason)
     if (result == "Flag Successfully Added!"):
         return "Item Reported Successfully!"
     else:
