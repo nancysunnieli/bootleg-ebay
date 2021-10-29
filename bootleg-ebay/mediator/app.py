@@ -6,6 +6,9 @@ import os
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
+# getting IP Address of items container
+itemsServiceHost = "localhost" if os.getenv('isLocalHost') != None else "172.16.238.10"
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -19,14 +22,14 @@ def base():
 
 @app.route('/Items/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                      ":8099" + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
 @app.route('/Items/SearchItem', methods=['POST'])
 def SearchItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" +itemsServiceHost +
                      ":8099" + "/SearchItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -35,7 +38,7 @@ def SearchItem():
 
 @app.route('/Items/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                      ":8099" + "/AddUserToWatchlist")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -44,7 +47,7 @@ def AddUserToWarchlist():
 
 @app.route('/Items/RemoveItem', methods = ['POST'])
 def RemoveItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                      ":8099" + "/RemoveItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -52,7 +55,7 @@ def RemoveItem():
 
 @app.route('/Items/ReportItem', methods = ['POST'])
 def ReportItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost+
                      ":8099" + "/ReportItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -60,7 +63,7 @@ def ReportItem():
 
 @app.route("/Items/GetItem", methods = ['POST'])
 def GetItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                      ":8099" + "/GetItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -68,7 +71,7 @@ def GetItem():
 
 @app.route("/Items/ModifyItem", methods = ['POST'])
 def ModifyItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/ModifyItem")
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -77,7 +80,7 @@ def ModifyItem():
 
 @app.route("/Items/AddItem", methods = ['POST'])
 def AddItem():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/AddItem")
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -85,7 +88,7 @@ def AddItem():
 
 @app.route("/Items/EditCategories", methods = ['POST'])
 def EditCategories():
-    socket_url = ("http://" + socket_name +
+    socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/EditCategories")
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -93,4 +96,4 @@ def EditCategories():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8098, host = socket_name)
+    app.run(debug = True, port = 8011, host = socket_name)

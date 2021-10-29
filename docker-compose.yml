@@ -1,6 +1,38 @@
 version: "3"
 
 services:
+  items-api:
+    build: .
+    ports:
+      - 8099:8099
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.10
+    volumes:
+      - ./items/app.py:/items/app.py
+      - ./items/item_functions.py:/items/item_functions.py
+    environment:
+      API_URL: http://items_api:8099/
+      PORT: 8099
+      FLASK_DEBUG: 1
+    depends_on:
+      - requirements
+
+  mediator-api:
+    build: .
+    ports:
+      - 8011:8011
+    networks:
+      app_net:
+        ipv4_address: 172.16.238.11
+    volumes:
+      - ./mediator/app.py:/mediator/app.py
+    environment:
+      PORT: 8011
+      FLASK_DEBUG: 1
+    depends_on:
+      - requirements
+
   users-db:
     image: mysql:8
     restart: always
@@ -124,3 +156,7 @@ networks:
       driver: default
       config:
         - subnet: 172.28.0.0/16
+  app_net:
+    {}
+
+  

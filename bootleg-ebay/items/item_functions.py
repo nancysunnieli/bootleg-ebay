@@ -2,7 +2,6 @@ import pymongo
 from pymongo import MongoClient
 import csv
 import uuid
-from items import Item
 import re
 import json
 import socket
