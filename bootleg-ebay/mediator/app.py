@@ -2,6 +2,7 @@ import requests
 from flask import Flask, Response, request
 import json
 import socket
+import os
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
@@ -16,14 +17,14 @@ def base():
 
 # The following functions call the items microservice
 
-@app.route('/ViewFlaggedItems', methods=['GET'])
+@app.route('/Items/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
-@app.route('/SearchItem', methods=['POST'])
+@app.route('/Items/SearchItem', methods=['POST'])
 def SearchItem():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/SearchItem")
@@ -32,7 +33,7 @@ def SearchItem():
     return r.content
 
 
-@app.route('/AddUserToWatchlist', methods = ['POST'])
+@app.route('/Items/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/AddUserToWatchlist")
@@ -41,7 +42,7 @@ def AddUserToWarchlist():
     return r.content
 
 
-@app.route('/RemoveItem', methods = ['POST'])
+@app.route('/Items/RemoveItem', methods = ['POST'])
 def RemoveItem():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/RemoveItem")
@@ -49,7 +50,7 @@ def RemoveItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@app.route('/ReportItem', methods = ['POST'])
+@app.route('/Items/ReportItem', methods = ['POST'])
 def ReportItem():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/ReportItem")
@@ -57,7 +58,7 @@ def ReportItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@app.route("/GetItem", methods = ['POST'])
+@app.route("/Items/GetItem", methods = ['POST'])
 def GetItem():
     socket_url = ("http://" + socket_name +
                      ":8099" + "/GetItem")
@@ -65,7 +66,7 @@ def GetItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@app.route("/ModifyItem", methods = ['POST'])
+@app.route("/Items/ModifyItem", methods = ['POST'])
 def ModifyItem():
     socket_url = ("http://" + socket_name +
                     ":8099" + "/ModifyItem")
@@ -74,7 +75,7 @@ def ModifyItem():
     return r.content
 
 
-@app.route("/AddItem", methods = ['POST'])
+@app.route("/Items/AddItem", methods = ['POST'])
 def AddItem():
     socket_url = ("http://" + socket_name +
                     ":8099" + "/AddItem")
@@ -82,7 +83,7 @@ def AddItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@app.route("/EditCategories", methods = ['POST'])
+@app.route("/Items/EditCategories", methods = ['POST'])
 def EditCategories():
     socket_url = ("http://" + socket_name +
                     ":8099" + "/EditCategories")
