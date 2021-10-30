@@ -1,13 +1,14 @@
-import pymongo
-from pymongo import MongoClient
 import csv
-import uuid
-import re
 import json
+import os
+import re
 import socket
+import uuid
 
-hostname = socket.gethostbyname(socket.gethostname())
-client = pymongo.MongoClient("mongodb://root:bootleg@" + hostname + ":27017")
+from pymongo import MongoClient
+
+hostname = os.getenv('ITEMSDBHOST', "localhost")
+client = MongoClient("mongodb://root:bootleg@" + hostname + ":27017")
 db = client["items"]
 items_collection = db["items"]
 flagged_items_collection = db["flagged_items"]

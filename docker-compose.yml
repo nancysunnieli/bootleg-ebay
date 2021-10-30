@@ -2,36 +2,29 @@ version: "3"
 
 services:
   items-api:
-    build: .
+    build: ./bootleg-ebay/items/
     ports:
       - 8099:8099
-    networks:
-      app_net:
-        ipv4_address: 172.16.238.10
     volumes:
-      - ./items/app.py:/items/app.py
-      - ./items/item_functions.py:/items/item_functions.py
+      - ./bootleg-ebay/items/:/items/
     environment:
       API_URL: http://items_api:8099/
       PORT: 8099
       FLASK_DEBUG: 1
     depends_on:
-      - requirements
+      - items-db
 
   mediator-api:
-    build: .
+    build: ./bootleg-ebay/mediator/
     ports:
       - 8011:8011
-    networks:
-      app_net:
-        ipv4_address: 172.16.238.11
     volumes:
-      - ./mediator/app.py:/mediator/app.py
+      - ./bootleg-ebay/mediator:/mediator/
     environment:
       PORT: 8011
       FLASK_DEBUG: 1
     depends_on:
-      - requirements
+      - items-api
 
   users-db:
     image: mysql:8
@@ -47,9 +40,9 @@ services:
 
   users-ms:
     # take the build from Dockerfile
-    build: .
-    tty: true 
-    ports: 
+    build: ./bootleg-ebay/users/
+    tty: true
+    ports:
       - 1001:1001
     volumes:
       - ./bootleg-ebay/users:/bootleg-ebay/users
@@ -156,7 +149,3 @@ networks:
       driver: default
       config:
         - subnet: 172.28.0.0/16
-  app_net:
-    {}
-
-  

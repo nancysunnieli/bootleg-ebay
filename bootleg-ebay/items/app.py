@@ -6,9 +6,9 @@ import socket
 
 @app.route('/')
 def base():
-    return Response(response = json.dumps({"Status": "UP"},
+    return Response(response = json.dumps({"Status": "UP"}),
                     status = 200,
-                    mimetype = 'application/json'))
+                    mimetype = 'application/json')
 
 @app.route('/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
