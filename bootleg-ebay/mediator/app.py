@@ -7,18 +7,25 @@ import os
 socket_name = socket.gethostbyname(socket.gethostname())
 
 # getting IP Address of items container
-itemsServiceHost = "localhost" if os.getenv('isLocalHost') != None else "172.16.238.10"
+itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 app = Flask(__name__)
 
 @app.route('/')
 def base():
-    return Response(response = json.dumps({"Status": "UP"},
+    return Response(response = json.dumps({"Status": "UP"}),
                     status = 200,
-                    mimetype = 'application/json'))
+                    mimetype = 'application/json')
 
 
 # The following functions call the items microservice
+
+@app.route('/Items/', methods=['GET'])
+def ItemsServiceStatus():
+    socket_url = ("http://" + itemsServiceHost +
+                     ":8099" + "/")
+    r = requests.get(url = socket_url)
+    return r.content
 
 @app.route('/Items/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
