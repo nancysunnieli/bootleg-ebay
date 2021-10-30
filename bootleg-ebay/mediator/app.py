@@ -7,6 +7,7 @@ import os
 socket_name = socket.gethostbyname(socket.gethostname())
 
 # getting IP Address of items container
+# The following functions call the items microservice
 itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 app = Flask(__name__)
@@ -17,8 +18,6 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-
-# The following functions call the items microservice
 
 @app.route('/Items/', methods=['GET'])
 def ItemsServiceStatus():
@@ -97,6 +96,53 @@ def AddItem():
 def EditCategories():
     socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/EditCategories")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+
+
+
+# getting IP Address of items container
+# The following are functions for the carts microservice
+cartsServiceHost = os.getenv('CARTSAPIHOST', "localhost")
+
+@app.route("/Carts/CreateCart", methods = ['POST'])
+def CreateCart():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/CreateCart")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+@app.route("/Carts/AddItemToCart", methods = ['POST'])
+def AddItemToCart():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/AddItemToCart")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+@app.route("/Carts/DeleteItemFromCart", methods = ['POST'])
+def DeleteItemFromCart():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/DeleteItemFromCart")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+@app.route("/Carts/GetItemsFromCart", methods = ['POST'])
+def GetItemsFromCart():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/GetItemsFromCart")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+@app.route("/Carts/Checkout", methods = ['POST'])
+def Checkout():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/Checkout")
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content

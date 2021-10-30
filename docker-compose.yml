@@ -1,6 +1,18 @@
 version: "3"
 
 services:
+  carts-api:
+    build: ./bootleg-ebay/carts/
+    ports:
+      - 3211:3211
+    volumes:
+      - ./bootleg-ebay/carts/:/carts/
+    environment:
+      PORT: 3211
+      FLASK_DEBUG: 1
+    depends_on:
+      - carts-db
+
   items-api:
     build: ./bootleg-ebay/items/
     ports:
@@ -24,6 +36,7 @@ services:
       FLASK_DEBUG: 1
     depends_on:
       - items-api
+      - carts-api
 
   users-db:
     image: mysql:8
@@ -137,23 +150,33 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
 
   carts-db:
-    image: "redis:alpine"
-    command: redis-server --requirepass bootleg
+    image: mongo:latest
+    restart: always
     ports:
-      - "6379:6379"
-    volumes:
-      - ./data/carts-db/redis-data:/var/lib/redis
-      - ./data/carts-db/redis.conf:/usr/local/etc/redis/redis.conf
+      - 27020:27017
     environment:
-      - REDIS_REPLICATION_MODE=master
-    networks:
-      node_net:
-        ipv4_address: 172.28.1.4
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: bootleg
+    volumes:
+      - ./data/carts-db:/data/db
+
+  carts-db-mongo-express:
+    image: mongo-express
+    depends_on:
+      - carts-db
+    restart: always
+    ports:
+      - 8084:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
+
 
 # networking for the Redis container
-networks:
-  node_net:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/16
+#networks:
+#  node_net:
+#    ipam:
+#      driver: default
+#      config:
+#        - subnet: 172.28.0.0/16
