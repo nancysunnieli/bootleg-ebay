@@ -136,6 +136,14 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
 
+  auctions-api:
+    build: ./bootleg-ebay/auctions/
+    tty: true
+    ports:
+      - 1002:1002
+    volumes:
+      - ./bootleg-ebay/auctions:/bootleg-ebay/auctions
+
   carts-db:
     image: "redis:alpine"
     command: redis-server --requirepass bootleg
