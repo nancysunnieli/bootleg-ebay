@@ -194,7 +194,7 @@ def DeleteAccount(user_id: UserID) -> None:
     UserDBManager.delete_by_id(user_id)
 
 
-DeleteAccount(user_id=11)
+# DeleteAccount(user_id=11)
 # user = UserDBManager.get_user(10)
 
 # import pdb; pdb.set_trace()

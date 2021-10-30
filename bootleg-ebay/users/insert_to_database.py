@@ -3,13 +3,13 @@
 
 import csv
 
-from users_functions import insert_many
+from users_functions import UserDBManager
 
 def load_data_into_db(data_path):
     with open(data_path) as f:
         rows = list(csv.reader(f))
 
-    insert_many(rows)
+    UserDBManager.insert_many(rows)
 
 
 
