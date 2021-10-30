@@ -8,7 +8,6 @@ services:
     volumes:
       - ./bootleg-ebay/items/:/items/
     environment:
-      API_URL: http://items_api:8099/
       PORT: 8099
       FLASK_DEBUG: 1
     depends_on:
@@ -104,6 +103,15 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
+
+  notifs-api:
+    build: ./bootleg-ebay/notifs/
+    ports:
+      - 8012:8012
+    volumes:
+      - ./bootleg-ebay/notifs/:/notifs/
+    depends_on:
+      - notifs-db
 
   auctions-db:
     image: mongo:latest
