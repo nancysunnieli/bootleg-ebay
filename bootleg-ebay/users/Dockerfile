@@ -5,13 +5,13 @@ WORKDIR /bootleg-ebay
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -yq \
-        build-essential \
-        curl \
-        git \
-        pkg-config \
-        python3-dev \
-        python3-pip \
-        python3-venv
+    build-essential \
+    curl \
+    git \
+    pkg-config \
+    python3-dev \
+    python3-pip \
+    python3-venv
 
 # ENV FLASK_APP=app.py
 # ENV FLASK_RUN_HOST=0.0.0.0

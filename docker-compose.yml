@@ -1,6 +1,30 @@
 version: "3"
 
 services:
+  items-api:
+    build: ./bootleg-ebay/items/
+    ports:
+      - 8099:8099
+    volumes:
+      - ./bootleg-ebay/items/:/items/
+    environment:
+      PORT: 8099
+      FLASK_DEBUG: 1
+    depends_on:
+      - items-db
+
+  mediator-api:
+    build: ./bootleg-ebay/mediator/
+    ports:
+      - 8011:8011
+    volumes:
+      - ./bootleg-ebay/mediator:/mediator/
+    environment:
+      PORT: 8011
+      FLASK_DEBUG: 1
+    depends_on:
+      - items-api
+
   users-db:
     image: mysql:8
     restart: always
@@ -15,9 +39,9 @@ services:
 
   users-ms:
     # take the build from Dockerfile
-    build: .
-    tty: true 
-    ports: 
+    build: ./bootleg-ebay/users/
+    tty: true
+    ports:
       - 1001:1001
     volumes:
       - ./bootleg-ebay/users:/bootleg-ebay/users
@@ -79,6 +103,15 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
+
+  notifs-api:
+    build: ./bootleg-ebay/notifs/
+    ports:
+      - 8012:8012
+    volumes:
+      - ./bootleg-ebay/notifs/:/notifs/
+    depends_on:
+      - notifs-db
 
   auctions-db:
     image: mongo:latest
