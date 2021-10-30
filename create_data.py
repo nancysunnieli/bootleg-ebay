@@ -1,7 +1,5 @@
 import random
 import string
-import names
-from django.utils.crypto import get_random_string
 import datetime
 import csv
 from nltk.corpus import gutenberg
@@ -124,7 +122,7 @@ def users():
     """
     Creates 30 users
 
-    Schema: amount_of_money, username, id, email, is_admin, assword_hash
+    Schema: username, password, email, money, suspended, is_admin 
     """
     all_users = []
     existing_usernames = set()
@@ -139,11 +137,12 @@ def users():
             if username not in existing_usernames:
                 existing_usernames.add(username)
                 break
-        id = generate_random_id()
+        # id = generate_random_id()
         email = get_random_words(2, ".") + random.choice(email_domains)
-        isAdmin = generate_random_bool()
+        isAdmin = int(generate_random_bool())
+        suspended = int(generate_random_bool())
         password_hash = get_random_words(3, "")
-        all_users.append([amount_of_money, username, id, email, isAdmin, password_hash])
+        all_users.append([username, password_hash, email, amount_of_money, suspended, isAdmin])
 
     with open('users.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
