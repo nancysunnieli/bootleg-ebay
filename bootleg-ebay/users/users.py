@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import json
 from typing import Any, Dict, Optional
 
 class User(ABC):
@@ -15,9 +16,14 @@ class User(ABC):
         self._username = username
         self._password = password
         self._user_info = {'email': None, 'money': 0, 'suspended': False}
+
+        for k in user_info.keys():
+            if k not in self._user_info:
+                raise ValueError('You cannot have key: {} for `user_info`'.format(k))
+
         self._user_info.update(user_info)
 
-        self._logged_in = False
+        # self._logged_in = False
 
         if user_info['email'] is None:
             raise ValueError('You must provide an email!')
@@ -40,6 +46,49 @@ class User(ABC):
         return self._user_info
 
     
+    @classmethod
+    def from_dict(cls, dict_: Dict[str, Any]):
+        """Initialize the class from a dictionary.
+
+        This method is particularly useful for interacting with databases
+
+        Returns
+        """
+
+        user_info = {
+            'email': dict_['email'],
+            'money': dict_['money'],
+            'suspended': dict_['suspended']
+        }
+
+        new_instance = cls(
+            user_id=dict_['id'],
+            username=dict_['username'],
+            password=dict_['password'],
+            user_info=user_info
+            )
+
+        return new_instance
+
+    def to_dict(self):
+        """Convert the important methods to dictionary
+        """
+
+        user_info = {
+            'id': self.user_id,
+            'username': self.username,
+            'password': self.password,
+            'email': self.user_info['email'],
+            'money': self.user_info['money'],
+            'suspended': self.user_info['suspended']
+        }
+
+        return user_info
+
+    def to_json(self):
+        user_info = self.to_dict()
+        return json.dumps(user_info)
+
 
 
     def _assert_not_suspended(self, operation):
@@ -94,7 +143,7 @@ class User(ABC):
 
         operation = 'modify_profile'
         self._assert_not_suspended(operation=operation)
-        self._assert_logged_in(operation=operation)
+        # self._assert_logged_in(operation=operation)
     
 
         if username is not None:
@@ -104,6 +153,10 @@ class User(ABC):
             self._password = password
 
         if user_info is not None:
+            for k in user_info.keys():
+                if k not in self._user_info:
+                    raise ValueError('You cannot have key: {} for `user_info`'.format(k))
+
             self._user_info.update(user_info)
 
 
@@ -111,8 +164,8 @@ class User(ABC):
 class Buyer(User):
     """The buyer
     """
-    def __init__(self):
-        super(Buyer, self).__init__()
+    def __init__(self, **kwargs):
+        super(Buyer, self).__init__(**kwargs)
         self._watch_list = []
     
     def place_item_on_watchlist(self, item) -> None:
@@ -124,11 +177,11 @@ class Buyer(User):
 class Seller(User):
     """The seller
     """
-    def __init__(self):
-        super(Seller, self).__init__()
+    def __init__(self, **kwargs):
+        super(Seller, self).__init__(**kwargs)
 
 class Admin(User):
     """The administrator
     """
-    def __init__(self):
-        super(Admin, self).__init__()
+    def __init__(self, **kwargs):
+        super(Admin, self).__init__(**kwargs)
