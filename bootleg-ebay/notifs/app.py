@@ -25,14 +25,7 @@ EmailPostSchema = {
 @expects_json(EmailPostSchema)
 def SendEmail():
     data = request.get_json()
-    keys = ["recipient", "subject", "body"]
-    configuration = {}
-    for key in keys:
-        if key not in data:
-            return f"{key} missing from request", 400
-        configuration[key] = data[key]
-
-    return notifs_functions.SendEmail(configuration)
+    return notifs_functions.SendEmail(data)
 
 if __name__ == '__main__':
     app.run(debug = True, port = 8012, host = socket.gethostbyname(socket.gethostname()))
