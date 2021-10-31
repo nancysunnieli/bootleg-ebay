@@ -155,7 +155,7 @@ services:
     ports:
       - 1002:1002
     volumes:
-      - ./bootleg-ebay/auctions:/bootleg-ebay/auctions
+      - ./bootleg-ebay/auctions:/auctions
 
   carts-db:
     image: mongo:latest
@@ -179,8 +179,6 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
-
-
 # networking for the Redis container
 #networks:
 #  node_net:
