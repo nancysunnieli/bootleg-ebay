@@ -21,3 +21,7 @@ RUN pip install -r requirements.txt
 # Do not copy because we should mount the volumes instead. See docker-compose
 # COPY . .
 # CMD ["flask", "run"]
+
+ENV PYTHONOUNBUFFERED 1
+ENV USERSDBHOST=users-db
+CMD ["python", "app.py"] 

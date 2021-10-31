@@ -166,12 +166,12 @@ class Buyer(User):
     """
     def __init__(self, **kwargs):
         super(Buyer, self).__init__(**kwargs)
-        self._watch_list = []
+        # self._watch_list = []
     
-    def place_item_on_watchlist(self, item) -> None:
-        """Place an item to the buyer's watch list
-        """
-        self._watch_list.append(item)
+    # def place_item_on_watchlist(self, item) -> None:
+    #     """Place an item to the buyer's watch list
+    #     """
+    #     self._watch_list.append(item)
 
 
 class Seller(User):

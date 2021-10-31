@@ -32,6 +32,7 @@ def create_photos_database(data_file_path, collection = photos_collection):
     collection.insert_many(all_entries)
     
 def create_flagged_items_database(data_file_path, collection = flagged_items_collection):
+
     file = open(data_file_path)
     csvreader = csv.reader(file)
     all_entries = []
