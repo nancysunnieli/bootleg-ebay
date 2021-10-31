@@ -57,4 +57,4 @@ def DeleteAccount():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 3306, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 1001, host = socket.gethostbyname(socket.gethostname()))
