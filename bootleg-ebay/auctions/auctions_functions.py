@@ -1,3 +1,4 @@
+import os
 import uuid
 import datetime
 from typing import Sequence
@@ -49,8 +50,10 @@ class AuctionDBManager:
 
     @classmethod
     def _init_auction_collection(cls):
-
-        client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27019")
+        hostname = os.getenv('AUCTIONSDBHOST', "localhost")
+        port = os.getenv('AUCTIONSDBPORT', "27019")
+        print(hostname, port)
+        client = pymongo.MongoClient(f"mongodb://root:bootleg@{hostname}:{port}")
         db = client["auctions"]
         return db["auctions"]
 
