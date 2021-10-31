@@ -110,7 +110,7 @@ def EditCategories():
 @app.route("/Items/ModifyAvailability", methods = ['POST'])
 def ModifyAvailability():
     socket_url = ("http://" + itemsServiceHost +
-                    ":8099" + "/EditCategories")
+                    ":8099" + "/ModifyAvailability")
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -156,21 +156,43 @@ def GetItemsFromCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+@app.route("/Carts/EmptyCart", methods = ['POST'])
+def EmptyCart():
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/EmptyCart")
+    r = requests.post(empty_cart_url, json = data_content)
+    return r.content
+
 @app.route("/Carts/Checkout", methods = ['POST'])
 def Checkout():
     data_content = requests.get_json()
+
+    # gets all items in user's cart
     get_items_url = ("http://" + cartsServiceHost +
                     ":3211" + "/GetItemsFromCart")
-    item = requests.post(url = get_items_url, json = data_content)
-
-    
+    items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
 
 
-    checkout_url = ("http://" + cartsServiceHost +
-                    ":3211" + "/Checkout")
+    # checks availability of all items
+    items_availability_url = ("http://" + itemsServiceHost +
+                            ":8099" + "/GetItemsFromCart")
+    available_items = []
+    unavailable_items = []
+    for item in items:
+        availability = (requests.post(url = items_availability_url, data = {"item_id" : item})).content
+        if availability == "Was unable to adjust availability. Item is no longer available.":
+            unavailable_items.append(item)
+        else:
+            available_items.append(item)
     
-    
-    r = requests.post(url = carts_url, json = data_content)
+    # GET CREDIT CARD INFO
+
+    # CREATE PAYMENT INFO
+
+    # DELETE ALL ITEMS FROM CART
+    empty_cart_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/EmptyCart")
+    r = requests.post(empty_cart_url, json = data_content)
     return r.content
 
 

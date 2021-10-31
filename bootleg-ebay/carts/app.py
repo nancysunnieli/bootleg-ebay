@@ -36,11 +36,11 @@ def GetItemsFromCart():
     user_id = data["user_id"]
     return carts_functions.get_items(user_id)
 
-@app.route('/Checkout', methods = ['POST'])
-def Checkout():
+@app.route('/EmptyCart', methods = ['POST'])
+def EmptyCart():
     data = request.get_json()
     user_id = data["user_id"]
-    return carts_functions.checkout(user_id)
+    return carts_functions.EmptyCart(user_id)
 
 
 if __name__ == '__main__':
