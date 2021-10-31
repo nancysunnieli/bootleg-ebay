@@ -75,9 +75,10 @@ def get_items(user_id, collection = carts_collection):
     results = list(collection.find(query))[0]["items"]
     return json.dumps(results)
 
-def checkout(user_id, colelction = carts_collection):
+def checkout(user_id, collection = carts_collection):
     """
-    This allows the user to checkout their current cart
+    This allows the user to checkout an item from
+    their current cart
     """
     # FIGURE OUT HOW TO IMPLEMENT THIS
     pass

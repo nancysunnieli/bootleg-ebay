@@ -206,6 +206,21 @@ def searchItem(keywords, collection = items_collection):
     results = json.dumps(list(collection.find(query)))
     return results
 
+def modifyAvailability(item_id, collection = items_collection):
+    """
+    This adjusts the availability of the item. If
+    the availability was successfully changed, it indicates it.
+    """
+    query = {"_id" : item_id}
+    modification = { "$set": {"available" : False }}
+    result = collection.update_one(query, modification)
+    if result.modified_count > 0:
+        return "Successfully adjusted availability."
+    else:
+        return "Was unable to adjust availability. Item is no longer available."
+
+
+
 # executing tests for my functions
 if __name__ == '__main__':
 
