@@ -5,7 +5,7 @@ from typing import Sequence
 import pymongo
 from pymongo import MongoClient
 
-from auction import Auction, Bid
+from auction import Auction, Bid, current_time
 
 """
 Jin- We won't be using AuctionID because mongodb already gives us an id
@@ -18,14 +18,16 @@ Auction should look something like:
     'item_id': 10,
 
     'buy_now': True, # Bool
-    'start_time': None, # Datetime
-    'end_time': None, # Datetime
+    'start_time': None, # DateTime
+    'end_time': None, # DateTime
 
     'started': False,
     'completed': False, # Bool
 
     # The maximum price that is allowed to be bid for this auction. If none, then there's no max
     'max_auction_price': None, # float
+    # The max end time set by the seller. 'end_time' can be less than 'max_end_time' if the auction finishes early
+    'max_end_time': None, # DateTime
 
     # The latest bid price and time
     'latest_bid_price': 0.0, # float
@@ -57,6 +59,12 @@ class AuctionDBManager:
         collection = cls._init_auction_collection()
         results = list(collection.find(query))
         return results
+
+    @classmethod
+    def insert_one(cls, dict_):
+        collection = cls._init_auction_collection()
+        return collection.insert_one(dict_)
+
 
     @classmethod
     def delete_one(cls, query):
@@ -91,6 +99,16 @@ class AuctionDBManager:
         query = { "_id": auction.auction_id}
         cls.update_one(query, values)
 
+def CreateAuction(auction_info):
+    """Create an auction and start it
+    """
+
+    auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
+    auction = AuctionDBManager.get_auction(auction_id)
+    auction.start_auction()
+    AuctionDBManager.update_auction(auction=auction)
+
+
 
 def GetAuction(auction_id):
     """Get an auction. Can either be completed or currently running
@@ -106,14 +124,14 @@ def ViewCurrentAuctions() -> Sequence:
     """Get the auctions that are currently running.
     """
     
-    current_time = float(datetime.datetime.now().timestamp())
-    query = {"start_time": {"$lte": current_time }, 
-            "auctionendtime": {"$gte": current_time}}
+    time = current_time()
+    query = {"start_time": {"$lte": time }, 
+            "end_time": {"$gte": time}}
 
     auctions = AuctionDBManager.query_collection(query)
     return auctions
 
-def removeAuction(auction_id) -> None:
+def RemoveAuction(auction_id) -> None:
     """
     This removes the auction that matches the auction id.
     This is used when  the auction itself

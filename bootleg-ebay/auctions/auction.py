@@ -7,6 +7,7 @@ UserID = int
 Price = float
 DateTime = Optional[float]
 AuctionInfo = Dict
+MongoDBData = Dict[str, Any]
 
 def current_time():
     return float(datetime.datetime.now().timestamp())
@@ -57,16 +58,27 @@ class Bid:
         return self._bid_time
 
     @classmethod
-    def from_mongodb_fmt(cls, mongodb_data):
-        new_instance = cls(
+    def from_mongodb_fmt(cls, mongodb_data: MongoDBData):
+        """Convert mongodb format data into Bid class
+
+        Args:
+            mongodb_data: Data format given by mongodb
+
+        Returns:
+            bid (Bid)
+        """
+        bid = cls(
             bid_id=mongodb_data['_id'],
             price=mongodb_data['price'],
             buyer_id=mongodb_data['buyer_id'],
             bid_time=mongodb_data['bid_time'])
 
-        return new_instance
+        return bid
 
-    def to_mongodb_fmt(self):
+    def to_mongodb_fmt(self) -> MongoDBData:
+        """Export this class to mongodb format
+        """
+
         bid_info = {
             'price': self.price,
             'buyer_id': self.buyer_id,
@@ -81,38 +93,43 @@ class Bid:
 
 
 class Auction:
-    """
+    """Represents the auction
     
-    Args:
-        auction_id: Unique id assigned to the auction
-        bids: List of bids made 
-        auction_info: Information regarding the auction
     """
     def __init__(
         self, 
         auction_id: AuctionID, 
-        # seller_id: UserID, 
         bids: Sequence[Bid] = [],
         auction_info: AuctionInfo = {}) -> None:
+        """
+        Args:
+            auction_id: Unique id assigned to the auction
+            bids: List of bids made 
+            auction_info: Information regarding the auction
+        """
 
         self._auction_id = auction_id
         # self._seller_id = seller_id
         self._bids = bids
         self._auction_info = {
             'item_id': None,
-
             'buy_now': None, # Bool
-            'start_time': None, # Datetime
-            'end_time': None, # Datetime
+
+            # start time of the auction
+            'start_time': None, # DateTime
+            # end time of the auction
+            'end_time': None, # DateTime
 
             'started': False,
             'completed': False, # Bool
 
             # The maximum price that is allowed to be bid for this auction
             'max_auction_price': None, # float
+            # The max end time set by the seller. 'end_time' can be less than 'max_end_time' if the auction finishes early
+            'max_end_time': None, # DateTime
 
-            'current_bid_price': 0.0, # float
-            'latest_bid_time': None # Datetime
+            'latest_bid_price': -1.0, # float
+            'latest_bid_time': None # DateTime
         }
 
         for k in auction_info.keys():
@@ -121,20 +138,36 @@ class Auction:
 
         self._auction_info.update(auction_info)
 
-        for k, v in self._auction_info.items():
-            assert v is not None
+        # i.e. if the auction expired
+        if current_time() > self._auction_info['max_end_time']:
+            self.stop_auction()
+
+
+        # for k, v in self._auction_info.items():
+        #     assert v is not None
 
     @classmethod
-    def from_mongodb_fmt(cls, mongodb_data):
+    def from_mongodb_fmt(cls, mongodb_data: MongoDBData):
+        """Convert mongodb format data into Bid class
+
+        Args:
+            mongodb_data: Data format given by mongodb
+
+        Returns:
+            auction (Auction)
+        """
+
         bids = [Bid.from_mongodb_fmt(bid) for bid in mongodb_data['bids']]
         auction_id = mongodb_data['_id']
         del mongodb_data['bids']
         del mongodb_data['_id']
         
-        new_instance = cls(auction_id=auction_id, bids=bids, auction_info=mongodb_data)
-        return new_instance
+        auction = cls(auction_id=auction_id, bids=bids, auction_info=mongodb_data)
+        return auction
 
     def to_mongodb_fmt(self):
+        """Export this class to mongodb format
+        """
         mongodb_dict = self.auction_info
         mongodb_dict['_id'] = self.auction_id
         mongodb_dict['bids'] = [b.to_mongodb_fmt() for b in self.bids]
@@ -194,9 +227,11 @@ class Auction:
         if auction_info['completed'] is True:
             raise ValueError('You cannot place a bid on an auction that has been finished.')
 
-        if bid.price > auction_info['current_bid_price'] and bid.bid_time > auction_info['latest_bid_time']:
+        if bid.price > auction_info['latest_bid_price'] and bid.bid_time > auction_info['latest_bid_time']:
             self._bids.append(bid)
             successful = True
+            auction_info['latest_bid_price'] = bid.price
+            auction_info['latest_bid_time'] = bid.bid_time
         else:
             successful = False
 
