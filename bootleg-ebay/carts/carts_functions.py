@@ -75,13 +75,16 @@ def get_items(user_id, collection = carts_collection):
     results = list(collection.find(query))[0]["items"]
     return json.dumps(results)
 
-def checkout(user_id, collection = carts_collection):
+def EmptyCart(user_id, collection = carts_collection):
     """
-    This allows the user to checkout an item from
+    This allows the user to checkout
     their current cart
     """
-    # FIGURE OUT HOW TO IMPLEMENT THIS
-    pass
+    query = { "user_id": user_id }
+    modification = { "$Set": {"items" : [] }}
+    result = collection.update_one(query, modification)
+    return "Successfully Emptied Cart!"
+
 
 if __name__ == "__main__":
     print("Create Cart Test: ")
