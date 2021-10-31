@@ -107,6 +107,16 @@ def EditCategories():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+@app.route("/Items/ModifyAvailability", methods = ['POST'])
+def ModifyAvailability():
+    socket_url = ("http://" + itemsServiceHost +
+                    ":8099" + "/EditCategories")
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+
+
 
 
 
@@ -148,10 +158,19 @@ def GetItemsFromCart():
 
 @app.route("/Carts/Checkout", methods = ['POST'])
 def Checkout():
-    socket_url = ("http://" + cartsServiceHost +
-                    ":3211" + "/Checkout")
     data_content = requests.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    get_items_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/GetItemsFromCart")
+    item = requests.post(url = get_items_url, json = data_content)
+
+    
+
+
+    checkout_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/Checkout")
+    
+    
+    r = requests.post(url = carts_url, json = data_content)
     return r.content
 
 

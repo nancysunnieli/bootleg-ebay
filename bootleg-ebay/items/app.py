@@ -101,6 +101,12 @@ def EditCategories():
     category = data["category"]
     return item_functions.EditCategories(id, category)
 
+@app.route("/ModifyAvailability", methods = ['POST'])
+def ModifyAvailability():
+    data = request.get_json()
+    id = data["item_id"]
+    return item_functions.modifyAvailability(id)
+
 
 if __name__ == '__main__':
     app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()))

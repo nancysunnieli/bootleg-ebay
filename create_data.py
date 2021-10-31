@@ -85,7 +85,7 @@ def items():
     csvreader = csv.reader(file)
     all_users = []
     for row in csvreader:
-        all_users.append(row[2])
+        all_users.append(row[0])
     file.close()
 
     all_photos = []
@@ -110,8 +110,9 @@ def items():
             new = random.choice(all_users)
             if new not in watch_list:
                 watch_list.append(new)
+        available = True
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged, watch_list])
+                            seller_id, price, isFlagged, watch_list, available])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -130,19 +131,18 @@ def users():
     email_domains = ["@jpmorgan.com", "@uchicago.edu",
                     "@lyft.com"]
     for i in range(0, 30):
-        amount_of_money = random.randint(100, 2000)
 
         while (True):
             username = get_random_words(3, "_")
             if username not in existing_usernames:
                 existing_usernames.add(username)
                 break
-        # id = generate_random_id()
+        id = generate_random_id()
         email = get_random_words(2, ".") + random.choice(email_domains)
         isAdmin = int(generate_random_bool())
         suspended = int(generate_random_bool())
         password_hash = get_random_words(3, "")
-        all_users.append([username, password_hash, email, amount_of_money, suspended, isAdmin])
+        all_users.append([id, username, password_hash, email, suspended, isAdmin])
 
     with open('users.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -233,7 +233,7 @@ def bids():
     csvreader = csv.reader(file)
     all_users = []
     for row in csvreader:
-        all_users.append(row[2])
+        all_users.append(row[0])
     file.close()
 
     # getting auction info
@@ -333,7 +333,7 @@ def notifications():
     csvreader = csv.reader(file)
     all_users = []
     for row in csvreader:
-        all_users.append(row[2])
+        all_users.append(row[0])
     file.close()
 
     all_notifications = []
@@ -368,6 +368,38 @@ def photos():
         writer.writerows(all_photos)
     f.close()
 
+def cards():
+    """
+    Creating credit cards info.
+    Schema is user_id, credit card #,
+                security code, expiration_date
+    """
+    # getting names of all users
+    file = open("users.csv")
+    csvreader = csv.reader(file)
+    all_users = []
+    for row in csvreader:
+        all_users.append(row[0])
+    file.close()
+    months = list(range(1, 13))
+    years = list(range(2022, 2027))
+
+    all_cards = []
+    for user in all_users:
+        card = [user]
+        card.append(str(random.randint(1111111111111111, 9999999999999999)))
+        card.append(str(random.randint(111, 999)))
+        card.append(str(random.choice(months)) + "/" + str(random.choice(years)))
+        all_cards.append(card)
+    
+    with open('cards.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all_cards)
+    f.close()
+
+
+
+
 
 def generate_all_data():
     """
@@ -382,6 +414,7 @@ def generate_all_data():
     advertisers()
     advertisements()
     notifications()
+    cards()
 
 if __name__ == '__main__':
     generate_all_data()
