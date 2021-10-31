@@ -220,8 +220,17 @@ def Logout():
 
 @app.route("/{}/CreateAccount".format(usersName), methods = ['POST'])
 def CreateAccount():
+    # CREATING ACCOUNT
+    data_content = requests.get_json()
     socket_url = ("http://" + usersServiceHost + usersPort + "/CreateAccount")
-    return get_and_post(socket_url)
+    get_and_post(socket_url)
+
+    # CREATING CART
+    socket_url = ("http://" + cartsServiceHost +
+                    ":3211" + "/CreateCart")
+    data_content = requests.get_json()
+    requests.post(url = socket_url, json = data_content)
+
 
 @app.route("/{}/SuspendAccount".format(usersName), methods = ['POST'])
 def SuspendAccount():
