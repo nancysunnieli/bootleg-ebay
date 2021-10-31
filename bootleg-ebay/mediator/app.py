@@ -12,6 +12,13 @@ itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 app = Flask(__name__)
 
+
+def get_and_post(socket_url):
+    data_content = requests.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
+
 @app.route('/')
 def base():
     return Response(response = json.dumps({"Status": "UP"}),
@@ -103,7 +110,7 @@ def EditCategories():
 
 
 
-# getting IP Address of items container
+# getting IP Address of carts container
 # The following are functions for the carts microservice
 cartsServiceHost = os.getenv('CARTSAPIHOST', "localhost")
 
@@ -146,6 +153,50 @@ def Checkout():
     data_content = requests.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
+
+
+
+# getting IP Address of users container
+# The following are functions for the users microservice
+usersServiceHost = os.getenv('USERSDBHOST', "localhost")
+usersName = 'Users'
+usersPort = ':1001'
+
+@app.route("/{}/ViewUser".format(usersName), methods = ['POST'])
+def ViewUser():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/ViewUser")
+    return get_and_post(socket_url)
+
+@app.route("/{}/Login".format(usersName), methods = ['POST'])
+def Login():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/Login")
+    return get_and_post(socket_url)
+
+@app.route("/{}/Logout".format(usersName), methods = ['POST'])
+def Logout():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/Logout")
+    return get_and_post(socket_url)
+
+@app.route("/{}/CreateAccount".format(usersName), methods = ['POST'])
+def CreateAccount():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/CreateAccount")
+    return get_and_post(socket_url)
+
+@app.route("/{}/SuspendAccount".format(usersName), methods = ['POST'])
+def SuspendAccount():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/SuspendAccount")
+    return get_and_post(socket_url)
+
+
+@app.route("/{}/ModifyProfile".format(usersName), methods = ['POST'])
+def ModifyProfile():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/ModifyProfile")
+    return get_and_post(socket_url)
+
+@app.route("/{}/DeleteAccount".format(usersName), methods = ['POST'])
+def DeleteAccount():
+    socket_url = ("http://" + usersServiceHost + usersPort + "/DeleteAccount")
+    return get_and_post(socket_url)
 
 
 if __name__ == '__main__':
