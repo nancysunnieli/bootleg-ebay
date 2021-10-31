@@ -15,3 +15,7 @@ RUN apt-get update && \
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
+
+ENV PYTHONOUNBUFFERED 1
+ENV AUCTIONSDBHOST=auctions-db
+CMD ["python", "app.py"] 
