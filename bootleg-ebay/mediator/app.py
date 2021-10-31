@@ -199,5 +199,56 @@ def DeleteAccount():
     return get_and_post(socket_url)
 
 
+# getting IP Address of auctions container
+# The following are functions for the auctions microservice
+auctionsServiceHost = os.getenv('AUCTIONSDBHOST', "localhost")
+auctionsName = 'Auctions'
+auctionsPort = ':1002'
+
+@app.route("/{}/CreateAuction".format(auctionsName), methods = ['POST'])
+def CreateAuction():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CreateAuction")
+    return get_and_post(socket_url)
+
+@app.route("/{}/GetAuction".format(auctionsName), methods = ['POST'])
+def GetAuction():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/GetAuction")
+    return get_and_post(socket_url)
+
+@app.route("/{}/ViewCurrentAuctions".format(auctionsName), methods = ['POST'])
+def ViewCurrentAuctions():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/GetAuction")
+    return get_and_post(socket_url)
+
+@app.route("/{}/RemoveAuction".format(auctionsName), methods = ['POST'])
+def RemoveAuction():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/RemoveAuction")
+    return get_and_post(socket_url)
+
+@app.route("/{}/CompleteAuction".format(auctionsName), methods = ['POST'])
+def CompleteAuction():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CompleteAuction")
+    return get_and_post(socket_url)
+
+@app.route("/{}/BidsByUser".format(auctionsName), methods = ['POST'])
+def BidsByUser():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/BidsByUser")
+    return get_and_post(socket_url)
+
+@app.route("/{}/CreateBid".format(auctionsName), methods = ['POST'])
+def CreateBid():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CreateBid")
+    return get_and_post(socket_url)
+
+@app.route("/{}/ViewBids".format(auctionsName), methods = ['POST'])
+def ViewBids():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/ViewBids")
+    return get_and_post(socket_url)
+
+@app.route("/{}/BuyNow".format(auctionsName), methods = ['POST'])
+def BuyNow():
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/BuyNow")
+    return get_and_post(socket_url)
+
 if __name__ == '__main__':
     app.run(debug = True, port = 8011, host = socket_name)
