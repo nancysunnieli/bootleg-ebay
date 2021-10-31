@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt
 
 ENV PYTHONOUNBUFFERED 1
 ENV USERSDBHOST=users-db
-CMD ["python", "app.py"] 
+CMD ["python3", "app.py"] 
