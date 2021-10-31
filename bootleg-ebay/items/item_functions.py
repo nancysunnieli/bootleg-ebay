@@ -152,14 +152,8 @@ def ReportItem(id, flag_reason, item_collection = items_collection,
 def RemoveItem(id, item_collection = items_collection,
                 flagged_item_collection = flagged_items_collection):
     """
-    This removes an item (if eligible)
+    This removes an item
     """
-    # ADD IF STATEMENT THAT DOES NOT ALLOW ITEM TO BE
-    # REMOVED IF THERE ARE ALREADY BIDS ON IT....
-    # NEEDS TO CALL THE AUCTIONS MICROSERVICE
-    if (False): # call to microservice
-        return """There are already bids on 
-                this item! It cannot be deleted"""
 
     find_item = {"_id": id}
     item_collection.delete_one(find_item)

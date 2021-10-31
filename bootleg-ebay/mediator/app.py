@@ -60,6 +60,10 @@ def AddUserToWarchlist():
 
 @app.route('/Items/RemoveItem', methods = ['POST'])
 def RemoveItem():
+    if ViewBids().length == 0:
+        return """There are already bids on 
+                this item! It cannot be deleted"""
+    
     socket_url = ("http://" + itemsServiceHost +
                      ":8099" + "/RemoveItem")
     data_content = request.get_json()
