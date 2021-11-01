@@ -203,7 +203,7 @@ def Checkout():
 
 # getting IP Address of users container
 # The following are functions for the users microservice
-usersServiceHost = os.getenv('USERSDBHOST', "localhost")
+usersServiceHost = os.getenv('USERAPIHOST', "localhost")
 usersName = 'Users'
 usersPort = ':1001'
 
