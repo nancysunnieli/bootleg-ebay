@@ -63,7 +63,7 @@ services:
     image: mysql:8
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_ROOT_PASSWORD=bootleg2
       - MYSQL_DATABASE=payments
     volumes:
       - ./data/payments-db:/var/lib/mysql
