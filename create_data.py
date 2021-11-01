@@ -123,7 +123,11 @@ def users():
     """
     Creates 30 users
 
-    Schema: username, password, email, money, suspended, is_admin 
+    The id will autoincrement from 1 to n because indexing by integer in mysql is faster + more efficient
+
+    So we won't use `generate_random_id`
+
+    Schema: username, password, email, suspended, is_admin 
     """
     all_users = []
     existing_usernames = set()
@@ -137,12 +141,12 @@ def users():
             if username not in existing_usernames:
                 existing_usernames.add(username)
                 break
-        id = generate_random_id()
+        # id = generate_random_id()
         email = get_random_words(2, ".") + random.choice(email_domains)
         isAdmin = int(generate_random_bool())
         suspended = int(generate_random_bool())
         password_hash = get_random_words(3, "")
-        all_users.append([id, username, password_hash, email, suspended, isAdmin])
+        all_users.append([username, password_hash, email, suspended, isAdmin])
 
     with open('users.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -371,6 +375,9 @@ def photos():
 def cards():
     """
     Creating credit cards info.
+
+    The user id autoincrements. 
+
     Schema is user_id, credit card #,
                 security code, expiration_date
     """
@@ -380,13 +387,15 @@ def cards():
     all_users = []
     for row in csvreader:
         all_users.append(row[0])
+
+    num_users = len(all_users)
     file.close()
     months = list(range(1, 13))
     years = list(range(2022, 2027))
 
     all_cards = []
-    for user in all_users:
-        card = [user]
+    for i in range(1, num_users + 1):
+        card = [i]
         card.append(str(random.randint(1111111111111111, 9999999999999999)))
         card.append(str(random.randint(111, 999)))
         card.append(str(random.choice(months)) + "/" + str(random.choice(years)))
