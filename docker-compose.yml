@@ -59,6 +59,27 @@ services:
     volumes:
       - ./bootleg-ebay/users:/users
 
+  payments-db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_DATABASE=payments
+    volumes:
+      - ./data/payments-db:/var/lib/mysql
+      - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 4407:4406
+
+  payments-api:
+    # take the build from Dockerfile
+    build: ./bootleg-ebay/payments/
+    tty: true
+    ports:
+      - 1003:1003
+    volumes:
+      - ./bootleg-ebay/payments:/payments
+
   advertisements-db:
     image: mysql:8
     restart: always
