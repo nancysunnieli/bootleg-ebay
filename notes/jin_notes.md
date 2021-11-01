@@ -6,7 +6,7 @@
 
 # Commands
 
-`docker-compose up -d users-db -d users-ms`
+`docker-compose up -d users-db -d users-api`
 `docker-compose up -d auctions-api -d auctions-db`
 
 # MongoDB issues for M1 Mac

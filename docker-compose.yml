@@ -50,14 +50,14 @@ services:
     ports:
       - 3307:3306
 
-  users-ms:
+  users-api:
     # take the build from Dockerfile
     build: ./bootleg-ebay/users/
     tty: true
     ports:
       - 1001:1001
     volumes:
-      - ./bootleg-ebay/users:/bootleg-ebay/users
+      - ./bootleg-ebay/users:/users
 
   advertisements-db:
     image: mysql:8
