@@ -1,4 +1,5 @@
 from typing import Dict, Any, Sequence, Optional
+import json
 
 from mysql.connector import connect, Error
 
@@ -6,6 +7,7 @@ from payments import PaymentCard
 
 PaymentInfo = Dict[str, Any]
 PaymentID = int
+UserID = int
 
 class PaymentsDBManager:
     db_name = "payments"
@@ -96,3 +98,34 @@ class PaymentsDBManager:
         
         payment_card = cls._get_payment_by_query(cmd, val)
         return payment_card
+
+    @classmethod
+    def get_payment_card_by_user_id(cls, user_id: UserID) -> Optional[PaymentCard]:
+        """Get the payment from the database by user id
+
+        Returns:
+            payment_card: Returns `None` if we couldn't find the payment. Otherwise, return the payment card.
+        """
+        cmd = "SELECT * FROM {} WHERE user_id = %s".format(cls.db_name)
+        val = (user_id, )
+        
+        payment_card = cls._get_payment_by_query(cmd, val)
+        return payment_card
+
+def CreatePaymentCard(payment_info: PaymentInfo):
+    """Create a payment card.
+    """
+    payment_card = PaymentCard.from_dict(payment_info)
+    payment_info = payment_card.to_dict()
+    rows = [[payment_info[c] for c in PaymentsDBManager.db_cols]]
+    PaymentsDBManager.insert_many(rows)
+
+def GetPaymentCard(payment_id: PaymentID):
+    payment = PaymentsDBManager.get_payment_card(payment_id)
+    if payment is None:
+        return json.dumps({})
+
+    return payment.to_json()
+
+def DeleteAccount(payment_id: PaymentID) -> None:
+   PaymentsDBManager.delete_by_id(payment_id)

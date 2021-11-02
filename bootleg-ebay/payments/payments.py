@@ -1,5 +1,6 @@
 from typing import Dict, Any
 import copy
+import json
 
 CardInfo = Dict[str, Any]
 PaymentID = int
@@ -22,6 +23,8 @@ class PaymentCard:
             if k not in self._card_info:
                 raise ValueError('You cannot have key: {} in card_info!'.format(k))
 
+        self._card_info.update(card_info)
+
     @property
     def payment_id(self):
         return self._payment_id
@@ -42,3 +45,7 @@ class PaymentCard:
         dict_['id'] = self.payment_id
 
         return dict_
+
+    def to_json(self):
+        user_info = self.to_dict()
+        return json.dumps(user_info)
