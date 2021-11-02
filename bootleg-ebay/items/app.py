@@ -18,7 +18,7 @@ def ViewFlaggedItems():
 def SearchItem():
     data = request.get_json()
     keywords = data["keywords"]
-    return item_functions.searchItem(keywords)
+    return item_functions.SearchItem(keywords)
 
 @app.route('/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
@@ -105,7 +105,7 @@ def EditCategories():
 def ModifyAvailability():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.modifyAvailability(id)
+    return item_functions.ModifyAvailability(id)
 
 
 if __name__ == '__main__':
