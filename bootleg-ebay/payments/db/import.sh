@@ -3,4 +3,4 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-docker exec -i $(docker-compose ps -q payments-db) mysql -uroot -pbootleg payments < ./sqlfile.sql
+docker exec -i $(docker-compose ps -q payments-db) mysql -uroot -pbootleg2 payments < ./sqlfile.sql
