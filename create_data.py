@@ -398,7 +398,9 @@ def cards():
         card = [i]
         card.append(str(random.randint(1111111111111111, 9999999999999999)))
         card.append(str(random.randint(111, 999)))
-        card.append(str(random.choice(months)) + "/" + str(random.choice(years)))
+
+        # year, month, day
+        card.append('{}-{}-{}'.format(random.choice(years), random.choice(months), 1))
         all_cards.append(card)
     
     with open('cards.csv', 'w', newline = "") as f:
