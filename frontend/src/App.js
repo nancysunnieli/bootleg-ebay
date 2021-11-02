@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import NavBar from "react-bootstrap/NavBar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import "./App.css";
 
 import Login from "./components/Login/Login";
@@ -16,13 +15,17 @@ import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
 import { logout } from "./slices/auth";
 import PrivateRoute from "./components/Routing/PrivateRouter";
 import { ROLE_USER, ROLE_ADMIN } from "./constants";
+import Logout from "./components/Logout/Logout";
+import { useHistory } from "react-router-dom";
+
 const NotFound = () => {
     return <h1>Not found</h1>;
 };
 const App = () => {
     const [showAdminBoard, setShowAdminBoard] = useState(false);
-
-    const { currentUser } = useSelector((state) => state.auth);
+    const history = useHistory();
+    const { user: currentUser } = useSelector((state) => state.auth);
+    console.log("user", currentUser);
     const dispatch = useDispatch();
 
     const logOut = useCallback(() => {
@@ -50,23 +53,39 @@ const App = () => {
             <div>
                 <NavBar bg="light" expand="lg">
                     <Container>
-                        <NavBar.Brand href={"/home"}>Bootleg Ebay</NavBar.Brand>
+                        <NavBar.Brand as={Link} to={"/home"}>
+                            Bootleg Ebay
+                        </NavBar.Brand>
                         <NavBar.Toggle aria-controls="basic-navbar-nav" />
                         <NavBar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
                                 {currentUser && [
-                                    <Nav.Link href="/home">Home</Nav.Link>,
-                                    <Nav.Link href="/profile">Profile</Nav.Link>,
+                                    <Nav.Link as={Link} to="/home">
+                                        Home
+                                    </Nav.Link>,
+                                    <Nav.Link as={Link} to="/profile">
+                                        Profile
+                                    </Nav.Link>,
                                 ]}
                                 {currentUser ? (
-                                    <Nav.Link href="/logout">Logout</Nav.Link>
+                                    <Nav.Link as={Link} to="/logout">
+                                        Logout
+                                    </Nav.Link>
                                 ) : (
                                     [
-                                        <Nav.Link href="/login">Login</Nav.Link>,
-                                        <Nav.Link href="/register">Register</Nav.Link>,
+                                        <Nav.Link as={Link} to="/login">
+                                            Login
+                                        </Nav.Link>,
+                                        <Nav.Link as={Link} to="/register">
+                                            Register
+                                        </Nav.Link>,
                                     ]
                                 )}
-                                {showAdminBoard && <Nav.Link href="/admin">Admin</Nav.Link>}
+                                {showAdminBoard && (
+                                    <Nav.Link as={Link} to="/admin">
+                                        Admin
+                                    </Nav.Link>
+                                )}
                             </Nav>
                         </NavBar.Collapse>
                     </Container>
@@ -76,6 +95,8 @@ const App = () => {
                     <Switch>
                         <Route exact path="/login" component={Login} />
                         <Route exact path="/register" component={Register} />
+                        <Route exact path="/logout" component={Logout} />
+
                         <PrivateRoute
                             exact
                             path={["/", "/home"]}
