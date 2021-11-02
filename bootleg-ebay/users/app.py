@@ -15,7 +15,7 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/ViewUser', methods=['POST'])
+@app.route('/ViewUser', methods=['GET'])
 def ViewUser():
     data = request.get_json()
     user_id = data["user_id"]
