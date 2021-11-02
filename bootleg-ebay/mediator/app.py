@@ -304,5 +304,28 @@ def BuyNow():
     socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/BuyNow")
     return get_and_post(socket_url)
 
+
+# getting IP Address of payments container
+# The following are functions for the payments microservice
+paymentsServiceHost = os.getenv('PAYMENTSDBHOST', "localhost")
+paymentsName = 'Payments'
+paymentsPort = ':1003'
+
+@app.route("/{}/CreatePaymentCard".format(paymentsName), methods = ['POST'])
+def CreatePaymentCard():
+    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/CreatePaymentCard")
+    return get_and_post(socket_url)
+
+@app.route("/{}/GetPaymentCard".format(paymentsName), methods = ['POST'])
+def GetPaymentCard():
+    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/GetPaymentCard")
+    return get_and_post(socket_url)
+
+@app.route("/{}/DeleteAccount".format(paymentsName), methods = ['POST'])
+def DeleteAccount():
+    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/DeleteAccount")
+    return get_and_post(socket_url)
+
+
 if __name__ == '__main__':
     app.run(debug = True, port = 8011, host = socket_name)
