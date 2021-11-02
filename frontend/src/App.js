@@ -17,7 +17,9 @@ import PrivateRoute from "./components/Routing/PrivateRouter";
 import { ROLE_USER, ROLE_ADMIN } from "./constants";
 import Logout from "./components/Logout/Logout";
 import { useHistory } from "react-router-dom";
-
+import Items from "./components/Items/Items";
+import Auctions from "./components/Auctions/Auctions";
+import Cart from "./components/Cart/Cart";
 const NotFound = () => {
     return <h1>Not found</h1>;
 };
@@ -60,11 +62,17 @@ const App = () => {
                         <NavBar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
                                 {currentUser && [
-                                    <Nav.Link as={Link} to="/home">
+                                    <Nav.Link as={Link} to="/home" key={0}>
                                         Home
                                     </Nav.Link>,
-                                    <Nav.Link as={Link} to="/profile">
+                                    <Nav.Link as={Link} to="/profile" key={1}>
                                         Profile
+                                    </Nav.Link>,
+                                    <Nav.Link as={Link} to="/items" key={2}>
+                                        Items
+                                    </Nav.Link>,
+                                    <Nav.Link as={Link} to="/auctions" key={3}>
+                                        Auctions
                                     </Nav.Link>,
                                 ]}
                                 {currentUser ? (
@@ -73,10 +81,10 @@ const App = () => {
                                     </Nav.Link>
                                 ) : (
                                     [
-                                        <Nav.Link as={Link} to="/login">
+                                        <Nav.Link as={Link} to="/login" key={0}>
                                             Login
                                         </Nav.Link>,
-                                        <Nav.Link as={Link} to="/register">
+                                        <Nav.Link as={Link} to="/register" key={1}>
                                             Register
                                         </Nav.Link>,
                                     ]
@@ -87,6 +95,13 @@ const App = () => {
                                     </Nav.Link>
                                 )}
                             </Nav>
+                            {currentUser && (
+                                <Nav>
+                                    <Nav.Link as={Link} to="/cart">
+                                        Cart
+                                    </Nav.Link>
+                                </Nav>
+                            )}
                         </NavBar.Collapse>
                     </Container>
                 </NavBar>
@@ -109,6 +124,14 @@ const App = () => {
                             component={Profile}
                             roles={[ROLE_USER]}
                         />
+                        <PrivateRoute exact path="/items" component={Items} roles={[ROLE_USER]} />
+                        <PrivateRoute
+                            exact
+                            path="/auctions"
+                            component={Auctions}
+                            roles={[ROLE_USER]}
+                        />
+                        <PrivateRoute exact path="/cart" component={Cart} roles={[ROLE_USER]} />
                         <PrivateRoute
                             exact
                             path="/admin"
