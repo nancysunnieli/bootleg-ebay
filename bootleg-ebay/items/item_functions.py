@@ -189,7 +189,8 @@ class ItemsDBManager:
         item = {"itemID": item_id, "FlagReason": flag_reason}
         inserted_item = flagged_items_collection.insert_one(item)
 
-        if len(list(flagged_items_collection.collection.find({"_id" : inserted_item.inserted_id }))) == 1:
+
+        if len(list(flagged_items_collection.find({"itemID" : item_id, "FlagReason": flag_reason}))) > 0:
             return "Flag Successfully Added!"
         else:
             return "Flag Failure. Please Try Again."
@@ -307,11 +308,13 @@ def ViewFlaggedItems(limit = None):
         new_item = items.Item()
         new_item.from_mongo(item, flags)
         if new_item.isFlagged:
-            item_objects.append(new_item.to_mongo())
+            new_dict = new_item.to_mongo()
+            item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
                 break
     return json.dumps(item_objects)
+
 
 def SearchItem(keywords):
     """

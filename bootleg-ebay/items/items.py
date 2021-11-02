@@ -1,3 +1,5 @@
+import json
+
 class Item(object):
     """
     Class for Item
@@ -101,11 +103,10 @@ class Item(object):
         self._id = item["_id"]
 
     def to_mongo(self):
-        return {"_id": self.id, "name": self.name,
-                "description": self.description, "category":
-                self.category, "photos": self.photos, "sellerID":
-                self.sellerID, "price": self.price, "isFlagged":
-                self.isFlagged, "watchlist": self.watchlist, "available": self.availability}
+        return {"name": self.name, "description": self.description,
+                "category": self.category, "photos": self.photos,
+                "sellerID": self.price, "isFlagged": self.isFlagged,
+                "watchlist": self.watchlist, "available": self.available}
 
     def modifyItem(self,
                     new_name = None,
