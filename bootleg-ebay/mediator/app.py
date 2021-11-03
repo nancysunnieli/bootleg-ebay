@@ -14,7 +14,7 @@ socket_name = socket.gethostbyname(socket.gethostname())
 itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 def get_and_post(socket_url):
