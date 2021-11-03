@@ -13,7 +13,7 @@ class CartsDBManager:
     @classmethod
     def _init_carts_collection(cls):
         hostname = os.getenv('CARTSDBHOST', "localhost")
-        client = MongoClient("mongodb://root:bootleg@" + hostname + ":27020")
+        client = MongoClient("mongodb://root:bootleg@" + hostname + ":27017")
 
         db = client["carts"]
         carts_collection = db["carts"]

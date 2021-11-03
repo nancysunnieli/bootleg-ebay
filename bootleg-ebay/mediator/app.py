@@ -163,6 +163,7 @@ def GetItemsFromCart():
 def EmptyCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/EmptyCart")
+    data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
     return r.content
 

@@ -9,4 +9,4 @@ RUN pip3 install -r ./requirements.txt
 WORKDIR /auctions
 ENV AUCTIONSDBHOST=auctions-db
 ENV AUCTIONSDBPORT=27017
-CMD ["python", "app.py"] 
+CMD ["python3", "app.py"] 
