@@ -126,7 +126,7 @@ def ViewUser(user_id: UserID):
     return user.to_json()
     
 
-def Login(username, password) -> bool:
+def Login(username, password) -> UserInfo:
     """Login to an account
     
     Returns:
@@ -135,10 +135,11 @@ def Login(username, password) -> bool:
     
     user = UserDBManager.get_user_by_username(username)
 
+
     if user.password != password:
-        return False
-    else:
-        return True
+        raise ValueError('Wrong password!')
+
+    return user.to_json()
     
 
 def Logout():
@@ -146,11 +147,14 @@ def Logout():
     """
     return True
 
-def CreateAccount(user_info: UserInfo):
+def CreateAccount(user_info: UserInfo) -> UserInfo:
     """Create an user account.
     """
     rows = [[user_info[c] for c in UserDBManager.db_cols]]
     UserDBManager.insert_many(rows)
+
+    user = UserDBManager.get_user_by_username(user_info['username'])
+    return user.to_json()
 
 def SuspendAccount(user_id: UserID):
     """Suspend an user account.
