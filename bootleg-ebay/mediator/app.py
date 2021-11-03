@@ -18,7 +18,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 
 def get_and_post(socket_url):
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -94,7 +94,7 @@ def GetItem():
 def ModifyItem():
     socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/ModifyItem")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -103,7 +103,7 @@ def ModifyItem():
 def AddItem():
     socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/AddItem")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -111,7 +111,7 @@ def AddItem():
 def EditCategories():
     socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/EditCategories")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -119,14 +119,9 @@ def EditCategories():
 def ModifyAvailability():
     socket_url = ("http://" + itemsServiceHost +
                     ":8099" + "/ModifyAvailability")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
-
-
-
-
-
 
 # getting IP Address of carts container
 # The following are functions for the carts microservice
@@ -136,7 +131,7 @@ cartsServiceHost = os.getenv('CARTSAPIHOST', "localhost")
 def CreateCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/CreateCart")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -144,7 +139,7 @@ def CreateCart():
 def AddItemToCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/AddItemToCart")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -152,7 +147,7 @@ def AddItemToCart():
 def DeleteItemFromCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/DeleteItemFromCart")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -160,7 +155,7 @@ def DeleteItemFromCart():
 def GetItemsFromCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/GetItemsFromCart")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -173,7 +168,7 @@ def EmptyCart():
 
 @app.route("/Carts/Checkout", methods = ['POST'])
 def Checkout():
-    data_content = requests.get_json()
+    data_content = request.get_json()
 
     # gets all items in user's cart
     get_items_url = ("http://" + cartsServiceHost +
@@ -241,7 +236,7 @@ UserInfoSchema = {
         'username': {'type': 'string'},
         'password': {'type': 'string'},
         'email': {'type': 'string'},
-        'money': {'type': 'float'},
+        'money': {'type': 'number'},
         'suspended': {'type': 'boolean'},
         'is_admin': {'type': 'boolean'}
     },
@@ -270,14 +265,14 @@ def Logout():
 @expects_json(UserInfoSchema)
 def CreateAccount():
     # CREATING ACCOUNT
-    data_content = requests.get_json()
+    data_content = request.get_json()
     socket_url = ("http://" + usersServiceHost + usersPort + "/CreateAccount")
     get_and_post(socket_url)
 
     # CREATING CART
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/CreateCart")
-    data_content = requests.get_json()
+    data_content = request.get_json()
     requests.post(url = socket_url, json = data_content)
 
 
