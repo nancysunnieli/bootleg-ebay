@@ -10,4 +10,4 @@ ENV ITEMSAPIHOST=items-api
 ENV CARTSAPIHOST=carts-api
 ENV USERAPIHOST=users-api
 
-CMD ["python", "app.py"]
+CMD ["python3", "app.py"]

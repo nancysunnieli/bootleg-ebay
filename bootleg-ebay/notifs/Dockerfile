@@ -8,4 +8,4 @@ RUN pip3 install -r ./requirements.txt
 # We've mounted a volume of the application already
 WORKDIR /notifs
 ENV NOTIFSDBHOST=notifs-db
-CMD ["python", "app.py"] 
+CMD ["python3", "app.py"] 
