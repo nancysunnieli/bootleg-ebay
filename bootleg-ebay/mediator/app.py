@@ -1,8 +1,10 @@
 import requests
-from flask import Flask, Response, request
 import json
 import socket
 import os
+
+from flask import Flask, Response, request
+from flask_expects_json import expects_json
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
@@ -207,22 +209,63 @@ usersServiceHost = os.getenv('USERAPIHOST', "localhost")
 usersName = 'Users'
 usersPort = ':1001'
 
+UserIDSchema = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'int'},
+    },
+    'required': ['user_id']
+}
+
+UserNamePassWordSchema = {
+    'type': 'object',
+    'properties': {
+        'username': {'type': 'string'},
+        'password': {'type': 'string'},
+    },
+    'required': ['user_id', 'password']
+}
+
+NoneSchema = {
+    'type': 'object',
+    'properties': {
+    },
+    'required': []
+}
+
+UserInfoSchema = {
+    'type': 'object',
+    'properties': {
+        'username': {'type': 'string'},
+        'password': {'type': 'string'},
+        'email': {'type': 'string'},
+        'money': {'type': 'float'},
+        'suspended': {'type': 'boolean'},
+        'is_admin': {'type': 'boolean'}
+    },
+    'required': ["username", "password", "email", "money", "suspended", "is_admin"]
+}
+
 @app.route("/{}/ViewUser".format(usersName), methods = ['POST'])
+@expects_json(UserIDSchema)
 def ViewUser():
     socket_url = ("http://" + usersServiceHost + usersPort + "/ViewUser")
     return get_and_post(socket_url)
 
 @app.route("/{}/Login".format(usersName), methods = ['POST'])
+@expects_json(UserNamePassWordSchema)
 def Login():
     socket_url = ("http://" + usersServiceHost + usersPort + "/Login")
     return get_and_post(socket_url)
 
 @app.route("/{}/Logout".format(usersName), methods = ['POST'])
+@expects_json(NoneSchema)
 def Logout():
     socket_url = ("http://" + usersServiceHost + usersPort + "/Logout")
     return get_and_post(socket_url)
 
 @app.route("/{}/CreateAccount".format(usersName), methods = ['POST'])
+@expects_json(UserInfoSchema)
 def CreateAccount():
     # CREATING ACCOUNT
     data_content = requests.get_json()
@@ -237,17 +280,20 @@ def CreateAccount():
 
 
 @app.route("/{}/SuspendAccount".format(usersName), methods = ['POST'])
+@expects_json(UserIDSchema)
 def SuspendAccount():
     socket_url = ("http://" + usersServiceHost + usersPort + "/SuspendAccount")
     return get_and_post(socket_url)
 
 
 @app.route("/{}/ModifyProfile".format(usersName), methods = ['POST'])
+@expects_json(UserInfoSchema)
 def ModifyProfile():
     socket_url = ("http://" + usersServiceHost + usersPort + "/ModifyProfile")
     return get_and_post(socket_url)
 
 @app.route("/{}/DeleteAccount".format(usersName), methods = ['POST'])
+@expects_json(UserIDSchema)
 def DeleteAccount():
     socket_url = ("http://" + usersServiceHost + usersPort + "/DeleteAccount")
     return get_and_post(socket_url)
