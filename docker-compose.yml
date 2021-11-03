@@ -69,7 +69,7 @@ services:
       - ./data/payments-db:/var/lib/mysql
       - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
-      - 3308:3306
+      - 3309:3306
 
   payments-api:
     # take the build from Dockerfile
