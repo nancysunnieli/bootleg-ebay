@@ -7,7 +7,7 @@ from flask import Flask, Response, request
 import auctions_functions
 
 app = Flask(__name__)
-
+socket_name = socket.gethostbyname(socket.gethostname())
 
 @app.route('/')
 def base():
@@ -69,4 +69,4 @@ def BuyNow():
     return auctions_functions.BuyNow(auction_id, data['buyer_id'])
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 1002, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 2222, host = socket_name)

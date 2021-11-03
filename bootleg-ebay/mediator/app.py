@@ -163,7 +163,7 @@ def GetItemsFromCart():
 def EmptyCart():
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/EmptyCart")
-    r = requests.post(empty_cart_url, json = data_content)
+    r = requests.post(socket_url, json = data_content)
     return r.content
 
 @app.route("/Carts/Checkout", methods = ['POST'])
@@ -300,7 +300,7 @@ def DeleteAccount():
 # The following are functions for the auctions microservice
 auctionsServiceHost = os.getenv('AUCTIONSDBHOST', "localhost")
 auctionsName = 'Auctions'
-auctionsPort = ':1002'
+auctionsPort = ':2222'
 
 @app.route("/{}/CreateAuction".format(auctionsName), methods = ['POST'])
 def CreateAuction():
@@ -371,4 +371,4 @@ def PaymentsDeleteAccount():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8011, host = socket_name)
+    app.run(debug = True, port = 8011, host = "localhost")
