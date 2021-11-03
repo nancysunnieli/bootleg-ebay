@@ -5,6 +5,7 @@ import os
 
 from flask import Flask, Response, request
 from flask_expects_json import expects_json
+from flask_cors import CORS
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
@@ -13,6 +14,7 @@ socket_name = socket.gethostbyname(socket.gethostname())
 itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 app = Flask(__name__)
+CORS(app)
 
 
 def get_and_post(socket_url):
