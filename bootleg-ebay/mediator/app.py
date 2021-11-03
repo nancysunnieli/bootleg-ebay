@@ -368,7 +368,7 @@ def GetPaymentCard():
     return get_and_post(socket_url)
 
 @app.route("/{}/DeleteAccount".format(paymentsName), methods = ['POST'])
-def DeleteAccount():
+def PaymentsDeleteAccount():
     socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/DeleteAccount")
     return get_and_post(socket_url)
 
