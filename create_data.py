@@ -408,6 +408,24 @@ def cards():
         writer.writerows(all_cards)
     f.close()
 
+def carts():
+    # getting names of all users
+    file = open("users.csv")
+    csvreader = csv.reader(file)
+    all_users = []
+    for row in csvreader:
+        all_users.append(row[0])
+    
+    all_carts = []
+    for i in range(0, len(all_users)):
+        id = generate_random_id()
+        all_carts.append([id, all_users[i], []])
+    
+    with open('carts.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all_carts)
+    f.close()
+
 
 
 
@@ -426,6 +444,7 @@ def generate_all_data():
     advertisements()
     notifications()
     cards()
+    carts()
 
 if __name__ == '__main__':
     generate_all_data()
