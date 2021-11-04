@@ -12,53 +12,53 @@ from config import *
 # getting IP Address of carts container
 # The following are functions for the carts microservice
 
-@routes.route("/Carts/CreateCart", methods = ['POST'])
+@routes.route("/{}/CreateCart".format(CARTS_NAME), methods = ['POST'])
 def CreateCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/CreateCart")
+                    CARTS_PORT + "/CreateCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/AddItemToCart", methods = ['POST'])
+@routes.route("/{}/AddItemToCart".format(CARTS_NAME), methods = ['POST'])
 def AddItemToCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/AddItemToCart")
+                    CARTS_PORT + "/AddItemToCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/DeleteItemFromCart", methods = ['POST'])
+@routes.route("/{}/DeleteItemFromCart".format(CARTS_NAME), methods = ['POST'])
 def DeleteItemFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/DeleteItemFromCart")
+                    CARTS_PORT + "/DeleteItemFromCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/GetItemsFromCart", methods = ['POST'])
+@routes.route("/{}/GetItemsFromCart".format(CARTS_NAME), methods = ['POST'])
 def GetItemsFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/GetItemsFromCart")
+                    CARTS_PORT + "/GetItemsFromCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/EmptyCart", methods = ['POST'])
+@routes.route("/{}/EmptyCart".format(CARTS_NAME), methods = ['POST'])
 def EmptyCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/EmptyCart")
+                    CARTS_PORT + "/EmptyCart")
     data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/Checkout", methods = ['POST'])
+@routes.route("/{}/Checkout".format(CARTS_NAME), methods = ['POST'])
 def Checkout():
     data_content = request.get_json()
 
     # gets all items in user's cart
     get_items_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/GetItemsFromCart")
+                    CARTS_PORT + "/GetItemsFromCart")
     items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
 
 
@@ -80,7 +80,7 @@ def Checkout():
 
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/EmptyCart")
+                    CARTS_PORT + "/EmptyCart")
     r = requests.post(empty_cart_url, json = data_content)
     return r.content
 

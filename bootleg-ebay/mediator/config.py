@@ -1,6 +1,8 @@
 import os
 
 CARTS_SERVICE_HOST = os.getenv('CARTSAPIHOST', "localhost")
+CARTS_NAME = 'carts'
+CARTS_PORT = ":3211"
 
 ITEMS_SERVICE_HOST = os.getenv('ITEMSAPIHOST', "localhost")
 
