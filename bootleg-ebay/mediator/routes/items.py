@@ -4,41 +4,42 @@ import requests
 import json
 
 from flask_expects_json import expects_json
-from flask import Response, request
+from flask import Response, request, Blueprint
 
 from utils import get_and_post
-from . import routes
 from config import *
 
 
 # getting IP Address of items container
 # The following functions call the items microservice
 
+items_api = Blueprint('items', __name__)
 
 
-@routes.route('/Items/', methods=['GET'])
+
+items_api.route('/Items/', methods=['GET'])
 def ItemsServiceStatus():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/")
     r = requests.get(url = socket_url)
     return r.content
 
-@app.route('/Items/ViewAllItems', methods=['POST'])
+items_api.route('/Items/ViewAllItems', methods=['POST'])
 def ViewAllItems():
-    socket_url = ("http://" + itemsServiceHost +
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ViewAllItems")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route('/Items/ViewFlaggedItems', methods=['GET'])
+items_api.route('/Items/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
-@routes.route('/Items/SearchItem', methods=['POST'])
+items_api.route('/Items/SearchItem', methods=['POST'])
 def SearchItem():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
                      ":8099" + "/SearchItem")
@@ -47,7 +48,7 @@ def SearchItem():
     return r.content
 
 
-@routes.route('/Items/AddUserToWatchlist', methods = ['POST'])
+items_api.route('/Items/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/AddUserToWatchlist")
@@ -56,7 +57,7 @@ def AddUserToWarchlist():
     return r.content
 
 
-@routes.route('/Items/RemoveItem', methods = ['POST'])
+items_api.route('/Items/RemoveItem', methods = ['POST'])
 def RemoveItem():
     if routes.view_bids().length == 0:
         return """There are already bids on 
@@ -68,7 +69,7 @@ def RemoveItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route('/Items/ReportItem', methods = ['POST'])
+items_api.route('/Items/ReportItem', methods = ['POST'])
 def ReportItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
                      ":8099" + "/ReportItem")
@@ -76,7 +77,7 @@ def ReportItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/GetItem", methods = ['POST'])
+items_api.route("/Items/GetItem", methods = ['POST'])
 def GetItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/GetItem")
@@ -84,7 +85,7 @@ def GetItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/ModifyItem", methods = ['POST'])
+items_api.route("/Items/ModifyItem", methods = ['POST'])
 def ModifyItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyItem")
@@ -93,7 +94,7 @@ def ModifyItem():
     return r.content
 
 
-@routes.route("/Items/AddItem", methods = ['POST'])
+items_api.route("/Items/AddItem", methods = ['POST'])
 def AddItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/AddItem")
@@ -101,7 +102,7 @@ def AddItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/EditCategories", methods = ['POST'])
+items_api.route("/Items/EditCategories", methods = ['POST'])
 def EditCategories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/EditCategories")
@@ -109,7 +110,7 @@ def EditCategories():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/ModifyAvailability", methods = ['POST'])
+items_api.route("/Items/ModifyAvailability", methods = ['POST'])
 def ModifyAvailability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyAvailability")

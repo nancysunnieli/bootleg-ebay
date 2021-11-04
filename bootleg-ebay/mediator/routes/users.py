@@ -4,11 +4,12 @@ import json
 import copy
 
 from flask_expects_json import expects_json
-from flask import Response, request
+from flask import Response, request, Blueprint
 
 from utils import get_and_post
-from . import routes
 from config import *
+
+users_api = Blueprint('users', __name__)
 
 _user_id_schema = {
     'type': 'object',
@@ -49,25 +50,25 @@ _user_info_schema = {
 _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
-@routes.route("/{}/view_user".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/view_user", methods = ['POST'])
 @expects_json(_user_id_schema)
 def view_user():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
     return get_and_post(socket_url)
 
-@routes.route("/{}/login".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/login", methods = ['POST'])
 @expects_json(_login_schema)
 def login():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
     return get_and_post(socket_url)
 
-@routes.route("/{}/logout".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/logout", methods = ['POST'])
 @expects_json(_none_schema)
 def logout():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
     return get_and_post(socket_url)
 
-@routes.route("/{}/create_account".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/create_account", methods = ['POST'])
 @expects_json(_user_info_schema)
 def create_account():
     # CREATING ACCOUNT
@@ -96,20 +97,20 @@ def create_account():
     return new_user_info
 
 
-@routes.route("/{}/suspend_account".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/suspend_account", methods = ['POST'])
 @expects_json(_user_id_schema)
 def suspend_account():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account")
     return get_and_post(socket_url)
 
 
-@routes.route("/{}/modify_profile".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/modify_profile", methods = ['POST'])
 @expects_json(_optional_user_info_schema)
 def modify_profile():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
     return get_and_post(socket_url)
 
-@routes.route("/{}/delete_account".format(USERS_NAME), methods = ['POST'])
+@users_api.route("/delete_account", methods = ['POST'])
 @expects_json(_user_id_schema)
 def delete_account():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account")

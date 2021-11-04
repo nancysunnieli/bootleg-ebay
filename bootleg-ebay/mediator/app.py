@@ -9,10 +9,11 @@ from flask_cors import CORS
 
 # from items import * 
 
-from routes import *
+from routes.users import users_api
 
 app = Flask(__name__)
-app.register_blueprint(routes)
+app.register_blueprint(users_api, url_prefix='/users')
+
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
