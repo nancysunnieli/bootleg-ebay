@@ -27,7 +27,6 @@ CREATE TABLE `users` (
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `money` float DEFAULT '0',
   `suspended` tinyint(1) DEFAULT '0',
   `is_admin` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -41,7 +40,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'your_them_wished','childrenwillwould','on.than@jpmorgan.com',622,0,0),(2,'Fairfax_had_Miss','sdiesI','uncle.but@lyft.com',222,1,0),(3,'round_had_Mr','ofnever','I.persuading@jpmorgan.com',1069,0,1),(4,'might_pleasure_so','shewhichabout','rather.should@lyft.com',488,1,0),(5,'event_she_my','easynominala','same.I@lyft.com',1176,0,0),(6,'_He_given','ofwehave','think.@jpmorgan.com',175,1,1),(7,'__did','continuedhe','and.so@uchicago.edu',969,0,0),(8,'business_be_','Ipopulousher','had.but@jpmorgan.com',1231,1,1),(9,'does_sure_it','sheMrsbe','himself.to@lyft.com',156,0,0),(10,'_joy_be','affectionshesurprize','.@uchicago.edu',1447,0,1),(11,'It_sell_to','tosagacitylady','it.unpleasant@lyft.com',1000,0,0),(12,'her__','happinessyou','No.Not@jpmorgan.com',1352,0,1),(13,'now_and_only','andfallenof','sure.do@uchicago.edu',790,1,0),(14,'to_the_that','youhousedefer','That.to@jpmorgan.com',1073,1,0),(15,'was__increase','environsexcitingshortness','Abbey.the@uchicago.edu',224,1,1),(16,'in_good_','disagreeableam','as.and@uchicago.edu',827,1,1),(17,'which__','waitingthankedThey','would.Her@jpmorgan.com',1757,1,1),(18,'sir_to_','particularlyourof','.long@lyft.com',404,1,1),(19,'_night_and','poorwhichbetween','those.may@jpmorgan.com',581,1,0),(20,'with_was_and','askedspecimen','idea.but@lyft.com',1583,0,1),(21,'Indifferent_I_persons','withoutmostthe','in.off@lyft.com',1046,1,0),(22,'_let_much','yourcould','months.for@lyft.com',1285,0,1),(23,'_day_You','IMisss','keep.@uchicago.edu',1856,0,1),(24,'had_and_or','herpursuitIf','In.bosom@jpmorgan.com',1739,0,1),(25,'not_side_more','Nothingto','they.five@uchicago.edu',1930,0,0),(26,'__a','childnothad','be.and@lyft.com',1795,1,1),(27,'But_such_Churchill','pointon','some.@lyft.com',1200,0,0),(28,'there_John_It','frontwhatand','in.her@jpmorgan.com',1674,1,1),(29,'his_her_The','hadIattachment','much.perhaps@jpmorgan.com',1889,1,0),(30,'consent_sudden_it','Howquestiona','it.@uchicago.edu',1599,1,0);
+INSERT INTO `users` VALUES (1,'no__very','friendsyoubut','you.@lyft.com',1,1),(2,'and_measuring_feelings','partmustwidower','fact.good@uchicago.edu',0,1),(3,'watching_every_Her','Campbellsdoor','likes.@uchicago.edu',0,0),(4,'notions__the','toaccount','her.presumption@jpmorgan.com',0,1),(5,'how_takes_of','offbethe','period.that@jpmorgan.com',0,1),(6,'better_on_be','tothingsyou','happy.not@jpmorgan.com',0,1),(7,'_to_event','thatneverin','been.all@jpmorgan.com',1,1),(8,'so__reproached','theminebeing','.to@uchicago.edu',1,0),(9,'clearness_she_putting','theyouword','particulars.sad@uchicago.edu',0,1),(10,'Miss_watched_what','FranksofteningChurchills','I.herself@uchicago.edu',0,0),(11,'__and','topoint','Elton.well@jpmorgan.com',1,0),(12,'two_Mr_as','promisesfor','and.the@lyft.com',0,1),(13,'one_eligibly_it','ofcriedof','.visibly@lyft.com',0,0),(14,'expeditious_not_not','andattentiona','not.he@lyft.com',1,1),(15,'there_heard_bounds','brightexplanation','running.may@uchicago.edu',1,0),(16,'be__had','deeplatestdissipated','.feelings@jpmorgan.com',1,1),(17,'domestic_It_that','The','.that@lyft.com',0,0),(18,'was_and_not','in','yesterday.in@uchicago.edu',1,1),(19,'any_And_to','pleasuresthey','in.@uchicago.edu',1,1),(20,'moment_give_believe','thatevery','of.Mrs@jpmorgan.com',0,1),(21,'must_on_else','bepleased','Mrs.@lyft.com',1,0),(22,'home_had_','onthehave','most.young@uchicago.edu',1,1),(23,'of_Angry_own','fortoAnd','I.one@jpmorgan.com',0,1),(24,'profit_bring_no','inonly','His.had@uchicago.edu',1,1),(25,'neighbourhood_he_long','ofbaroucheI','Miss.And@jpmorgan.com',1,1),(26,'astonished_as_very','firessay','enter.than@jpmorgan.com',0,1),(27,'I__','itthat','Emma.@lyft.com',0,0),(28,'to__and','thoughtherrecollect','and.Knightley@lyft.com',0,1),(29,'to_know_and','notyouwill','on.but@lyft.com',1,1),(30,'and_self_door','tothathe','yet.bad@lyft.com',0,1);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-10-30 18:21:31
+-- Dump completed on 2021-11-04  2:02:07
