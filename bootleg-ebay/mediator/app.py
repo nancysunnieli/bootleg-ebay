@@ -13,10 +13,8 @@ app = Flask(__name__)
 app.register_blueprint(users_api, url_prefix='/users')
 app.register_blueprint(payments_api, url_prefix='/payments')
 app.register_blueprint(auctions_api, url_prefix='/auctions')
-app.register_blueprint(items_api, url_prefix='/items')
 app.register_blueprint(carts_api, url_prefix='/carts')
-
-
+app.register_blueprint(items_api, url_prefix='/items')
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
