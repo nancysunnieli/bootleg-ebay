@@ -11,7 +11,7 @@ UserID = int
 
 class UserDBManager:
     db_name = "users"
-    db_cols = ["username", "password", "email", "money", "suspended", "is_admin"]
+    db_cols = ["username", "password", "email", "suspended", "is_admin"]
 
     @classmethod
     def _create_connection(cls):
@@ -31,7 +31,7 @@ class UserDBManager:
         Args: 
             data: List of rows to be inserted
         """
-        cmd = "INSERT INTO {} ({}) VALUES (%s, %s, %s, %s, %s, %s)".format(
+        cmd = "INSERT INTO {} ({}) VALUES (%s, %s, %s, %s, %s)".format(
             cls.db_name, 
             ', '.join(cls.db_cols))
 
@@ -176,9 +176,6 @@ def ModifyProfile(new_user_info: UserInfo):
 
     if 'email' in new_user_info:
         user_info['email'] = new_user_info['email']
-
-    if 'money' in new_user_info:
-        user_info['money'] = new_user_info['money']
 
     if 'suspended' in new_user_info:
         user_info['suspended'] = new_user_info['suspended']

@@ -6,7 +6,6 @@ CREATE TABLE `users` (
   `username` varchar(100) NOT NULL UNIQUE,
   `password` varchar(100) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `money` float DEFAULT 0,
   `suspended` boolean DEFAULT 0,
   `is_admin` boolean DEFAULT 0,
   PRIMARY KEY (`id`)
