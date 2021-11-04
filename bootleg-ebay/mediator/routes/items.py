@@ -25,7 +25,11 @@ def ItemsServiceStatus():
 
 @app.route('/Items/ViewAllItems', methods=['POST'])
 def ViewAllItems():
+<<<<<<< HEAD
     socket_url = ("http://" + itemsServiceHost +
+=======
+    socket_url = ("http://" + ITEM_SERVICE_HOST +
+>>>>>>> nancy
                     ":8099" + "/ViewAllItems")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
