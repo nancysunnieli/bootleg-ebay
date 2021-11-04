@@ -7,52 +7,19 @@ import pymongo
 from pymongo import MongoClient
 
 from auction import Auction, Bid, current_time
+import json
 
 """
-Jin- We won't be using AuctionID because mongodb already gives us an id
-
-We'll have one auction collection
-
-Auction should look something like: 
-{
-    '_id': 12
-    'item_id': 10,
-
-    'buy_now': True, # Bool
-    'start_time': None, # DateTime
-    'end_time': None, # DateTime
-
-    'started': False,
-    'completed': False, # Bool
-
-    # The maximum price that is allowed to be bid for this auction. If none, then there's no max
-    'max_auction_price': None, # float
-    # The max end time set by the seller. 'end_time' can be less than 'max_end_time' if the auction finishes early
-    'max_end_time': None, # DateTime
-
-    # The latest bid price and time
-    'latest_bid_price': 0.0, # float
-    'latest_bid_time': None # Datetime
-
-    'bids': [bid1, bid2, ...]
-}
-
-Bid should look like:
-{
-    '_id': 1
-    'price': 99.1
-    'buyer_id': 21
-    'bid_time': None #Datetime
-}
+I have changed the data in the mongodb database for auctions,
+and the code runs on that data.
+- Nancy
 """
-
 class AuctionDBManager:
 
     @classmethod
     def _init_auction_collection(cls):
         hostname = os.getenv('AUCTIONSDBHOST', "localhost")
         port = os.getenv('AUCTIONSDBPORT', "27019")
-        print(hostname, port)
         client = pymongo.MongoClient(f"mongodb://root:bootleg@{hostname}:{port}")
         db = client["auctions"]
         return db["auctions"]
@@ -82,14 +49,14 @@ class AuctionDBManager:
     @classmethod
     def update_one(cls, query, values):
         collection = cls._init_auction_collection()
-        collection.update_one(query, values)
+        collection.replace_one(query, values)
 
     @classmethod
     def get_auction(cls, auction_id) -> Auction:
         """Get an auction by id
         """
         query = {"_id": auction_id}
-        result = cls.query_collection(query)
+        result = cls.query_collection(query)[0]
         auction = Auction.from_mongodb_fmt(result)
         return auction
 
@@ -102,95 +69,67 @@ class AuctionDBManager:
         query = { "_id": auction.auction_id}
         cls.update_one(query, values)
 
-def CreateAuction(auction_info):
-    """Create an auction and start it
-    """
-
-    auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
-    auction = AuctionDBManager.get_auction(auction_id)
-    auction.start_auction()
-    AuctionDBManager.update_auction(auction=auction)
-
-
-
 def GetAuction(auction_id):
-    """Get an auction. Can either be completed or currently running
+    """
+    Get an auction. Can either be completed or currently running
 
     This is used in place of `examineAuctionMetrics()`
     """
 
     query = {'_id': auction_id}
     auctions = AuctionDBManager.query_collection(query)
-    return auctions
+    return json.dumps(auctions)
+
+def CreateAuction(auction_info):
+    """
+    Create an auction
+    """
+
+    auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
+    
+    if len(AuctionDBManager.query_collection({"_id": auction_id})) > 0:
+        return "SUCCESSFULLY CREATED AUCTION!"
+    else:
+        return "UNABLE TO CREATE AUCTION. PLEASE TRY AGAIN"
+
 
 def ViewCurrentAuctions() -> Sequence:
-    """Get the auctions that are currently running.
+    """
+    Get the auctions that are currently running.
     """
     
     time = current_time()
-    query = {"start_time": {"$lte": time }, 
+    query = {"start_time": {"$lte": time}, 
             "end_time": {"$gte": time}}
 
     auctions = AuctionDBManager.query_collection(query)
-    return auctions
+    return json.dumps(auctions)
 
 def RemoveAuction(auction_id) -> None:
     """
     This removes the auction that matches the auction id.
-    This is used when  the auction itself
+    This is used when the auction itself
     is force deleted by the admin if it violates conditions.
     """
     query = {"_id" : auction_id}
     AuctionDBManager.delete_one(query)
+    if len(AuctionDBManager.query_collection({"_id": auction_id})) == 0:
+        return "Auction Successfully deleted!"
+    else:
+        return "Auction was unable to be successfully deleted."
 
-def AddWinnerCart(auction_id):
-    """
-    This is called when the auction completes,
-    and it adds the item to the winner's cart
 
-    # Jin- This should not call the shopping microservice because the point of the mediator is
-    to prevent each microservice from talking to each other. We somehow need to do this on 
-    the mediator side.
-    """
-
-    raise NotImplementedError
-    query = {"AuctionID" : auction_id }
-    results = list(bids_collection.find(query).sort("timestamp",-1).limit(1))
-
-    # results contains the dictionary for the bid that won the auction
-    # if results is not empty,
-    # I have to call the shopping cart microservice here to add the item
-    # to the winner's shopping cart
-    # The shopping cart microservice will then call the items microservice
-    # to disable the buy now functionality
-
-def CompleteAuction(auction_id):
-    """
-    When the auction completes, we add the item to the winner's
-    cart. If there were bids, then we add the item to the winner's cart,
-    and while they wait to check out, we will disable the buy now functionality.
-    If there were no bids, then we just end the auction, and keep the buy now
-    functionality enabled, and do not add the item to anyone's cart,
-    In either case, we can delete the auction, since it has been completed.
-    We also delete the bids associated with the auction.
-
-    # Jin- We shouldn't delete the auction when it's finished. We can just set an attribute "completed" 
-    from False to True to indicate that the auction is finished. This is because we may still need the
-    auction information later on. For example, a user may want to view finished auctions
-    """
-
-    auction = AuctionDBManager.get_auction(auction_id)
-    auction.stop_auction()
-    AuctionDBManager.update_auction(auction)
-
-def BidsByUser(auction_id, buyer_id):
+def BidsByUser(buyer_id):
     """
     This returns back a list of bids by user
     """
-    auction = AuctionDBManager.get_auction(auction_id)
-    bids = auction.view_bids(buyer_id=buyer_id)
-    bids = [b.to_mongodb_fmt() for b in bids]
-    return bids
+    all_auctions = AuctionDBManager.query_collection({})
+    all_bids = []
+    for current_auction in all_auctions:
+        auction = AuctionDBManager.get_auction(current_auction["_id"])
+        bids = auction.view_bids(buyer_id=buyer_id)
+        all_bids += [b.to_mongodb_fmt() for b in bids]
+    return json.dumps(all_bids)
 
 def CreateBid(auction_id, price, user_id):
     """
@@ -199,11 +138,11 @@ def CreateBid(auction_id, price, user_id):
     """
 
     auction = AuctionDBManager.get_auction(auction_id)
-    successful = auction.place_bid(price=price, user_id=user_id)
+    successful = auction.place_bid(price=price, buyer_id=user_id)
     if successful:
         AuctionDBManager.update_auction(auction=auction)
-
-    return successful
+        return "SUCCESSFULLY CREATED BID"
+    return "WAS UNABLE TO CREATE BID. PLEASE TRY AGAIN."
 
 def ViewBids(auction_id):
     """
@@ -213,24 +152,33 @@ def ViewBids(auction_id):
 
     bids = auction.view_bids(buyer_id=None)
     bids = [b.to_mongodb_fmt() for b in bids]
-    return bids
-
-def BuyNow(auction_id, buyer_id):
-    auction = AuctionDBManager.get_auction(auction_id)
-    successful = auction.buy_now(buyer_id)
-
-    if successful:
-        AuctionDBManager.update_auction(auction=auction)
-
-    return successful
-
-
+    return json.dumps(bids)
     
 
 
 if __name__ == "__main__":
-    print(ViewCurrentAuctions())
-    print(AddWinnerCart('6c3d2078-c47'))
-
+    """
+    print(CreateAuction({
+    "_id": 'dd965614-cb9',
+    "seller_id": '63fb9967-8cb',
+    "start_time": 1637412397,
+    "end_time": 1638556220,
+    "item_id": '5878ea47-d84',
+    "bids": [
+        {
+            "bid_id": '16de12f0-7e4',
+            "bid_time": 1638422695,
+            "price": 41.21,
+            "buyer_id": 'f6961483-134'
+        }
+    ]
+    }))
+    """
+    #print(BidsByUser('db6ef937-1e3'))
+    #print(ViewCurrentAuctions())
+    #print(GetAuction('dd965614-cb9'))
+    #print(RemoveAuction('dd965614-cb9'))
+    #print(ViewBids('dd965614-cb9'))
+    #print(CreateBid('2f459c3c-c35', 101.99, 'db6ef937-1e3'))
 
 
