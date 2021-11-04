@@ -21,12 +21,12 @@ def view_user():
     user_id = data["user_id"]
     return users_functions.view_user(user_id)
 
-@app.route('/Login', methods=['POST'])
-def Login():
+@app.route('/login', methods=['POST'])
+def login():
     data = request.get_json()
     username = data["username"]
     password = data['password']
-    return users_functions.Login(username, password)
+    return users_functions.login(username, password)
 
 @app.route('/logout', methods=['POST'])
 def logout():

@@ -55,10 +55,10 @@ def view_user():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
     return get_and_post(socket_url)
 
-@routes.route("/{}/Login".format(USERS_NAME), methods = ['POST'])
+@routes.route("/{}/login".format(USERS_NAME), methods = ['POST'])
 @expects_json(_login_schema)
-def Login():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/Login")
+def login():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
     return get_and_post(socket_url)
 
 @routes.route("/{}/logout".format(USERS_NAME), methods = ['POST'])

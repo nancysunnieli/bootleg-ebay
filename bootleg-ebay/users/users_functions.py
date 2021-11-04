@@ -126,7 +126,7 @@ def view_user(user_id: UserID):
     return user.to_json()
     
 
-def Login(username, password) -> UserInfo:
+def login(username, password) -> UserInfo:
     """Login to an account
     
     Returns:
