@@ -3,5 +3,5 @@
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 
-docker cp ./dump $(docker-compose ps -q items-db):/dump
-docker exec -i $(docker-compose ps -q items-db) /usr/bin/mongorestore --username root --password bootleg --authenticationDatabase admin /dump
+docker cp ./dump $(docker-compose ps -q carts-db):/dump
+docker exec -i $(docker-compose ps -q carts-db) /usr/bin/mongorestore --username root --password bootleg --authenticationDatabase admin /dump
