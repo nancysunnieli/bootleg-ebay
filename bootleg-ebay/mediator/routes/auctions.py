@@ -14,37 +14,37 @@ from config import *
 auctions_api = Blueprint('auctions', __name__)
 
 
-@auctions_api.route("/{}/create_auction".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/create_auction", methods = ['POST'])
 def create_auction():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_auction")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/get_auction".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/get_auction", methods = ['POST'])
 def get_auction():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/get_auction")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/view_current_auctions".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/view_current_auctions", methods = ['POST'])
 def view_current_auctions():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_current_auctions")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/remove_auction".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/remove_auction", methods = ['POST'])
 def remove_auction():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/remove_auction")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/bids_by_user".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/bids_by_user", methods = ['POST'])
 def bids_by_user():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids_by_user")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/create_bid".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/create_bid", methods = ['POST'])
 def create_bid():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_bid")
     return get_and_post(socket_url)
 
-@auctions_api.route("/{}/view_bids".format(AUCTIONS_NAME), methods = ['POST'])
+@auctions_api.route("/view_bids", methods = ['POST'])
 def view_bids():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_bids")
     return get_and_post(socket_url)

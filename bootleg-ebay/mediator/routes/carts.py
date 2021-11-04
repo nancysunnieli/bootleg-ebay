@@ -14,7 +14,7 @@ from config import *
 carts_api = Blueprint('carts', __name__)
 
 
-carts_api.route("/{}/CreateCart".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/CreateCart", methods = ['POST'])
 def CreateCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/CreateCart")
@@ -22,7 +22,7 @@ def CreateCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-carts_api.route("/{}/AddItemToCart".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/AddItemToCart", methods = ['POST'])
 def AddItemToCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/AddItemToCart")
@@ -30,7 +30,7 @@ def AddItemToCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-carts_api.route("/{}/DeleteItemFromCart".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/DeleteItemFromCart", methods = ['POST'])
 def DeleteItemFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/DeleteItemFromCart")
@@ -38,7 +38,7 @@ def DeleteItemFromCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-carts_api.route("/{}/GetItemsFromCart".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/GetItemsFromCart", methods = ['POST'])
 def GetItemsFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/GetItemsFromCart")
@@ -46,7 +46,7 @@ def GetItemsFromCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-carts_api.route("/{}/EmptyCart".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/EmptyCart", methods = ['POST'])
 def EmptyCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/EmptyCart")
@@ -54,7 +54,7 @@ def EmptyCart():
     r = requests.post(socket_url, json = data_content)
     return r.content
 
-carts_api.route("/{}/Checkout".format(CARTS_NAME), methods = ['POST'])
+carts_api.route("/Checkout", methods = ['POST'])
 def Checkout():
     data_content = request.get_json()
 

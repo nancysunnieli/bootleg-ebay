@@ -17,14 +17,14 @@ items_api = Blueprint('items', __name__)
 
 
 
-items_api.route('/Items/', methods=['GET'])
+items_api.route('/', methods=['GET'])
 def ItemsServiceStatus():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/")
     r = requests.get(url = socket_url)
     return r.content
 
-items_api.route('/Items/ViewAllItems', methods=['POST'])
+items_api.route('/ViewAllItems', methods=['POST'])
 def ViewAllItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ViewAllItems")
@@ -32,14 +32,14 @@ def ViewAllItems():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route('/Items/ViewFlaggedItems', methods=['GET'])
+items_api.route('/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
-items_api.route('/Items/SearchItem', methods=['POST'])
+items_api.route('/SearchItem', methods=['POST'])
 def SearchItem():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
                      ":8099" + "/SearchItem")
@@ -48,7 +48,7 @@ def SearchItem():
     return r.content
 
 
-items_api.route('/Items/AddUserToWatchlist', methods = ['POST'])
+items_api.route('/AddUserToWatchlist', methods = ['POST'])
 def AddUserToWarchlist():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/AddUserToWatchlist")
@@ -57,7 +57,7 @@ def AddUserToWarchlist():
     return r.content
 
 
-items_api.route('/Items/RemoveItem', methods = ['POST'])
+items_api.route('/RemoveItem', methods = ['POST'])
 def RemoveItem():
     if routes.view_bids().length == 0:
         return """There are already bids on 
@@ -69,7 +69,7 @@ def RemoveItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route('/Items/ReportItem', methods = ['POST'])
+items_api.route('/ReportItem', methods = ['POST'])
 def ReportItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
                      ":8099" + "/ReportItem")
@@ -77,7 +77,7 @@ def ReportItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route("/Items/GetItem", methods = ['POST'])
+items_api.route("/GetItem", methods = ['POST'])
 def GetItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/GetItem")
@@ -85,7 +85,7 @@ def GetItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route("/Items/ModifyItem", methods = ['POST'])
+items_api.route("/ModifyItem", methods = ['POST'])
 def ModifyItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyItem")
@@ -94,7 +94,7 @@ def ModifyItem():
     return r.content
 
 
-items_api.route("/Items/AddItem", methods = ['POST'])
+items_api.route("/AddItem", methods = ['POST'])
 def AddItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/AddItem")
@@ -102,7 +102,7 @@ def AddItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route("/Items/EditCategories", methods = ['POST'])
+items_api.route("/EditCategories", methods = ['POST'])
 def EditCategories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/EditCategories")
@@ -110,7 +110,7 @@ def EditCategories():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-items_api.route("/Items/ModifyAvailability", methods = ['POST'])
+items_api.route("/ModifyAvailability", methods = ['POST'])
 def ModifyAvailability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyAvailability")
