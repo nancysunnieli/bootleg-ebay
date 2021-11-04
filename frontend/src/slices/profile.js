@@ -15,5 +15,5 @@ const profileSlice = createSlice({
     extraReducers: {},
 });
 export const { setEditModalVisible } = profileSlice.actions;
-const { reducer } = profileSlice;
-export default reducer;
+
+export default profileSlice.reducer;

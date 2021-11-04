@@ -1,36 +1,25 @@
 import axios from "axios";
 import { API_URL } from "../config";
 
-const register = (username, email, password) => {
-    console.log("register");
-    return axios
-        .post(API_URL + "Users/CreateAccount", {
-            username,
-            email,
-            password,
-            is_admin: false,
-            suspended: false,
-        })
-        .then((response) => {
-            localStorage.setItem("user", JSON.stringify(response.data));
-
-            return response.data;
-        });
+const register = async (username, email, password) => {
+    const response = await axios.post(API_URL + "Users/CreateAccount", {
+        username,
+        email,
+        password,
+        is_admin: false,
+        suspended: false,
+    });
+    localStorage.setItem("user", JSON.stringify(response.data));
+    return response.data;
 };
 
-const login = (username, password) => {
-    return axios
-        .post(API_URL + "Users/Login", {
-            username,
-            password,
-        })
-        .then((response) => {
-            if (response.data.accessToken) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-            }
-
-            return response.data;
-        });
+const login = async (username, password) => {
+    const response = await axios.post(API_URL + "Users/Login", {
+        username,
+        password,
+    });
+    localStorage.setItem("user", JSON.stringify(response.data));
+    return response.data;
 };
 
 const logout = () => {
