@@ -2,6 +2,7 @@ import os
 
 cartsServiceHost = os.getenv('CARTSAPIHOST', "localhost")
 
+itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 usersServiceHost = os.getenv('USERAPIHOST', "localhost")
 usersName = 'Users'

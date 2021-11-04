@@ -1,15 +1,18 @@
 import requests
 import os
+import requests
+import json
 
+from flask_expects_json import expects_json
+from flask import Response, request
 
-from flask import Flask, Response, request
-
+from utils import get_and_post
 from . import routes
+from config import *
 
 
 # getting IP Address of items container
 # The following functions call the items microservice
-itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
 
 
 
