@@ -6,6 +6,7 @@ cd "$parent_path"
 /bin/bash ../bootleg-ebay/auctions/db/import.sh &
 /bin/bash ../bootleg-ebay/items/db/import.sh &
 /bin/bash ../bootleg-ebay/notifs/db/import.sh &
+/bin/bash ../bootleg-ebay/carts/db/import.sh &
 wait
 echo "Done!"
 
