@@ -6,13 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const { isLoggedIn } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const loginUser = (e) => {
         e.preventDefault();
-        dispatch(login({ email, password }));
+        dispatch(login({ username, password }));
     };
 
     if (isLoggedIn) return <Redirect to={{ pathname: "/home" }} />;
@@ -21,13 +21,12 @@ const Login = () => {
         <div>
             <h1>Login</h1>
             <Form onSubmit={loginUser}>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
+                <Form.Group className="mb-3">
+                    <Form.Label>Username</Form.Label>
                     <Form.Control
-                        type="email"
-                        placeholder="Enter email"
-                        value={email}
-                        onChange={({ target: { value } }) => setEmail(value)}
+                        placeholder="Enter username"
+                        value={username}
+                        onChange={({ target: { value } }) => setUsername(value)}
                     />
                 </Form.Group>
 

@@ -221,7 +221,7 @@ UserNamePassWordSchema = {
         'username': {'type': 'string'},
         'password': {'type': 'string'},
     },
-    'required': ['user_id', 'password']
+    'required': ['username', 'password']
 }
 
 NoneSchema = {
@@ -237,11 +237,10 @@ UserInfoSchema = {
         'username': {'type': 'string'},
         'password': {'type': 'string'},
         'email': {'type': 'string'},
-        'money': {'type': 'number'},
         'suspended': {'type': 'boolean'},
         'is_admin': {'type': 'boolean'}
     },
-    'required': ["username", "password", "email", "money", "suspended", "is_admin"]
+    'required': ["username", "password", "email", "suspended", "is_admin"]
 }
 
 @app.route("/{}/ViewUser".format(usersName), methods = ['POST'])
@@ -268,13 +267,27 @@ def CreateAccount():
     # CREATING ACCOUNT
     data_content = request.get_json()
     socket_url = ("http://" + usersServiceHost + usersPort + "/CreateAccount")
-    get_and_post(socket_url)
-
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    
+    new_user_info = r.content.decode('utf-8')
+    
+    new_user_dict = json.loads(new_user_info)
+    new_user_id = new_user_dict["id"]
+    
     # CREATING CART
     socket_url = ("http://" + cartsServiceHost +
                     ":3211" + "/CreateCart")
-    data_content = request.get_json()
-    requests.post(url = socket_url, json = data_content)
+    data_content = new_user_info
+    requests.post(url = socket_url, json ={"user_id": new_user_id})
+    
+    return Response(response = new_user_info,
+                    status = 200,
+                    mimetype = 'application/json')
+    
+
+    
+    return new_user_info
 
 
 @app.route("/{}/SuspendAccount".format(usersName), methods = ['POST'])
@@ -362,4 +375,4 @@ def PaymentsDeleteAccount():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8011, host = "localhost")
+    app.run(debug = True, port = 8011, host = socket_name)

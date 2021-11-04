@@ -8,14 +8,11 @@ const register = (username, email, password) => {
             username,
             email,
             password,
-            money: 0.0,
-            suspended: false,
             is_admin: false,
+            suspended: false,
         })
         .then((response) => {
-            if (response.data.accessToken) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-            }
+            localStorage.setItem("user", JSON.stringify(response.data));
 
             return response.data;
         });

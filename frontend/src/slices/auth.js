@@ -21,21 +21,10 @@ export const register = createAsyncThunk(
     }
 );
 
-export const login = createAsyncThunk("auth/login", async ({ email, password }, thunkAPI) => {
+export const login = createAsyncThunk("auth/login", async ({ username, password }, thunkAPI) => {
     try {
-        // const data = await AuthService.login(email, password);
-        // return { user: data };
-        console.log("mocking login flow", email, password);
-        return {
-            user: {
-                roles: [ROLE_USER],
-                id: "1",
-                username: "yvesshum",
-                password: "123",
-                email: "yvesshum1210@gmail.com",
-                suspended: false,
-            },
-        };
+        const data = await AuthService.login(username, password);
+        return { user: data };
     } catch (error) {
         const message =
             (error.response && error.response.data && error.response.data.message) ||
@@ -65,9 +54,8 @@ const authSlice = createSlice({
     extraReducers: {
         [register.fulfilled]: (state, action) => {
             state.isLoggedIn = true;
-            console.log("payload", action.payload);
-            // state.user = action.payload.user;
-            // state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
+            state.user = action.payload.user;
+            state.isAdmin = action.payload.user.is_admin;
         },
         [register.rejected]: (state, action) => {
             state.isLoggedIn = false;
@@ -75,7 +63,7 @@ const authSlice = createSlice({
         [login.fulfilled]: (state, action) => {
             state.isLoggedIn = true;
             state.user = action.payload.user;
-            state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
+            state.isAdmin = action.payload.user.is_admin;
         },
         [login.rejected]: (state, action) => {
             state.isLoggedIn = false;
