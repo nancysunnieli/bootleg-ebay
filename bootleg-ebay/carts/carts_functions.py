@@ -96,7 +96,7 @@ class CartsDBManager:
         """
         carts_collection = cls._init_carts_collection()
         query = { "user_id": user_id }
-        modification = { "$Set": {"items" : [] }}
+        modification = { "$set": {"items" : [] }}
         result = carts_collection.update_one(query, modification)
         return "Successfully Emptied Cart!"
     
@@ -140,19 +140,19 @@ def delete_item_from_cart(user_id, item_id):
     r = shopping_cart.remove_item(item_id)
     if r == "ITEM SUCCESSFULLY REMOVED.":
         dict_object = shopping_cart.to_mongo()
-        for item in items:
-            if item not in dict_object["items"]:
-                return CartsDBManager.remove_item_from_cart(user_id, item)
+        for i in range(0, len(items)):
+            if items[i] not in dict_object["items"]:
+                return CartsDBManager.delete_item_from_cart(user_id, items[i])
     # I call this either way because it will give me an error message if
     # it did not work
-    return CartsDBManager.remove_item_to_cart(user_id, item)
+    return CartsDBManager.delete_item_from_cart(user_id, item_id)
 
 def get_items(user_id):
     """
     This gets a list of all the items in a selected
     user's cart
     """
-    return CartsDBManager.get_items_from_cart
+    return CartsDBManager.get_items_from_cart(user_id)
 
 def empty_cart(user_id):
     """
@@ -163,9 +163,9 @@ def empty_cart(user_id):
     shopping_cart = Cart.Cart(user_id, items)
 
     shopping_cart.empty_cart()
-    dict_object = shopping_cart.to_json()
+    dict_object = shopping_cart.to_mongo()
 
-    return CartsDBManager.empty_cart()
+    return CartsDBManager.empty_cart(dict_object["user_id"])
     
 
 

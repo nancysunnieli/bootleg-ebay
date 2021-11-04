@@ -40,7 +40,7 @@ def GetItemsFromCart():
 def EmptyCart():
     data = request.get_json()
     user_id = data["user_id"]
-    return carts_functions.EmptyCart(user_id)
+    return carts_functions.empty_cart(user_id)
 
 
 if __name__ == '__main__':
