@@ -23,6 +23,14 @@ def ItemsServiceStatus():
     r = requests.get(url = socket_url)
     return r.content
 
+@app.route('/Items/ViewAllItems', methods=['POST'])
+def ViewAllItems():
+    socket_url = ("http://" + itemsServiceHost +
+                    ":8099" + "/ViewAllItems")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    return r.content
+
 @routes.route('/Items/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
