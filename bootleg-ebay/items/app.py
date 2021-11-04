@@ -10,6 +10,15 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
+@app.route('/ViewAllItems', methods = ['POST'])
+def ViewAllItems():
+    data = request.get_json()
+    if "limit" in data:
+        limit = data["limit"]
+    else:
+        limit = None
+    return item_functions.ViewAllItems(limit)
+
 @app.route('/ViewFlaggedItems', methods=['GET'])
 def ViewFlaggedItems():
     return item_functions.ViewFlaggedItems()
