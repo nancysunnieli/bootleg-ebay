@@ -9,9 +9,9 @@ USERS_NAME = 'users'
 USERS_PORT = ':1001'
 
 AUCTIONS_SERVICE_HOST = os.getenv('AUCTIONSDBHOST', "localhost")
-AUCTIONS_NAME = 'Auctions'
+AUCTIONS_NAME = 'auctions'
 AUCTIONS_PORT = ':2222'
 
 PAYMENTS_SERVICE_HOST = os.getenv('PAYMENTSDBHOST', "localhost")
-PAYMENTS_NAME = 'Payments'
+PAYMENTS_NAME = 'payments'
 PAYMENTS_PORT = ':1003'
