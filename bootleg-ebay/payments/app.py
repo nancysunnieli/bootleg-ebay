@@ -15,16 +15,16 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/CreatePaymentCard', methods=['POST'])
-def CreatePaymentCard():
+@app.route('/create_payment_card', methods=['POST'])
+def create_payment_card():
     data = request.get_json()
-    return payments_functions.CreatePaymentCard(data)
+    return payments_functions.create_payment_card(data)
 
 
-@app.route('/GetPaymentCard', methods=['GET'])
-def GetPaymentCard():
+@app.route('/get_payment_card', methods=['GET'])
+def get_payment_card():
     data = request.get_json()
-    return payments_functions.GetPaymentCard(data['payment_id'])
+    return payments_functions.get_payment_card(data['payment_id'])
 
 @app.route('/delete_account', methods=['POST'])
 def delete_account():
