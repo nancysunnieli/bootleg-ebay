@@ -23,8 +23,8 @@ def GetPaymentCard():
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/GetPaymentCard")
     return get_and_post(socket_url)
 
-@routes.route("/{}/DeleteAccount".format(PAYMENTS_NAME), methods = ['POST'])
+@routes.route("/{}/delete_account".format(PAYMENTS_NAME), methods = ['POST'])
 def PaymentsDeleteAccount():
-    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/DeleteAccount")
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/delete_account")
     return get_and_post(socket_url)
 

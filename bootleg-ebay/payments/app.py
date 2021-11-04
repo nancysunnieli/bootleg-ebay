@@ -26,10 +26,10 @@ def GetPaymentCard():
     data = request.get_json()
     return payments_functions.GetPaymentCard(data['payment_id'])
 
-@app.route('/DeleteAccount', methods=['POST'])
-def DeleteAccount():
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
     data = request.get_json()
-    return payments_functions.DeleteAccount(data['payment_id'])
+    return payments_functions.delete_account(data['payment_id'])
 
 
 

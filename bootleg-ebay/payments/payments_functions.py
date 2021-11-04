@@ -127,5 +127,5 @@ def GetPaymentCard(payment_id: PaymentID):
 
     return payment.to_json()
 
-def DeleteAccount(payment_id: PaymentID) -> None:
+def delete_account(payment_id: PaymentID) -> None:
    PaymentsDBManager.delete_by_id(payment_id)
