@@ -315,17 +315,12 @@ def GetAuction():
 
 @app.route("/{}/ViewCurrentAuctions".format(auctionsName), methods = ['POST'])
 def ViewCurrentAuctions():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/GetAuction")
+    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/ViewCurrentAuctions")
     return get_and_post(socket_url)
 
 @app.route("/{}/RemoveAuction".format(auctionsName), methods = ['POST'])
 def RemoveAuction():
     socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/RemoveAuction")
-    return get_and_post(socket_url)
-
-@app.route("/{}/CompleteAuction".format(auctionsName), methods = ['POST'])
-def CompleteAuction():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CompleteAuction")
     return get_and_post(socket_url)
 
 @app.route("/{}/BidsByUser".format(auctionsName), methods = ['POST'])
@@ -341,11 +336,6 @@ def CreateBid():
 @app.route("/{}/ViewBids".format(auctionsName), methods = ['POST'])
 def ViewBids():
     socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/ViewBids")
-    return get_and_post(socket_url)
-
-@app.route("/{}/BuyNow".format(auctionsName), methods = ['POST'])
-def BuyNow():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/BuyNow")
     return get_and_post(socket_url)
 
 
