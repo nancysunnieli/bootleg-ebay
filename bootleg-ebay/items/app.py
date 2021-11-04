@@ -19,8 +19,13 @@ def ViewAllItems():
         limit = None
     return item_functions.ViewAllItems(limit)
 
-@app.route('/ViewFlaggedItems', methods=['GET'])
+@app.route('/ViewFlaggedItems', methods=['POST'])
 def ViewFlaggedItems():
+    data = request.get_json()
+    if "limit" in data:
+        limit = data["limit"]
+    else:
+        limit = None
     return item_functions.ViewFlaggedItems()
 
 @app.route('/SearchItem', methods=['POST'])

@@ -15,14 +15,98 @@ from config import *
 
 items_api = Blueprint('items', __name__)
 
+_required_attributes = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+        'name': {'type': 'string'},
+        'description' : {'type' : 'string'},
+        'category': {'type': 'string'},
+        'photos': {'type': 'string'},
+        'sellerID': {'type': 'string'},
+        'price': {'type': 'string'}
+    },
+    'required': ['item_id', 'name', 'description', 'category', 'photos', 'sellerID', 'price']
+}
+
+_unrequired_attributes = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+        'name': {'type': 'string'},
+        'description' : {'type' : 'string'},
+        'category': {'type': 'string'},
+        'photos': {'type': 'string'},
+        'sellerID': {'type': 'string'},
+        'price': {'type': 'string'}
+    },
+    'required': []
+}
+
+_category = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+        'category': {'type': 'array'}
+    },
+    'required': ['item_id', 'category']
+}
+
+_view_items_schema = {
+    'type': 'object',
+    'properties': {
+        'limit' : {'type': 'int'}
+    }
+}
+
+_search_items = {
+    'type': 'object',
+    'properties': {
+        'keywords' : {'type': 'array'}
+    },
+    'required': ['keywords']
+}
+
+_watchlist = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+        'user_id': {'type': 'string'}
+    },
+    'required': ['item_id', 'user_id']
+}
+
+_item = {
+    'type': 'object',
+    'properties': {
+        'item_id' : {'type': 'string'}
+    },
+    'required': ['item_id']
+}
+
+_report = {
+    'type': 'object',
+    'properties': {
+        'item_id' : {'type': 'string'},
+        'reason': {'type': 'string'}
+    },
+    'required': ['item_id', 'reason']
+}
+
+
+
+
 @items_api.route('/', methods=['GET'])
+
 def ItemsServiceStatus():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/")
     r = requests.get(url = socket_url)
     return r.content
 
+
 @items_api.route('/ViewAllItems', methods=['POST'])
+@expects_json(_view_items_schema)
 def ViewAllItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ViewAllItems")
@@ -31,13 +115,16 @@ def ViewAllItems():
     return r.content
 
 @items_api.route('/ViewFlaggedItems', methods=['GET'])
+@expects_json(_view_items_schema)
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
+
 @items_api.route('/SearchItem', methods=['POST'])
+@expects_json(_search_items)
 def SearchItem():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
                      ":8099" + "/SearchItem")
@@ -47,6 +134,7 @@ def SearchItem():
 
 
 @items_api.route('/AddUserToWatchlist', methods = ['POST'])
+@expects_json(_watchlist)
 def AddUserToWarchlist():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/AddUserToWatchlist")
@@ -55,7 +143,9 @@ def AddUserToWarchlist():
     return r.content
 
 
+
 @items_api.route('/RemoveItem', methods = ['POST'])
+@expects_json(_item)
 def RemoveItem():
     if routes.view_bids().length == 0:
         return """There are already bids on 
@@ -67,7 +157,9 @@ def RemoveItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+
 @items_api.route('/ReportItem', methods = ['POST'])
+@expects_json(_report)
 def ReportItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
                      ":8099" + "/ReportItem")
@@ -75,7 +167,9 @@ def ReportItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+
 @items_api.route("/GetItem", methods = ['POST'])
+@expects_json(_item)
 def GetItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/GetItem")
@@ -83,7 +177,9 @@ def GetItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+
 @items_api.route("/ModifyItem", methods = ['POST'])
+@expects_json(_unrequired_attributes)
 def ModifyItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyItem")
@@ -93,6 +189,7 @@ def ModifyItem():
 
 
 @items_api.route("/AddItem", methods = ['POST'])
+@expects_json(_required_attributes)
 def AddItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/AddItem")
@@ -100,7 +197,9 @@ def AddItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+
 @items_api.route("/EditCategories", methods = ['POST'])
+@expects_json(_category)
 def EditCategories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/EditCategories")
@@ -108,7 +207,9 @@ def EditCategories():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
+
 @items_api.route("/ModifyAvailability", methods = ['POST'])
+@expects_json(_item)
 def ModifyAvailability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ":8099" + "/ModifyAvailability")
