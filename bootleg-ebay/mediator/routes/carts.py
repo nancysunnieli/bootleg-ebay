@@ -3,16 +3,18 @@ import requests
 import json
 
 from flask_expects_json import expects_json
-from flask import Response, request
+from flask import Response, request, Blueprint
 
 from utils import get_and_post
-from . import routes
 from config import *
 
 # getting IP Address of carts container
 # The following are functions for the carts microservice
 
-@routes.route("/{}/CreateCart".format(CARTS_NAME), methods = ['POST'])
+carts_api = Blueprint('carts', __name__)
+
+
+@carts_api.route("/CreateCart", methods = ['POST'])
 def CreateCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/CreateCart")
@@ -20,7 +22,7 @@ def CreateCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/{}/AddItemToCart".format(CARTS_NAME), methods = ['POST'])
+@carts_api.route("/AddItemToCart", methods = ['POST'])
 def AddItemToCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/AddItemToCart")
@@ -28,7 +30,7 @@ def AddItemToCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/{}/DeleteItemFromCart".format(CARTS_NAME), methods = ['POST'])
+@carts_api.route("/DeleteItemFromCart", methods = ['POST'])
 def DeleteItemFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/DeleteItemFromCart")
@@ -36,7 +38,7 @@ def DeleteItemFromCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/{}/GetItemsFromCart".format(CARTS_NAME), methods = ['POST'])
+@carts_api.route("/GetItemsFromCart", methods = ['POST'])
 def GetItemsFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/GetItemsFromCart")
@@ -44,7 +46,7 @@ def GetItemsFromCart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/{}/EmptyCart".format(CARTS_NAME), methods = ['POST'])
+@carts_api.route("/EmptyCart", methods = ['POST'])
 def EmptyCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/EmptyCart")
@@ -52,7 +54,7 @@ def EmptyCart():
     r = requests.post(socket_url, json = data_content)
     return r.content
 
-@routes.route("/{}/Checkout".format(CARTS_NAME), methods = ['POST'])
+@carts_api.route("/Checkout", methods = ['POST'])
 def Checkout():
     data_content = request.get_json()
 

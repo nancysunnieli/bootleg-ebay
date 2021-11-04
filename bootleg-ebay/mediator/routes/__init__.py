@@ -1,8 +1,5 @@
-from flask import Blueprint
-routes = Blueprint('routes', __name__)
-
-from .items import *
-from .users import *
-from .auctions import *
-from .carts import *
-from .payments import *
+from .items import items_api
+from .users import users_api
+from .auctions import auctions_api
+from .carts import carts_api
+from .payments import payments_api

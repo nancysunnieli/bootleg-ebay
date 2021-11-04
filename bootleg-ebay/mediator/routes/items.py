@@ -4,16 +4,16 @@ import requests
 import json
 
 from flask_expects_json import expects_json
-from flask import Response, request
+from flask import Response, request, Blueprint
 
 from utils import get_and_post
-from . import routes
 from config import *
 
 
 # getting IP Address of items container
 # The following functions call the items microservice
 
+items_api = Blueprint('items', __name__)
 
 _required_attributes = {
     'type': 'object',
@@ -96,15 +96,16 @@ _report = {
 
 
 
+@items_api.route('/', methods=['GET'])
 
-@routes.route('/Items/', methods=['GET'])
 def ItemsServiceStatus():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/")
     r = requests.get(url = socket_url)
     return r.content
 
-@app.route('/Items/ViewAllItems', methods=['POST'])
+
+@items_api.route('/ViewAllItems', methods=['POST'])
 @expects_json(_view_items_schema)
 def ViewAllItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -113,7 +114,7 @@ def ViewAllItems():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route('/Items/ViewFlaggedItems', methods=['POST'])
+@items_api.route('/ViewFlaggedItems', methods=['GET'])
 @expects_json(_view_items_schema)
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -121,7 +122,8 @@ def ViewFlaggedItems():
     r = requests.get(url = socket_url)
     return r.content
 
-@routes.route('/Items/SearchItem', methods=['POST'])
+
+@items_api.route('/SearchItem', methods=['POST'])
 @expects_json(_search_items)
 def SearchItem():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
@@ -131,9 +133,9 @@ def SearchItem():
     return r.content
 
 
-@routes.route('/Items/AddUserToWatchlist', methods = ['POST'])
+@items_api.route('/AddUserToWatchlist', methods = ['POST'])
 @expects_json(_watchlist)
-def AddUserToWatchlist():
+def AddUserToWarchlist():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ":8099" + "/AddUserToWatchlist")
     data_content = request.get_json()
@@ -141,7 +143,8 @@ def AddUserToWatchlist():
     return r.content
 
 
-@routes.route('/Items/RemoveItem', methods = ['POST'])
+
+@items_api.route('/RemoveItem', methods = ['POST'])
 @expects_json(_item)
 def RemoveItem():
     if routes.view_bids().length == 0:
@@ -154,7 +157,8 @@ def RemoveItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route('/Items/ReportItem', methods = ['POST'])
+
+@items_api.route('/ReportItem', methods = ['POST'])
 @expects_json(_report)
 def ReportItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
@@ -163,7 +167,8 @@ def ReportItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/GetItem", methods = ['POST'])
+
+@items_api.route("/GetItem", methods = ['POST'])
 @expects_json(_item)
 def GetItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -172,7 +177,8 @@ def GetItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/ModifyItem", methods = ['POST'])
+
+@items_api.route("/ModifyItem", methods = ['POST'])
 @expects_json(_unrequired_attributes)
 def ModifyItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -182,7 +188,7 @@ def ModifyItem():
     return r.content
 
 
-@routes.route("/Items/AddItem", methods = ['POST'])
+@items_api.route("/AddItem", methods = ['POST'])
 @expects_json(_required_attributes)
 def AddItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -191,7 +197,8 @@ def AddItem():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/EditCategories", methods = ['POST'])
+
+@items_api.route("/EditCategories", methods = ['POST'])
 @expects_json(_category)
 def EditCategories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -200,7 +207,8 @@ def EditCategories():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Items/ModifyAvailability", methods = ['POST'])
+
+@items_api.route("/ModifyAvailability", methods = ['POST'])
 @expects_json(_item)
 def ModifyAvailability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +

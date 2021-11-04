@@ -3,7 +3,6 @@ import json
 import os
 import re
 import socket
-from types import ClassMethodDescriptorType
 import uuid
 import items
 
