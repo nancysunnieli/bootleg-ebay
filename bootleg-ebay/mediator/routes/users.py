@@ -50,9 +50,10 @@ _user_info_schema = {
 _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
-@users_api.route("/view_user", methods = ['POST'])
+
+@users_api.route("/user/<user_id>", methods = ['POST'])
 @expects_json(_user_id_schema)
-def view_user():
+def view_user(user_id):
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
     return get_and_post(socket_url)
 
@@ -91,26 +92,24 @@ def create_account():
     return Response(response = new_user_info,
                     status = 200,
                     mimetype = 'application/json')
-    
 
-    
-    return new_user_info
-
-
-@users_api.route("/suspend_account", methods = ['POST'])
+@users_api.route("/user/<user_id>", methods = ['POST'])
 @expects_json(_user_id_schema)
 def suspend_account():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account")
     return get_and_post(socket_url)
 
 
-@users_api.route("/modify_profile", methods = ['POST'])
+@users_api.route("/user/<user_id>", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)
-def modify_profile():
+def modify_profile(user_id):
+    dict = request.get_json()
+    # TODO
+    
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
-    return get_and_post(socket_url)
+    return get_and_post(socket_url) 
 
-@users_api.route("/delete_account", methods = ['POST'])
+@users_api.route("/user/<user_id>", methods = ['DELETE'])
 @expects_json(_user_id_schema)
 def delete_account():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account")
