@@ -9,6 +9,7 @@ export const register = createAsyncThunk(
     "auth/register",
     async ({ username, email, password }, thunkAPI) => {
         try {
+            console.log("register thunk");
             const response = await AuthService.register(username, email, password);
             //   thunkAPI.dispatch(setMessage(response.data.message));
             return response.data;
@@ -63,10 +64,10 @@ const authSlice = createSlice({
     initialState,
     extraReducers: {
         [register.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
-            state.user = action.payload.user;
-            state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
-            window.location.replace("/home");
+            state.isLoggedIn = true;
+            console.log("payload", action.payload);
+            // state.user = action.payload.user;
+            // state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
         },
         [register.rejected]: (state, action) => {
             state.isLoggedIn = false;

@@ -2,34 +2,46 @@ import axios from "axios";
 import { API_URL } from "../config";
 
 const register = (username, email, password) => {
-  return axios.post(API_URL + "Users/Register", {
-    username,
-    email,
-    password,
-  });
+    console.log("register");
+    return axios
+        .post(API_URL + "Users/CreateAccount", {
+            username,
+            email,
+            password,
+            money: 0.0,
+            suspended: false,
+            is_admin: false,
+        })
+        .then((response) => {
+            if (response.data.accessToken) {
+                localStorage.setItem("user", JSON.stringify(response.data));
+            }
+
+            return response.data;
+        });
 };
 
 const login = (username, password) => {
-  return axios
-    .post(API_URL + "Users/Login", {
-      username,
-      password,
-    })
-    .then((response) => {
-      if (response.data.accessToken) {
-        localStorage.setItem("user", JSON.stringify(response.data));
-      }
+    return axios
+        .post(API_URL + "Users/Login", {
+            username,
+            password,
+        })
+        .then((response) => {
+            if (response.data.accessToken) {
+                localStorage.setItem("user", JSON.stringify(response.data));
+            }
 
-      return response.data;
-    });
+            return response.data;
+        });
 };
 
 const logout = () => {
-  localStorage.removeItem("user");
+    localStorage.removeItem("user");
 };
 
 export default {
-  register,
-  login,
-  logout,
+    register,
+    login,
+    logout,
 };
