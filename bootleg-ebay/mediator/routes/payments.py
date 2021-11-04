@@ -13,18 +13,18 @@ from config import *
 # The following are functions for the payments microservice
 
 
-@routes.route("/{}/CreatePaymentCard".format(paymentsName), methods = ['POST'])
+@routes.route("/{}/CreatePaymentCard".format(PAYMENTS_NAME), methods = ['POST'])
 def CreatePaymentCard():
-    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/CreatePaymentCard")
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/CreatePaymentCard")
     return get_and_post(socket_url)
 
-@routes.route("/{}/GetPaymentCard".format(paymentsName), methods = ['POST'])
+@routes.route("/{}/GetPaymentCard".format(PAYMENTS_NAME), methods = ['POST'])
 def GetPaymentCard():
-    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/GetPaymentCard")
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/GetPaymentCard")
     return get_and_post(socket_url)
 
-@routes.route("/{}/DeleteAccount".format(paymentsName), methods = ['POST'])
+@routes.route("/{}/DeleteAccount".format(PAYMENTS_NAME), methods = ['POST'])
 def PaymentsDeleteAccount():
-    socket_url = ("http://" + paymentsServiceHost + paymentsPort + "/DeleteAccount")
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT + "/DeleteAccount")
     return get_and_post(socket_url)
 
