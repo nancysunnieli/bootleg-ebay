@@ -13,8 +13,26 @@ from config import *
 
 carts_api = Blueprint('carts', __name__)
 
+_user = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'string'}
+    },
+    'required': ['user_id']
+}
+
+_user_item = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'string'},
+        'item_id': {'type': 'string'}
+    },
+    'required': ['user_id', 'item_id']
+}
+
 
 @carts_api.route("/CreateCart", methods = ['POST'])
+@expects_json(_user)
 def CreateCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/CreateCart")
@@ -23,6 +41,7 @@ def CreateCart():
     return r.content
 
 @carts_api.route("/AddItemToCart", methods = ['POST'])
+@expects_json(_user_item)
 def AddItemToCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/AddItemToCart")
@@ -31,6 +50,7 @@ def AddItemToCart():
     return r.content
 
 @carts_api.route("/DeleteItemFromCart", methods = ['POST'])
+@expects_json(_user_item)
 def DeleteItemFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/DeleteItemFromCart")
@@ -39,6 +59,7 @@ def DeleteItemFromCart():
     return r.content
 
 @carts_api.route("/GetItemsFromCart", methods = ['POST'])
+@expects_json(_user)
 def GetItemsFromCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/GetItemsFromCart")
@@ -47,6 +68,7 @@ def GetItemsFromCart():
     return r.content
 
 @carts_api.route("/EmptyCart", methods = ['POST'])
+@expects_json(_user)
 def EmptyCart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/EmptyCart")
@@ -55,6 +77,7 @@ def EmptyCart():
     return r.content
 
 @carts_api.route("/Checkout", methods = ['POST'])
+@expects_json(_user)
 def Checkout():
     data_content = request.get_json()
 
