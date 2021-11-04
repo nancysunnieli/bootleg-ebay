@@ -16,44 +16,44 @@ def base():
                     mimetype = 'application/json')
 
 
-@app.route('/CreateAuction', methods=['POST'])
-def CreateAuction():
+@app.route('/create_auction', methods=['POST'])
+def create_auction():
     data = request.get_json()
-    return auctions_functions.CreateAuction(data)
+    return auctions_functions.create_auction(data)
 
-@app.route('/GetAuction', methods=['POST'])
-def GetAuction():
-    data = request.get_json()
-    auction_id = data['_id']
-    return auctions_functions.GetAuction(auction_id)
-
-@app.route('/ViewCurrentAuctions', methods=['POST'])
-def ViewCurrentAuctions():
-    return auctions_functions.ViewCurrentAuctions()
-
-@app.route('/RemoveAuction', methods=['POST'])
-def RemoveAuction():
+@app.route('/get_auction', methods=['POST'])
+def get_auction():
     data = request.get_json()
     auction_id = data['_id']
-    return auctions_functions.RemoveAuction(auction_id)
+    return auctions_functions.get_auction(auction_id)
 
+@app.route('/view_current_auctions', methods=['POST'])
+def view_current_auctions():
+    return auctions_functions.view_current_auctions()
 
-@app.route('/BidsByUser', methods=['POST'])
-def BidsByUser():
-    data = request.get_json()
-    return auctions_functions.BidsByUser(data['buyer_id'])
-
-@app.route('/CreateBid', methods=['POST'])
-def CreateBid():
+@app.route('/remove_auction', methods=['POST'])
+def remove_auction():
     data = request.get_json()
     auction_id = data['_id']
-    return auctions_functions.CreateBid(auction_id, data['price'], data['buyer_id'])
+    return auctions_functions.remove_auction(auction_id)
 
-@app.route('/ViewBids', methods=['POST'])
-def ViewBids():
+
+@app.route('/bids_by_user', methods=['POST'])
+def bids_by_user():
+    data = request.get_json()
+    return auctions_functions.bids_by_user(data['buyer_id'])
+
+@app.route('/create_bid', methods=['POST'])
+def create_bid():
     data = request.get_json()
     auction_id = data['_id']
-    return auctions_functions.ViewBids(auction_id)
+    return auctions_functions.create_bid(auction_id, data['price'], data['buyer_id'])
+
+@app.route('/view_bids', methods=['POST'])
+def view_bids():
+    data = request.get_json()
+    auction_id = data['_id']
+    return auctions_functions.view_bids(auction_id)
 
 if __name__ == '__main__':
     app.run(debug = True, port = 2222, host = socket_name)

@@ -8,6 +8,7 @@ const EditModalInfo = ({ show, handleClose }) => {
     const { user } = useSelector((state) => state.auth);
     const [email, setEmail] = useState(user.email);
     const [password, setPassword] = useState(user.password);
+    // const dispatch = useDispatch();
 
     const close = () => {
         setEmail(user.email);

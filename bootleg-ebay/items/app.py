@@ -118,4 +118,6 @@ def ModifyAvailability():
 
 
 if __name__ == '__main__':
+    # Don't set host as localhost, otherwise it wont be reachable through docker networks
+    # Should run this file with docker-compose up, and talk to it via localhost:8011 on your system
     app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()))

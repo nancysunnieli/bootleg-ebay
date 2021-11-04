@@ -15,44 +15,44 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/ViewUser', methods=['GET'])
-def ViewUser():
+@app.route('/view_user', methods=['GET'])
+def view_user():
     data = request.get_json()
     user_id = data["user_id"]
-    return users_functions.ViewUser(user_id)
+    return users_functions.view_user(user_id)
 
-@app.route('/Login', methods=['POST'])
-def Login():
+@app.route('/login', methods=['POST'])
+def login():
     data = request.get_json()
     username = data["username"]
     password = data['password']
-    return users_functions.Login(username, password)
+    return users_functions.login(username, password)
 
-@app.route('/Logout', methods=['POST'])
-def Logout():
-    return users_functions.Logout()
+@app.route('/logout', methods=['POST'])
+def logout():
+    return users_functions.logout()
 
-@app.route('/CreateAccount', methods=['POST'])
-def CreateAccount():
+@app.route('/create_account', methods=['POST'])
+def create_account():
     data = request.get_json()
-    return users_functions.CreateAccount(data)
+    return users_functions.create_account(data)
 
-@app.route('/SuspendAccount', methods=['POST'])
-def SuspendAccount():
-    data = request.get_json()
-    user_id = data["user_id"]
-    return users_functions.SuspendAccount(user_id)
-
-@app.route('/ModifyProfile', methods=['POST'])
-def ModifyProfile():
-    data = request.get_json()
-    return users_functions.ModifyProfile(data)
-
-@app.route('/DeleteAccount', methods=['POST'])
-def DeleteAccount():
+@app.route('/suspend_account', methods=['POST'])
+def suspend_account():
     data = request.get_json()
     user_id = data["user_id"]
-    return users_functions.DeleteAccount(user_id)
+    return users_functions.suspend_account(user_id)
+
+@app.route('/modify_profile', methods=['POST'])
+def modify_profile():
+    data = request.get_json()
+    return users_functions.modify_profile(data)
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    data = request.get_json()
+    user_id = data["user_id"]
+    return users_functions.delete_account(user_id)
 
 
 

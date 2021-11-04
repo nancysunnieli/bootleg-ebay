@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { ROLE_ADMIN, ROLE_USER } from "../constants";
 
 import AuthService from "../services/auth.service";
 
@@ -9,9 +8,10 @@ export const register = createAsyncThunk(
     "auth/register",
     async ({ username, email, password }, thunkAPI) => {
         try {
-            const response = await AuthService.register(username, email, password);
+            console.log("register thunk");
+            const data = await AuthService.register(username, email, password);
             //   thunkAPI.dispatch(setMessage(response.data.message));
-            return response.data;
+            return { user: data };
         } catch (error) {
             const message = error.toString();
             //   thunkAPI.dispatch(setMessage(message));
@@ -20,21 +20,10 @@ export const register = createAsyncThunk(
     }
 );
 
-export const login = createAsyncThunk("auth/login", async ({ email, password }, thunkAPI) => {
+export const login = createAsyncThunk("auth/login", async ({ username, password }, thunkAPI) => {
     try {
-        // const data = await AuthService.login(email, password);
-        // return { user: data };
-        console.log("mocking login flow", email, password);
-        return {
-            user: {
-                roles: [ROLE_USER],
-                id: "1",
-                username: "yvesshum",
-                password: "123",
-                email: "yvesshum1210@gmail.com",
-                suspended: false,
-            },
-        };
+        const data = await AuthService.login(username, password);
+        return { user: data };
     } catch (error) {
         const message =
             (error.response && error.response.data && error.response.data.message) ||
@@ -50,23 +39,16 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 });
 
 const initialState = user ? { isLoggedIn: true, user } : { isLoggedIn: false, user: null };
-// const initialState = {
-//     user: {
-//         roles: [ROLE_USER],
-//     },
-//     isAdmin: false,
-//     isLoggedIn: true,
-// };
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     extraReducers: {
         [register.fulfilled]: (state, action) => {
-            state.isLoggedIn = false;
+            console.log("action", action.payload);
+            state.isLoggedIn = true;
             state.user = action.payload.user;
-            state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
-            window.location.replace("/home");
+            state.isAdmin = action.payload.is_admin;
         },
         [register.rejected]: (state, action) => {
             state.isLoggedIn = false;
@@ -74,7 +56,7 @@ const authSlice = createSlice({
         [login.fulfilled]: (state, action) => {
             state.isLoggedIn = true;
             state.user = action.payload.user;
-            state.isAdmin = action.payload.user.roles.includes(ROLE_ADMIN);
+            state.isAdmin = action.payload.is_admin;
         },
         [login.rejected]: (state, action) => {
             state.isLoggedIn = false;

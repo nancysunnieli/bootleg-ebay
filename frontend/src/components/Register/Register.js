@@ -1,15 +1,22 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useState } from "react";
+import { register } from "../../slices/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [userName, setUsername] = useState("");
+    const [username, setUsername] = useState("");
+    const dispatch = useDispatch();
+    const { isLoggedIn } = useSelector((state) => state.auth);
 
     const registerUser = (e) => {
         e.preventDefault();
-        console.log(email, password, userName);
+        dispatch(register({ email, password, username }));
     };
+
+    if (isLoggedIn) return <Redirect to={{ pathname: "/home" }} />;
 
     return (
         <div>
@@ -30,7 +37,7 @@ const Register = () => {
                     <Form.Control
                         type="input"
                         placeholder="Enter username"
-                        value={userName}
+                        value={username}
                         onChange={({ target: { value } }) => setUsername(value)}
                     />
                 </Form.Group>

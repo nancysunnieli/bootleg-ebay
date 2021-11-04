@@ -11,6 +11,12 @@
 `docker-compose up -d payments-db -d payments-api`
 `docker-compose up -d auctions-db -d auctions-api `
 
+`docker run --hostname mongodb --name mongo_xenial -p 28017:28017 -p 27017:27017 -e MONGODB_PASS="password" -d mongo:3.4-xenial`
+
+`docker run --hostname mongodb --name mongo_latest -p 28017:28017 -p 27017:27017 -e MONGODB_PASS="password" -d mongo:latest`
+
+`docker pull --platform linux/x86_64 mongo:latest`
+
 Start mysql
 
 ```

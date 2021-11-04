@@ -69,7 +69,7 @@ class AuctionDBManager:
         query = { "_id": auction.auction_id}
         cls.update_one(query, values)
 
-def GetAuction(auction_id):
+def get_auction(auction_id):
     """
     Get an auction. Can either be completed or currently running
 
@@ -80,7 +80,7 @@ def GetAuction(auction_id):
     auctions = AuctionDBManager.query_collection(query)
     return json.dumps(auctions)
 
-def CreateAuction(auction_info):
+def create_auction(auction_info):
     """
     Create an auction
     """
@@ -93,7 +93,7 @@ def CreateAuction(auction_info):
         return "UNABLE TO CREATE AUCTION. PLEASE TRY AGAIN"
 
 
-def ViewCurrentAuctions() -> Sequence:
+def view_current_auctions() -> Sequence:
     """
     Get the auctions that are currently running.
     """
@@ -105,7 +105,7 @@ def ViewCurrentAuctions() -> Sequence:
     auctions = AuctionDBManager.query_collection(query)
     return json.dumps(auctions)
 
-def RemoveAuction(auction_id) -> None:
+def remove_auction(auction_id) -> None:
     """
     This removes the auction that matches the auction id.
     This is used when the auction itself
@@ -119,7 +119,7 @@ def RemoveAuction(auction_id) -> None:
         return "Auction was unable to be successfully deleted."
 
 
-def BidsByUser(buyer_id):
+def bids_by_user(buyer_id):
     """
     This returns back a list of bids by user
     """
@@ -131,7 +131,7 @@ def BidsByUser(buyer_id):
         all_bids += [b.to_mongodb_fmt() for b in bids]
     return json.dumps(all_bids)
 
-def CreateBid(auction_id, price, user_id):
+def create_bid(auction_id, price, user_id):
     """
     This is the function that allows users to place
     bids in auctions
@@ -144,7 +144,7 @@ def CreateBid(auction_id, price, user_id):
         return "SUCCESSFULLY CREATED BID"
     return "WAS UNABLE TO CREATE BID. PLEASE TRY AGAIN."
 
-def ViewBids(auction_id):
+def view_bids(auction_id):
     """
     This allows us to view all the bids for a single auction
     """
@@ -158,7 +158,7 @@ def ViewBids(auction_id):
 
 if __name__ == "__main__":
     """
-    print(CreateAuction({
+    print(create_auction({
     "_id": 'dd965614-cb9',
     "seller_id": '63fb9967-8cb',
     "start_time": 1637412397,
@@ -174,11 +174,11 @@ if __name__ == "__main__":
     ]
     }))
     """
-    #print(BidsByUser('db6ef937-1e3'))
-    #print(ViewCurrentAuctions())
-    #print(GetAuction('dd965614-cb9'))
-    #print(RemoveAuction('dd965614-cb9'))
-    #print(ViewBids('dd965614-cb9'))
-    #print(CreateBid('2f459c3c-c35', 101.99, 'db6ef937-1e3'))
+    #print(bids_by_user('db6ef937-1e3'))
+    #print(view_current_auctions())
+    #print(get_auction('dd965614-cb9'))
+    #print(remove_auction('dd965614-cb9'))
+    #print(view_bids('dd965614-cb9'))
+    #print(create_bid('2f459c3c-c35', 101.99, 'db6ef937-1e3'))
 
 

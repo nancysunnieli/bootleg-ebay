@@ -36,7 +36,7 @@ const App = () => {
 
     useEffect(() => {
         if (currentUser) {
-            setShowAdminBoard(currentUser.roles.includes("ROLE_ADMIN"));
+            setShowAdminBoard(currentUser.is_admin);
         } else {
             setShowAdminBoard(false);
         }
