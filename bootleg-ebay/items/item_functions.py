@@ -3,6 +3,7 @@ import json
 import os
 import re
 import socket
+from types import ClassMethodDescriptorType
 import uuid
 import items
 
@@ -20,6 +21,20 @@ class ItemsDBManager:
         flagged_items_collection = db["flagged_items"]
         photos_collection = db["photos"]
         return items_collection, flagged_items_collection, photos_collection
+    
+    @classmethod
+    def ViewAllItems(cls, limit = None):
+        """
+        This returns back all available items
+        in sorted order
+        """
+        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        query = {"available" : True}
+        results = list(items_collection.find(query))
+        if limit:
+            return results[:limit]
+        else:
+            return results
 
     @classmethod
     def ViewFlaggedItems(cls, limit = None):
@@ -308,6 +323,26 @@ def ViewFlaggedItems(limit = None):
         new_item = items.Item()
         new_item.from_mongo(item, flags)
         if new_item.isFlagged:
+            new_dict = new_item.to_mongo()
+            item_objects.append(new_dict)
+        if limit:
+            if len(item_objects) == limit:
+                break
+    return json.dumps(item_objects)
+
+
+def ViewAllItems(limit = None):
+    """
+    This returns back a list of all items
+    """
+    all_items = ItemsDBManager.GetAllItems()
+    item_objects = []
+    for item in all_items:
+        item_id = item["_id"]
+        flags = ItemsDBManager.getFlagReasons(item_id)
+        new_item = items.Item()
+        new_item.from_mongo(item, flags)
+        if new_item.available:
             new_dict = new_item.to_mongo()
             item_objects.append(new_dict)
         if limit:
