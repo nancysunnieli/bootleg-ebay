@@ -118,7 +118,7 @@ class UserDBManager:
         return user
 
 
-def ViewUser(user_id: UserID):
+def view_user(user_id: UserID):
     user = UserDBManager.get_user(user_id)
     if user is None:
         return {}.to_json()
@@ -126,7 +126,7 @@ def ViewUser(user_id: UserID):
     return user.to_json()
     
 
-def Login(username, password) -> UserInfo:
+def login(username, password) -> UserInfo:
     """Login to an account
     
     Returns:
@@ -142,12 +142,12 @@ def Login(username, password) -> UserInfo:
     return user.to_json()
     
 
-def Logout():
+def logout():
     """Log out from the account
     """
     return True
 
-def CreateAccount(user_info: UserInfo) -> UserInfo:
+def create_account(user_info: UserInfo) -> UserInfo:
     """Create an user account.
     """
     rows = [[user_info[c] for c in UserDBManager.db_cols]]
@@ -156,7 +156,7 @@ def CreateAccount(user_info: UserInfo) -> UserInfo:
     user = UserDBManager.get_user_by_username(user_info['username'])
     return user.to_json()
 
-def SuspendAccount(user_id: UserID):
+def suspend_account(user_id: UserID):
     """Suspend an user account.
     """
     user = UserDBManager.get_user(user_id)
@@ -165,7 +165,7 @@ def SuspendAccount(user_id: UserID):
     user_dict = user.to_dict()
     UserDBManager.update_by_id(user_dict)
 
-def ModifyProfile(new_user_info: UserInfo):
+def modify_profile(new_user_info: UserInfo):
     """Modify the 
 
     Args:
@@ -191,11 +191,11 @@ def ModifyProfile(new_user_info: UserInfo):
 
     UserDBManager.update_by_id(user_dict)
 
-def DeleteAccount(user_id: UserID) -> None:
+def delete_account(user_id: UserID) -> None:
     UserDBManager.delete_by_id(user_id)
 
 
-# DeleteAccount(user_id=11)
+# delete_account(user_id=11)
 # user = UserDBManager.get_user(10)
 
 # import pdb; pdb.set_trace()

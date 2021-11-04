@@ -112,7 +112,7 @@ class PaymentsDBManager:
         payment_card = cls._get_payment_by_query(cmd, val)
         return payment_card
 
-def CreatePaymentCard(payment_info: PaymentInfo):
+def create_payment_card(payment_info: PaymentInfo):
     """Create a payment card.
     """
     payment_card = PaymentCard.from_dict(payment_info)
@@ -120,12 +120,12 @@ def CreatePaymentCard(payment_info: PaymentInfo):
     rows = [[payment_info[c] for c in PaymentsDBManager.db_cols]]
     PaymentsDBManager.insert_many(rows)
 
-def GetPaymentCard(payment_id: PaymentID):
+def get_payment_card(payment_id: PaymentID):
     payment = PaymentsDBManager.get_payment_card(payment_id)
     if payment is None:
         return json.dumps({})
 
     return payment.to_json()
 
-def DeleteAccount(payment_id: PaymentID) -> None:
+def delete_account(payment_id: PaymentID) -> None:
    PaymentsDBManager.delete_by_id(payment_id)

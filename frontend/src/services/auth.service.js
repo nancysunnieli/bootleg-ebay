@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_URL } from "../config";
 
 const register = async (username, email, password) => {
-    const response = await axios.post(API_URL + "Users/CreateAccount", {
+    const response = await axios.post(API_URL + "Users/create_account", {
         username,
         email,
         password,
@@ -14,7 +14,7 @@ const register = async (username, email, password) => {
 };
 
 const login = async (username, password) => {
-    const response = await axios.post(API_URL + "Users/Login", {
+    const response = await axios.post(API_URL + "Users/login", {
         username,
         password,
     });

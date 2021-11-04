@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import copy
 
 from flask_expects_json import expects_json
 from flask import Response, request
@@ -9,10 +10,7 @@ from utils import get_and_post
 from . import routes
 from config import *
 
-# getting IP Address of users container
-# The following are functions for the users microservice
-
-UserIDSchema = {
+_user_id_schema = {
     'type': 'object',
     'properties': {
         'user_id': {'type': 'int'},
@@ -20,7 +18,7 @@ UserIDSchema = {
     'required': ['user_id']
 }
 
-UserNamePassWordSchema = {
+_login_schema = {
     'type': 'object',
     'properties': {
         'username': {'type': 'string'},
@@ -29,14 +27,14 @@ UserNamePassWordSchema = {
     'required': ['username', 'password']
 }
 
-NoneSchema = {
+_none_schema = {
     'type': 'object',
     'properties': {
     },
     'required': []
 }
 
-UserInfoSchema = {
+_user_info_schema = {
     'type': 'object',
     'properties': {
         'username': {'type': 'string'},
@@ -48,30 +46,33 @@ UserInfoSchema = {
     'required': ["username", "password", "email", "suspended", "is_admin"]
 }
 
-@routes.route("/{}/ViewUser".format(usersName), methods = ['POST'])
-@expects_json(UserIDSchema)
-def ViewUser():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/ViewUser")
+_optional_user_info_schema = copy.deepcopy(_user_info_schema)
+_optional_user_info_schema['required'] = []
+
+@routes.route("/{}/view_user".format(USERS_NAME), methods = ['POST'])
+@expects_json(_user_id_schema)
+def view_user():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
     return get_and_post(socket_url)
 
-@routes.route("/{}/Login".format(usersName), methods = ['POST'])
-@expects_json(UserNamePassWordSchema)
-def Login():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/Login")
+@routes.route("/{}/login".format(USERS_NAME), methods = ['POST'])
+@expects_json(_login_schema)
+def login():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
     return get_and_post(socket_url)
 
-@routes.route("/{}/Logout".format(usersName), methods = ['POST'])
-@expects_json(NoneSchema)
-def Logout():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/Logout")
+@routes.route("/{}/logout".format(USERS_NAME), methods = ['POST'])
+@expects_json(_none_schema)
+def logout():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
     return get_and_post(socket_url)
 
-@routes.route("/{}/CreateAccount".format(usersName), methods = ['POST'])
-@expects_json(UserInfoSchema)
-def CreateAccount():
+@routes.route("/{}/create_account".format(USERS_NAME), methods = ['POST'])
+@expects_json(_user_info_schema)
+def create_account():
     # CREATING ACCOUNT
     data_content = request.get_json()
-    socket_url = ("http://" + usersServiceHost + usersPort + "/CreateAccount")
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/create_account")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     
@@ -81,7 +82,7 @@ def CreateAccount():
     new_user_id = new_user_dict["id"]
     
     # CREATING CART
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/CreateCart")
     data_content = new_user_info
     requests.post(url = socket_url, json ={"user_id": new_user_id})
@@ -95,21 +96,21 @@ def CreateAccount():
     return new_user_info
 
 
-@routes.route("/{}/SuspendAccount".format(usersName), methods = ['POST'])
-@expects_json(UserIDSchema)
-def SuspendAccount():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/SuspendAccount")
+@routes.route("/{}/suspend_account".format(USERS_NAME), methods = ['POST'])
+@expects_json(_user_id_schema)
+def suspend_account():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account")
     return get_and_post(socket_url)
 
 
-@routes.route("/{}/ModifyProfile".format(usersName), methods = ['POST'])
-@expects_json(UserInfoSchema)
-def ModifyProfile():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/ModifyProfile")
+@routes.route("/{}/modify_profile".format(USERS_NAME), methods = ['POST'])
+@expects_json(_optional_user_info_schema)
+def modify_profile():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
     return get_and_post(socket_url)
 
-@routes.route("/{}/DeleteAccount".format(usersName), methods = ['POST'])
-@expects_json(UserIDSchema)
-def DeleteAccount():
-    socket_url = ("http://" + usersServiceHost + usersPort + "/DeleteAccount")
+@routes.route("/{}/delete_account".format(USERS_NAME), methods = ['POST'])
+@expects_json(_user_id_schema)
+def delete_account():
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account")
     return get_and_post(socket_url)

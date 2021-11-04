@@ -1,17 +1,17 @@
 import os
 
-cartsServiceHost = os.getenv('CARTSAPIHOST', "localhost")
+CARTS_SERVICE_HOST = os.getenv('CARTSAPIHOST', "localhost")
 
-itemsServiceHost = os.getenv('ITEMSAPIHOST', "localhost")
+ITEMS_SERVICE_HOST = os.getenv('ITEMSAPIHOST', "localhost")
 
-usersServiceHost = os.getenv('USERAPIHOST', "localhost")
-usersName = 'Users'
-usersPort = ':1001'
+USERS_SERVICE_HOST = os.getenv('USERAPIHOST', "localhost")
+USERS_NAME = 'users'
+USERS_PORT = ':1001'
 
-auctionsServiceHost = os.getenv('AUCTIONSDBHOST', "localhost")
-auctionsName = 'Auctions'
-auctionsPort = ':2222'
+AUCTIONS_SERVICE_HOST = os.getenv('AUCTIONSDBHOST', "localhost")
+AUCTIONS_NAME = 'auctions'
+AUCTIONS_PORT = ':2222'
 
-paymentsServiceHost = os.getenv('PAYMENTSDBHOST', "localhost")
-paymentsName = 'Payments'
-paymentsPort = ':1003'
+PAYMENTS_SERVICE_HOST = os.getenv('PAYMENTSDBHOST', "localhost")
+PAYMENTS_NAME = 'payments'
+PAYMENTS_PORT = ':1003'

@@ -14,7 +14,7 @@ from config import *
 
 @routes.route("/Carts/CreateCart", methods = ['POST'])
 def CreateCart():
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/CreateCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -22,7 +22,7 @@ def CreateCart():
 
 @routes.route("/Carts/AddItemToCart", methods = ['POST'])
 def AddItemToCart():
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/AddItemToCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -30,7 +30,7 @@ def AddItemToCart():
 
 @routes.route("/Carts/DeleteItemFromCart", methods = ['POST'])
 def DeleteItemFromCart():
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/DeleteItemFromCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -38,7 +38,7 @@ def DeleteItemFromCart():
 
 @routes.route("/Carts/GetItemsFromCart", methods = ['POST'])
 def GetItemsFromCart():
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/GetItemsFromCart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
@@ -46,7 +46,7 @@ def GetItemsFromCart():
 
 @routes.route("/Carts/EmptyCart", methods = ['POST'])
 def EmptyCart():
-    socket_url = ("http://" + cartsServiceHost +
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/EmptyCart")
     data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
@@ -57,13 +57,13 @@ def Checkout():
     data_content = request.get_json()
 
     # gets all items in user's cart
-    get_items_url = ("http://" + cartsServiceHost +
+    get_items_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/GetItemsFromCart")
     items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
 
 
     # checks availability of all items
-    items_availability_url = ("http://" + itemsServiceHost +
+    items_availability_url = ("http://" + ITEMS_SERVICE_HOST +
                             ":8099" + "/GetItemsFromCart")
     available_items = []
     unavailable_items = []
@@ -79,7 +79,7 @@ def Checkout():
     # CREATE PAYMENT INFO
 
     # DELETE ALL ITEMS FROM CART
-    empty_cart_url = ("http://" + cartsServiceHost +
+    empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     ":3211" + "/EmptyCart")
     r = requests.post(empty_cart_url, json = data_content)
     return r.content

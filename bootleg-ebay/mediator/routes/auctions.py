@@ -13,37 +13,37 @@ from config import *
 # The following are functions for the auctions microservice
 
 
-@routes.route("/{}/CreateAuction".format(auctionsName), methods = ['POST'])
-def CreateAuction():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CreateAuction")
+@routes.route("/{}/create_auction".format(AUCTIONS_NAME), methods = ['POST'])
+def create_auction():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_auction")
     return get_and_post(socket_url)
 
-@routes.route("/{}/GetAuction".format(auctionsName), methods = ['POST'])
-def GetAuction():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/GetAuction")
+@routes.route("/{}/get_auction".format(AUCTIONS_NAME), methods = ['POST'])
+def get_auction():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/get_auction")
     return get_and_post(socket_url)
 
-@routes.route("/{}/ViewCurrentAuctions".format(auctionsName), methods = ['POST'])
-def ViewCurrentAuctions():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/ViewCurrentAuctions")
+@routes.route("/{}/view_current_auctions".format(AUCTIONS_NAME), methods = ['POST'])
+def view_current_auctions():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_current_auctions")
     return get_and_post(socket_url)
 
-@routes.route("/{}/RemoveAuction".format(auctionsName), methods = ['POST'])
-def RemoveAuction():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/RemoveAuction")
+@routes.route("/{}/remove_auction".format(AUCTIONS_NAME), methods = ['POST'])
+def remove_auction():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/remove_auction")
     return get_and_post(socket_url)
 
-@routes.route("/{}/BidsByUser".format(auctionsName), methods = ['POST'])
-def BidsByUser():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/BidsByUser")
+@routes.route("/{}/bids_by_user".format(AUCTIONS_NAME), methods = ['POST'])
+def bids_by_user():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids_by_user")
     return get_and_post(socket_url)
 
-@routes.route("/{}/CreateBid".format(auctionsName), methods = ['POST'])
-def CreateBid():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/CreateBid")
+@routes.route("/{}/create_bid".format(AUCTIONS_NAME), methods = ['POST'])
+def create_bid():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_bid")
     return get_and_post(socket_url)
 
-@routes.route("/{}/ViewBids".format(auctionsName), methods = ['POST'])
-def ViewBids():
-    socket_url = ("http://" + auctionsServiceHost + auctionsPort + "/ViewBids")
+@routes.route("/{}/view_bids".format(AUCTIONS_NAME), methods = ['POST'])
+def view_bids():
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_bids")
     return get_and_post(socket_url)
