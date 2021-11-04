@@ -50,7 +50,7 @@ def AddUserToWarchlist():
 
 @routes.route('/Items/RemoveItem', methods = ['POST'])
 def RemoveItem():
-    if routes.ViewBids().length == 0:
+    if routes.view_bids().length == 0:
         return """There are already bids on 
                 this item! It cannot be deleted"""
     
