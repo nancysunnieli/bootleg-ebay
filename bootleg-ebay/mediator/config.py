@@ -4,6 +4,7 @@ CARTS_SERVICE_HOST = os.getenv('CARTSAPIHOST', "localhost")
 CARTS_PORT = ":3211"
 
 ITEMS_SERVICE_HOST = os.getenv('ITEMSAPIHOST', "localhost")
+ITEMS_PORT = ":8099"
 
 USERS_SERVICE_HOST = os.getenv('USERAPIHOST', "localhost")
 USERS_PORT = ':1001'

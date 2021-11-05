@@ -100,7 +100,7 @@ _report = {
 
 def ItemsServiceStatus():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ":8099" + "/")
+                     ITEMS_PORT + "/")
     r = requests.get(url = socket_url)
     return r.content
 
@@ -109,7 +109,7 @@ def ItemsServiceStatus():
 @expects_json(_view_items_schema)
 def ViewAllItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ":8099" + "/ViewAllItems")
+                    ITEMS_PORT + "/ViewAllItems")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -118,7 +118,7 @@ def ViewAllItems():
 @expects_json(_view_items_schema)
 def ViewFlaggedItems():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ":8099" + "/ViewFlaggedItems")
+                     ITEMS_PORT + "/ViewFlaggedItems")
     r = requests.get(url = socket_url)
     return r.content
 
@@ -127,7 +127,7 @@ def ViewFlaggedItems():
 @expects_json(_search_items)
 def SearchItem():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
-                     ":8099" + "/SearchItem")
+                     ITEMS_PORT + "/SearchItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -137,7 +137,7 @@ def SearchItem():
 @expects_json(_watchlist)
 def AddUserToWarchlist():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ":8099" + "/AddUserToWatchlist")
+                     ITEMS_PORT + "/AddUserToWatchlist")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -152,7 +152,7 @@ def RemoveItem():
                 this item! It cannot be deleted"""
     
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ":8099" + "/RemoveItem")
+                     ITEMS_PORT + "/RemoveItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -162,7 +162,7 @@ def RemoveItem():
 @expects_json(_report)
 def ReportItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
-                     ":8099" + "/ReportItem")
+                     ITEMS_PORT + "/ReportItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -172,7 +172,7 @@ def ReportItem():
 @expects_json(_item)
 def GetItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ":8099" + "/GetItem")
+                     ITEMS_PORT + "/GetItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -182,7 +182,7 @@ def GetItem():
 @expects_json(_unrequired_attributes)
 def ModifyItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ":8099" + "/ModifyItem")
+                    ITEMS_PORT + "/ModifyItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -192,7 +192,7 @@ def ModifyItem():
 @expects_json(_required_attributes)
 def AddItem():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ":8099" + "/AddItem")
+                    ITEMS_PORT + "/AddItem")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -202,7 +202,7 @@ def AddItem():
 @expects_json(_category)
 def EditCategories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ":8099" + "/EditCategories")
+                    ITEMS_PORT + "/EditCategories")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
@@ -212,7 +212,7 @@ def EditCategories():
 @expects_json(_item)
 def ModifyAvailability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ":8099" + "/ModifyAvailability")
+                    ITEMS_PORT + "/ModifyAvailability")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
