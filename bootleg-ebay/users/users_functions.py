@@ -1,8 +1,12 @@
 from re import L
-from mysql.connector import connect, Error
-from typing import Dict, Any, Sequence, Optional
+import json
+from typing import Dict, Any, Sequence, Optional, Union
 
-from users import User, Admin
+from mysql.connector import connect, Error
+
+from users import User, Admin, BadInputError
+
+
 
 
 
@@ -135,9 +139,8 @@ def login(username, password) -> UserInfo:
     
     user = UserDBManager.get_user_by_username(username)
 
-
     if user.password != password:
-        raise ValueError('Wrong password!')
+        raise BadInputError('Wrong password!')
 
     return user.to_json()
     
@@ -150,6 +153,11 @@ def logout():
 def create_account(user_info: UserInfo) -> UserInfo:
     """Create an user account.
     """
+    # check if username already exists
+    user = UserDBManager.get_user_by_username(user_info['username'])
+    if user is not None:
+        raise BadInputError('Username already exists!')
+
     rows = [[user_info[c] for c in UserDBManager.db_cols]]
     UserDBManager.insert_many(rows)
 
@@ -193,6 +201,8 @@ def modify_profile(new_user_info: UserInfo):
 
 def delete_account(user_id: UserID) -> None:
     UserDBManager.delete_by_id(user_id)
+
+    return json.dumps({})
 
 
 # delete_account(user_id=11)

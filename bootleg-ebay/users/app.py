@@ -1,13 +1,33 @@
 import json
 import socket
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 
 
 import users_functions
+from users import APIError
 
 app = Flask(__name__)
 
+
+@app.errorhandler(500)
+def handle_exception(err):
+    """Return JSON instead of HTML for server error"""
+    # app.logger.error(f"Unknown Exception: {str(err)}")
+    # app.logger.debug(''.join(traceback.format_exception(etype=type(err), value=err, tb=err.__traceback__)))
+    response = {"error": str(err)}
+    return jsonify(response), 500
+
+@app.errorhandler(APIError)
+def handle_api_error(err):
+    """Return custom JSON when APIError"""
+    response = {"error": err.description, "message": ""}
+    if len(err.args) > 0:
+        response["message"] = err.args[0]
+        
+    # Add some logging so that we can monitor different types of errors 
+    # app.logger.error(f"{err.description}: {response["message"]}")
+    return jsonify(response), err.code
 
 @app.route('/')
 def base():

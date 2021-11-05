@@ -2,6 +2,15 @@ from abc import ABC, abstractmethod
 import json
 from typing import Any, Dict, Optional
 
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
+
 class User(ABC):
     """Abstract class for the user
 
@@ -26,7 +35,7 @@ class User(ABC):
         # self._logged_in = False
 
         if user_info['email'] is None:
-            raise ValueError('You must provide an email!')
+            raise BadInputError('You must provide an email!')
 
 
     @property
@@ -91,7 +100,7 @@ class User(ABC):
 
     def _assert_not_suspended(self, operation):
         if self._user_info['suspended']:
-            raise ValueError('You cannot perform {} because you are suspended'.format(operation))
+            raise BadInputError('You cannot perform {} because you are suspended'.format(operation))
 
     def _assert_logged_in(self, operation):
         if self._logged_in is False:

@@ -6,15 +6,17 @@ import copy
 from flask_expects_json import expects_json
 from flask import Response, request, Blueprint
 
-from utils import get_and_post
+from utils import get_and_post, get_and_request
 from config import *
+
 
 users_api = Blueprint('users', __name__)
 
+    
 _user_id_schema = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'int'},
+        'user_id': {'type': 'integer'},
     },
     'required': ['user_id']
 }
@@ -61,7 +63,12 @@ def view_user(user_id):
 @expects_json(_login_schema)
 def login():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
-    return get_and_post(socket_url)
+    r = get_and_request(socket_url, 'post')
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @users_api.route("/logout", methods = ['POST'])
 @expects_json(_none_schema)
@@ -72,21 +79,23 @@ def logout():
 @users_api.route("/create_account", methods = ['POST'])
 @expects_json(_user_info_schema)
 def create_account():
-    # CREATING ACCOUNT
-    data_content = request.get_json()
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/create_account")
-    data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    # create account for user
+
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/create_account"
+    r = get_and_request(socket_url, 'post')
     
+    # i.e. if there's an issue with the user side
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     new_user_info = r.content.decode('utf-8')
-    
     new_user_dict = json.loads(new_user_info)
-    new_user_id = new_user_dict["id"]
     
-    # CREATING CART
+    # create cart
     socket_url = ("http://" + CARTS_SERVICE_HOST + CARTS_PORT + "/create_cart")
-    data_content = new_user_info
-    requests.post(url = socket_url, json ={"user_id": new_user_id})
+    r = requests.post(url = socket_url, json ={"user_id": new_user_dict["id"]})
+    # if not r.ok:
+    #     return Response(response=r.text, status=r.status_code)
     
     return Response(response = new_user_info,
                     status = 200,
@@ -108,7 +117,7 @@ def modify_profile(user_id):
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
     return get_and_post(socket_url) 
 
-@users_api.route("/user/<user_id>", methods = ['DELETE'])
+@users_api.route("/delete_account", methods = ['DELETE'])
 @expects_json(_user_id_schema)
 def delete_account():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account")
