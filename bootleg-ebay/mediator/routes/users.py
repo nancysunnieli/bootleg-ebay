@@ -84,8 +84,7 @@ def create_account():
     new_user_id = new_user_dict["id"]
     
     # CREATING CART
-    socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/CreateCart")
+    socket_url = ("http://" + CARTS_SERVICE_HOST + CARTS_PORT + "/create_cart")
     data_content = new_user_info
     requests.post(url = socket_url, json ={"user_id": new_user_id})
     
