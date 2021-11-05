@@ -15,7 +15,7 @@ flagged_items_collection = db["flagged_items"]
 photos_collection = db["photos"]
 
 
-def ViewFlaggedItems(limit = None, collection = items_collection):
+def view_flagged_items(limit = None, collection = items_collection):
     """
     This returns all the flagged items
     """
@@ -27,7 +27,7 @@ def ViewFlaggedItems(limit = None, collection = items_collection):
     else:
         return json.dumps(results)
 
-def EditCategories(item_id, updated_categories, collection = items_collection):
+def edit_categories(item_id, updated_categories, collection = items_collection):
     query = { "_id" : item_id }
     new_categories = { "$set": { "category": updated_categories } }
     result = collection.update_one(query, new_categories)
@@ -37,7 +37,7 @@ def EditCategories(item_id, updated_categories, collection = items_collection):
     else:
         return "Change was not Successful. Please Try Again."
 
-def AddItem(name, description, category, photos, 
+def add_item(name, description, category, photos, 
                 sellerID, price,
                 collection = items_collection):
     """
@@ -62,7 +62,7 @@ def AddItem(name, description, category, photos,
 
 
 
-def ModifyItem(id, name = None, description = None,
+def modify_item(id, name = None, description = None,
                 category = None, photos = None, price = None,
                 collection = items_collection):
     """
@@ -109,7 +109,7 @@ def ModifyItem(id, name = None, description = None,
         string_to_return += ("Failure to change %s fields." % ", ".join(failure))
     return string_to_return
 
-def GetItem(id, collection = items_collection):
+def get_item(id, collection = items_collection):
     """
     given an item id, this function returns back the item
     """
@@ -130,7 +130,7 @@ def AddFlaggedItem(item_id, flag_reason, collection = flagged_items_collection):
         return "Flag Failure. Please Try Again."
 
 
-def ReportItem(id, flag_reason, item_collection = items_collection, 
+def report_item(id, flag_reason, item_collection = items_collection, 
                 flagged_item_collection = flagged_items_collection):
     """
     This flags an item, and gives the flag reason
@@ -148,7 +148,7 @@ def ReportItem(id, flag_reason, item_collection = items_collection,
     else:
         return "Item Report Failed. Please Try Again."
 
-def RemoveItem(id, item_collection = items_collection,
+def remove_item(id, item_collection = items_collection,
                 flagged_item_collection = flagged_items_collection):
     """
     This removes an item
@@ -166,7 +166,7 @@ def RemoveItem(id, item_collection = items_collection,
     else:
         return "Item Was Not Deleted! Please Try Again."
 
-def AddUserToWatchlist(id, user_id, collection = items_collection):
+def add_user_to_watch_list(id, user_id, collection = items_collection):
     """
     This adds a user to the watchlist
     """
@@ -221,28 +221,28 @@ if __name__ == '__main__':
     print(searchItem(["lemon"]))
     
     print("Add User To Watchlist Test: ")
-    print(AddUserToWatchlist("48c00e9a-f5e", "d35d484e-d66"))
+    print(add_user_to_watch_list("48c00e9a-f5e", "d35d484e-d66"))
 
     print("Remove Item From Items List Test: ")
-    print(RemoveItem("48c00e9a-f5e"))
+    print(remove_item("48c00e9a-f5e"))
 
     print("Report Item Test/ Add Flagged Item Test: ")
-    print(ReportItem("c7ed9ede-00e", "counterfeit"))
+    print(report_item("c7ed9ede-00e", "counterfeit"))
 
     print("Get Item Test: ")
-    print(GetItem("c7ed9ede-00e"))
+    print(get_item("c7ed9ede-00e"))
 
     print("Modify Item Test: ")
-    print(ModifyItem("c7ed9ede-00e", "lemon bars"))
+    print(modify_item("c7ed9ede-00e", "lemon bars"))
 
     print("Add Items: ")
-    print(AddItem("potato test",
+    print(add_item("potato test",
             "re you do by for and not almost of  I to  an dark but not ran",
             ["Jewelry", "Watches"], "0aa271bf-1b4", "492674a4-bbe",
             23.82))
 
     print("Edit Categories Test: ")
-    print(EditCategories("48c00e9a-f5e", ["potato"]))
+    print(edit_categories("48c00e9a-f5e", ["potato"]))
 
     print("View Flagged Items Test: ")
-    print(ViewFlaggedItems())
+    print(view_flagged_items())

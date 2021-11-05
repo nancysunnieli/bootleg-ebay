@@ -10,58 +10,58 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/ViewAllItems', methods = ['POST'])
-def ViewAllItems():
+@app.route('/view_all_items', methods = ['POST'])
+def view_all_items():
     data = request.get_json()
     if "limit" in data:
         limit = data["limit"]
     else:
         limit = None
-    return item_functions.ViewAllItems(limit)
+    return item_functions.view_all_items(limit)
 
-@app.route('/ViewFlaggedItems', methods=['POST'])
-def ViewFlaggedItems():
+@app.route('/view_flagged_items', methods=['POST'])
+def view_flagged_items():
     data = request.get_json()
     if "limit" in data:
         limit = data["limit"]
     else:
         limit = None
-    return item_functions.ViewFlaggedItems()
+    return item_functions.view_flagged_items()
 
-@app.route('/SearchItem', methods=['POST'])
-def SearchItem():
+@app.route('/search_item', methods=['POST'])
+def search_item():
     data = request.get_json()
     keywords = data["keywords"]
-    return item_functions.SearchItem(keywords)
+    return item_functions.search_item(keywords)
 
-@app.route('/AddUserToWatchlist', methods = ['POST'])
-def AddUserToWarchlist():
+@app.route('/add_user_to_watch_list', methods = ['POST'])
+def add_user_to_watch_list():
     data = request.get_json()
     id = data["item_id"]
     user_id = data["user_id"]
-    return item_functions.AddUserToWatchlist(id, user_id)
+    return item_functions.add_user_to_watch_list(id, user_id)
 
-@app.route('/RemoveItem', methods = ['POST'])
-def RemoveItem():
+@app.route('/remove_item', methods = ['POST'])
+def remove_item():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.RemoveItem(id)
+    return item_functions.remove_item(id)
 
-@app.route('/ReportItem', methods = ['POST'])
-def ReportItem():
+@app.route('/report_item', methods = ['POST'])
+def report_item():
     data = request.get_json()
     item = data["item_id"]
     reason = data["reason"]
-    return item_functions.ReportItem(item, reason)
+    return item_functions.report_item(item, reason)
 
-@app.route("/GetItem", methods = ['POST'])
-def GetItem():
+@app.route("/get_item", methods = ['POST'])
+def get_item():
     data = request.get_json()
     item = data["item_id"]
-    return item_functions.GetItem(item)
+    return item_functions.get_item(item)
 
-@app.route("/ModifyItem", methods = ['POST'])
-def ModifyItem():
+@app.route("/modify_item", methods = ['POST'])
+def modify_item():
     data = request.get_json()
     id = data["item_id"]
 
@@ -90,13 +90,13 @@ def ModifyItem():
     else:
         price = None
 
-    return item_functions.ModifyItem(id, name,
+    return item_functions.modify_item(id, name,
                                     description, 
                                     category, photos, 
                                     price)
 
-@app.route("/AddItem", methods = ['POST'])
-def AddItem():
+@app.route("/add_item", methods = ['POST'])
+def add_item():
     data = request.get_json()
     name = data["name"]
     description = data["description"]
@@ -105,21 +105,21 @@ def AddItem():
     sellerID = data["sellerID"]
     price = data["price"]
 
-    return item_functions.AddItem(name, description, category,
+    return item_functions.add_item(name, description, category,
                                 photos, sellerID, price)
 
-@app.route("/EditCategories", methods = ['POST'])
-def EditCategories():
+@app.route("/edit_categories", methods = ['POST'])
+def edit_categories():
     data = request.get_json()
     id = data["item_id"]
     category = data["category"]
-    return item_functions.EditCategories(id, category)
+    return item_functions.edit_categories(id, category)
 
-@app.route("/ModifyAvailability", methods = ['POST'])
-def ModifyAvailability():
+@app.route("/modify_availability", methods = ['POST'])
+def modify_availability():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.ModifyAvailability(id)
+    return item_functions.modify_availability(id)
 
 
 if __name__ == '__main__':

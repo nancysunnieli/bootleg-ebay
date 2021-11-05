@@ -98,121 +98,121 @@ _report = {
 
 @items_api.route('/', methods=['GET'])
 
-def ItemsServiceStatus():
+def items_service_status():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/")
     r = requests.get(url = socket_url)
     return r.content
 
 
-@items_api.route('/ViewAllItems', methods=['POST'])
+@items_api.route('/view_all_items', methods=['POST'])
 @expects_json(_view_items_schema)
-def ViewAllItems():
+def view_all_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/ViewAllItems")
+                    ITEMS_PORT + "/view_all_items")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@items_api.route('/ViewFlaggedItems', methods=['GET'])
+@items_api.route('/view_flagged_items', methods=['GET'])
 @expects_json(_view_items_schema)
-def ViewFlaggedItems():
+def view_flagged_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ITEMS_PORT + "/ViewFlaggedItems")
+                     ITEMS_PORT + "/view_flagged_items")
     r = requests.get(url = socket_url)
     return r.content
 
 
-@items_api.route('/SearchItem', methods=['POST'])
+@items_api.route('/search_item', methods=['POST'])
 @expects_json(_search_items)
-def SearchItem():
+def search_item():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
-                     ITEMS_PORT + "/SearchItem")
+                     ITEMS_PORT + "/search_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route('/AddUserToWatchlist', methods = ['POST'])
+@items_api.route('/add_user_to_watch_list', methods = ['POST'])
 @expects_json(_watchlist)
-def AddUserToWarchlist():
+def add_user_to_watch_list():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ITEMS_PORT + "/AddUserToWatchlist")
+                     ITEMS_PORT + "/add_user_to_watch_list")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
 
-@items_api.route('/RemoveItem', methods = ['POST'])
+@items_api.route('/remove_item', methods = ['POST'])
 @expects_json(_item)
-def RemoveItem():
+def remove_item():
     if routes.view_bids().length == 0:
         return """There are already bids on 
                 this item! It cannot be deleted"""
     
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ITEMS_PORT + "/RemoveItem")
+                     ITEMS_PORT + "/remove_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route('/ReportItem', methods = ['POST'])
+@items_api.route('/report_item', methods = ['POST'])
 @expects_json(_report)
-def ReportItem():
+def report_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
-                     ITEMS_PORT + "/ReportItem")
+                     ITEMS_PORT + "/report_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/GetItem", methods = ['POST'])
+@items_api.route("/get_item", methods = ['POST'])
 @expects_json(_item)
-def GetItem():
+def get_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                     ITEMS_PORT + "/GetItem")
+                     ITEMS_PORT + "/get_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/ModifyItem", methods = ['POST'])
+@items_api.route("/modify_item", methods = ['POST'])
 @expects_json(_unrequired_attributes)
-def ModifyItem():
+def modify_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/ModifyItem")
+                    ITEMS_PORT + "/modify_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/AddItem", methods = ['POST'])
+@items_api.route("/add_item", methods = ['POST'])
 @expects_json(_required_attributes)
-def AddItem():
+def add_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/AddItem")
+                    ITEMS_PORT + "/add_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/EditCategories", methods = ['POST'])
+@items_api.route("/edit_categories", methods = ['POST'])
 @expects_json(_category)
-def EditCategories():
+def edit_categories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/EditCategories")
+                    ITEMS_PORT + "/edit_categories")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/ModifyAvailability", methods = ['POST'])
+@items_api.route("/modify_availability", methods = ['POST'])
 @expects_json(_item)
-def ModifyAvailability():
+def modify_availability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/ModifyAvailability")
+                    ITEMS_PORT + "/modify_availability")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content

@@ -13,7 +13,7 @@ class ItemsManager:
         self.photos_collection = self.db["photos"]
 
 
-    def ViewFlaggedItems(self, limit = None, collection = items_collection):
+    def view_flagged_items(self, limit = None, collection = items_collection):
         """
         This returns all the flagged items
         """

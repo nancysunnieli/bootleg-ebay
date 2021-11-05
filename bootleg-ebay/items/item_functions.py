@@ -22,7 +22,7 @@ class ItemsDBManager:
         return items_collection, flagged_items_collection, photos_collection
     
     @classmethod
-    def ViewAllItems(cls, limit = None):
+    def view_all_items(cls, limit = None):
         """
         This returns back all available items
         in sorted order
@@ -36,7 +36,7 @@ class ItemsDBManager:
             return results
 
     @classmethod
-    def ViewFlaggedItems(cls, limit = None):
+    def view_flagged_items(cls, limit = None):
         """
         This returns all the flagged items
         """
@@ -59,7 +59,7 @@ class ItemsDBManager:
         return items
     
     @classmethod
-    def GetItem(cls, id):
+    def get_item(cls, id):
         """
         this gets an item from the items collection
         """
@@ -69,7 +69,7 @@ class ItemsDBManager:
         return results
 
     @classmethod
-    def EditCategories(cls, item_id, updated_categories):
+    def edit_categories(cls, item_id, updated_categories):
         """
         This edits the categories for an item
         """
@@ -83,7 +83,7 @@ class ItemsDBManager:
             return "Change was not Successful. Please Try Again."
     
     @classmethod
-    def AddItem(cls, name, description, category, photos, 
+    def add_item(cls, name, description, category, photos, 
                 sellerID, price):
         """
         This adds an item to the items collection
@@ -108,7 +108,7 @@ class ItemsDBManager:
             return "Item was not successfully inserted. Please Try Again."
 
     @classmethod
-    def ModifyItem(cls, id, name = None, description = None,
+    def modify_item(cls, id, name = None, description = None,
                 category = None, photos = None, price = None,
                 watchlist = None):
         """
@@ -211,7 +211,7 @@ class ItemsDBManager:
 
 
     @classmethod
-    def ReportItem(cls, id, flag_reason):
+    def report_item(cls, id, flag_reason):
         """
         This flags an item, and gives the flag reason
         """
@@ -230,7 +230,7 @@ class ItemsDBManager:
             return "Item Report Failed. Please Try Again."
 
     @classmethod
-    def RemoveItem(cls, id):
+    def remove_item(cls, id):
         """
         This removes an item
         """
@@ -248,7 +248,7 @@ class ItemsDBManager:
             return "Item Was Not Deleted! Please Try Again."
 
     @classmethod
-    def AddUserToWatchlist(cls, id, user_id):
+    def add_user_to_watch_list(cls, id, user_id):
         """
         This adds a user to the watchlist
         """
@@ -309,7 +309,7 @@ class ItemsDBManager:
         return result
 
 
-def ViewFlaggedItems(limit = None):
+def view_flagged_items(limit = None):
     """
     This function searches through all the items and returns
     the ones that are flagged
@@ -330,7 +330,7 @@ def ViewFlaggedItems(limit = None):
     return json.dumps(item_objects)
 
 
-def ViewAllItems(limit = None):
+def view_all_items(limit = None):
     """
     This returns back a list of all items
     """
@@ -350,7 +350,7 @@ def ViewAllItems(limit = None):
     return json.dumps(item_objects)
 
 
-def SearchItem(keywords):
+def search_item(keywords):
     """
     This function searches through all the items and returns
     the ones that match the search criteria
@@ -366,48 +366,48 @@ def SearchItem(keywords):
             item_objects.append(new_item.to_mongo())
     return json.dumps(item_objects)
 
-def AddUserToWatchlist(item_id, user_id):
+def add_user_to_watch_list(item_id, user_id):
     """
     This adds a user to the watchlist
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
+    item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.getFlagReasons(item_id)
     new_item = items.Item()
     new_item.from_mongo(item, flags)
     new_item.addUserToWatchlist(user_id)
-    return json.dumps(ItemsDBManager.ModifyItem(new_item.id, None, None, None, None,
+    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None, None,
                                     None, new_item.watchlist))
 
-def RemoveItem(item_id):
+def remove_item(item_id):
     """
     This removes an item from the database
     """
-    return json.dumps(ItemsDBManager.RemoveItem(item_id))
+    return json.dumps(ItemsDBManager.remove_item(item_id))
 
-def ReportItem(item_id, reason):
+def report_item(item_id, reason):
     """
     This reports an item
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
+    item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.getFlagReasons(item_id)
     new_item = items.Item()
     new_item.from_mongo(item, flags)
     new_item.report_item(reason)
-    return json.dumps(ItemsDBManager.ReportItem(new_item.id, reason))
+    return json.dumps(ItemsDBManager.report_item(new_item.id, reason))
 
-def GetItem(item_id):
+def get_item(item_id):
     """
     This gets an item from the database
     """
-    return json.dumps(ItemsDBManager.GetItem(item_id)[0])
+    return json.dumps(ItemsDBManager.get_item(item_id)[0])
 
-def ModifyItem(item_id, name = None, description = None,
+def modify_item(item_id, name = None, description = None,
                 category = None, photos = None, price = None,
                 watchlist = None):
     """
     This modifies the item
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
+    item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.getFlagReasons(item_id)
     new_item = items.Item()
     new_item.from_mongo(item, flags)
@@ -438,11 +438,11 @@ def ModifyItem(item_id, name = None, description = None,
     else:
         new_watchlist = None
     
-    return json.dumps(ItemsDBManager.ModifyItem(item_id, new_name, new_description,
+    return json.dumps(ItemsDBManager.modify_item(item_id, new_name, new_description,
                                         new_category, new_photos, new_price, 
                                         new_watchlist))
 
-def AddItem(name, description, category, 
+def add_item(name, description, category, 
                 photos, sellerID, price):
     """
     This adds the item
@@ -450,22 +450,22 @@ def AddItem(name, description, category,
     new_item = items.Item(name, description, category,
                             photos, sellerID, price, False,
                             None, None, True, None)
-    return json.dumps(ItemsDBManager.AddItem(new_item.name, new_item.description,
+    return json.dumps(ItemsDBManager.add_item(new_item.name, new_item.description,
                             new_item.category, new_item.photos,
                             new_item.sellerID, new_item.price))
 
-def EditCategories(item_id, new_categories):
-    item = ItemsDBManager.GetItem(item_id)[0]
+def edit_categories(item_id, new_categories):
+    item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.getFlagReasons(item_id)
     new_item = items.Item()
     new_item.from_mongo(item, flags)
 
     new_item.editCategories(new_categories)
-    return json.dumps(ItemsDBManager.ModifyItem(new_item.id, None, None, new_item.category,
+    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, new_item.category,
                                 None, None, None))
 
-def ModifyAvailability(item_id):
-    item = ItemsDBManager.GetItem(item_id)[0]
+def modify_availability(item_id):
+    item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.getFlagReasons(item_id)
     new_item = items.Item()
     new_item.from_mongo(item, flags)
@@ -479,35 +479,35 @@ def ModifyAvailability(item_id):
 if __name__ == '__main__':
     
     print("Search Item Test: ")
-    print(SearchItem(["caught"]))
+    print(search_item(["caught"]))
     
     print("Add User To Watchlist Test: ")
-    print(AddUserToWatchlist("7ed25c8c-89b", "d35d484e-d66"))
+    print(add_user_to_watch_list("7ed25c8c-89b", "d35d484e-d66"))
 
     print("Remove Item From Items List Test: ")
-    print(RemoveItem("4e889ad4-74b"))
+    print(remove_item("4e889ad4-74b"))
 
     print("Report Item Test/ Add Flagged Item Test: ")
-    print(ReportItem("e176a0d8-1a2", "counterfeit"))
+    print(report_item("e176a0d8-1a2", "counterfeit"))
 
     print("Get Item Test: ")
-    print(GetItem("0ff1cb38-5d1"))
+    print(get_item("0ff1cb38-5d1"))
 
     print("Modify Item Test: ")
-    print(ModifyItem("0ff1cb38-5d1", "lemon bars"))
+    print(modify_item("0ff1cb38-5d1", "lemon bars"))
 
     print("Add Items: ")
-    print(AddItem("potato test",
+    print(add_item("potato test",
             "re you do by for and not almost of  I to  an dark but not ran",
             ["Jewelry", "Watches"], "0aa271bf-1b4", "492674a4-bbe",
             23.82))
 
     print("Edit Categories Test: ")
-    print(EditCategories("0ff1cb38-5d1", ["potato"]))
+    print(edit_categories("0ff1cb38-5d1", ["potato"]))
 
     print("View Flagged Items Test: ")
-    print(ViewFlaggedItems())
+    print(view_flagged_items())
 
     print("Modify Availability Test: ")
-    print(ModifyAvailability("0ff1cb38-5d1"))
+    print(modify_availability("0ff1cb38-5d1"))
     
