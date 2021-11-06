@@ -17,6 +17,13 @@ We can put the tests within each microservice directory.
 Run something like:
 
 ```
-cd users/
+cd tests/
+
+# to run all tests
 python -m unittest discover -v
+
+# to run one file
+python -m unittest test_user
+
+
 ```
