@@ -11,9 +11,12 @@
 * https://www.ibm.com/docs/ru/qradar-common?topic=overview-api-error-messages
 * https://www.w3schools.com/python/ref_requests_response.asp
 * https://medium.com/datasparq-technology/flask-api-exception-handling-with-custom-http-response-codes-c51a82a51a0f
+* https://metamug.com/article/rest-api-naming-best-practices.html
 
 # Commands
 
+
+* To rebuild: `docker-compose up --build`
 `docker-compose up -d users-db -d users-api`
 `docker-compose up -d payments-db -d payments-api`
 `docker-compose up -d auctions-db -d auctions-api `
