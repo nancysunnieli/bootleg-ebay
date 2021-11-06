@@ -164,7 +164,7 @@ def create_account(user_info: UserInfo) -> UserInfo:
     user = UserDBManager.get_user_by_username(user_info['username'])
     return user.to_json()
 
-def suspend_account(user_id: UserID):
+def suspend(user_id: UserID):
     """Suspend an user account.
     """
     user = UserDBManager.get_user(user_id)
@@ -172,7 +172,7 @@ def suspend_account(user_id: UserID):
     if user is None:
         raise BadInputError('Cannot find user id {} in database'.format(user_id))
 
-    user.suspend_account()
+    user.suspend()
 
     user_dict = user.to_dict()
     UserDBManager.update_by_id(user_dict)

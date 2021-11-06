@@ -9,7 +9,7 @@ export const getUserInfo = (user_id) => {
 };
 
 export const suspendAccount = (user_id) => {
-    return axios.post(API_URL + "/Users/suspend_account", { user_id });
+    return axios.post(API_URL + "/Users/suspend", { user_id });
 };
 
 export const modifyProfile = (user_id, fields) => {

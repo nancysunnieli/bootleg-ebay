@@ -53,40 +53,40 @@ _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
 
-@users_api.route("/view_user", methods = ['POST'])
+@users_api.route("/user", methods = ['GET'])
 @expects_json(_user_id_schema)
 def view_user():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
 
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'get')
 
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
-@users_api.route("/login", methods = ['POST'])
+@users_api.route("/login", methods = ['GET'])
 @expects_json(_login_schema)
 def login():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'get')
 
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
-@users_api.route("/logout", methods = ['POST'])
+@users_api.route("/logout", methods = ['GET'])
 @expects_json(_none_schema)
 def logout():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'get')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
-@users_api.route("/create_account", methods = ['POST'])
+@users_api.route("/user", methods = ['POST'])
 @expects_json(_user_info_schema)
 def create_account():
     # create account for user
@@ -111,33 +111,33 @@ def create_account():
                     status = 200,
                     mimetype = 'application/json')
 
-@users_api.route("/suspend_account", methods = ['POST'])
+@users_api.route("/suspend", methods = ['PUT'])
 @expects_json(_user_id_schema)
-def suspend_account():
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account"
+def suspend():
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend"
 
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'put')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
 
-@users_api.route("/modify_profile", methods = ['PUT'])
+@users_api.route("/user", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)
 def modify_profile():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'put')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
-@users_api.route("/delete_account", methods = ['DELETE'])
+@users_api.route("/user", methods = ['DELETE'])
 @expects_json(_user_id_schema)
 def delete_account():
     socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account"
-    r = get_and_request(socket_url, 'post')
+    r = get_and_request(socket_url, 'delete')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 

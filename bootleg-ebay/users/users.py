@@ -131,7 +131,7 @@ class User(ABC):
         """
         self._logged_in = False
 
-    def suspend_account(self) -> None:
+    def suspend(self) -> None:
         """Suspend own account
         """
 

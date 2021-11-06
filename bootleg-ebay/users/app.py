@@ -35,20 +35,20 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/view_user', methods=['POST'])
+@app.route('/view_user', methods=['GET'])
 def view_user():
     data = request.get_json()
     user_id = data["user_id"]
     return users_functions.view_user(user_id)
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET'])
 def login():
     data = request.get_json()
     username = data["username"]
     password = data['password']
     return users_functions.login(username, password)
 
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
     return users_functions.logout()
 
@@ -57,18 +57,18 @@ def create_account():
     data = request.get_json()
     return users_functions.create_account(data)
 
-@app.route('/suspend_account', methods=['POST'])
-def suspend_account():
+@app.route('/suspend', methods=['PUT'])
+def suspend():
     data = request.get_json()
     user_id = data["user_id"]
-    return users_functions.suspend_account(user_id)
+    return users_functions.suspend(user_id)
 
-@app.route('/modify_profile', methods=['POST'])
+@app.route('/modify_profile', methods=['PUT'])
 def modify_profile():
     data = request.get_json()
     return users_functions.modify_profile(data)
 
-@app.route('/delete_account', methods=['POST'])
+@app.route('/delete_account', methods=['DELETE'])
 def delete_account():
     data = request.get_json()
     user_id = data["user_id"]

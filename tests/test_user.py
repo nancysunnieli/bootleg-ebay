@@ -11,14 +11,14 @@ class TestUser(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, USERS_NAME)
 
     # comment / uncomment this decorator to skip test
-    @unittest.skip("Skipped because it runs correctly")
+    # @unittest.skip("Skipped because it runs correctly")
     def test_account(self):
 
         user_name = id_generator()
         password = "123"
 
         # create account successfully
-        url = self.base_url + "create_account"
+        url = self.base_url + "user"
         user_info_params = {
             "username": user_name,
             "email": "jinli7255@gmail.com",
@@ -45,7 +45,7 @@ class TestUser(TestCase):
             "password": "WRONG_PASSWORD"
         }
 
-        output = requests.post(url=url, json=params)
+        output = requests.get(url=url, json=params)
 
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
@@ -57,32 +57,32 @@ class TestUser(TestCase):
             "password": password
         }
 
-        output = requests.post(url=url, json=params)
+        output = requests.get(url=url, json=params)
         self.assertTrue(output.ok)
 
         # logout
         url = self.base_url + "logout"
-        output2 = requests.post(url=url, json={})
+        output2 = requests.get(url=url, json={})
         self.assertTrue(output2.ok)
 
         # view user 
-        url = self.base_url + "view_user"
-        output = requests.post(url=url, json={'user_id': id_})
+        url = self.base_url + "user"
+        output = requests.get(url=url, json={'user_id': id_})
         output_json = output.json()
         self.assertEqual(output_json['username'], user_name)
         self.assertEqual(output_json['password'], password)
         self.assertTrue(output.ok)
 
         # suspend the account
-        url = self.base_url + "suspend_account"
-        output = requests.post(url=url, json={'user_id': id_})
+        url = self.base_url + "suspend"
+        output = requests.put(url=url, json={'user_id': id_})
         output_json = output.json()
         self.assertEqual(output_json["suspended"], True)
         self.assertTrue(output.ok)
 
         # delete account
         # make sure to delete anything you create for testing
-        url = self.base_url + 'delete_account'
+        url = self.base_url + 'user'
         params = {
             "user_id": id_,
         }
@@ -90,13 +90,14 @@ class TestUser(TestCase):
 
         self.assertTrue(output.ok)
         
+    # @unittest.skip("Skipped because it runs correctly")
     def test_modify(self):
 
         user_name = id_generator()
         password = "123"
 
         # create account successfully
-        url = self.base_url + "create_account"
+        url = self.base_url + "user"
         user_info_params = {
             "username": user_name,
             "email": "jinli7255@gmail.com",
@@ -115,7 +116,7 @@ class TestUser(TestCase):
         new_email = "email"
 
         # modify account
-        url = self.base_url + "modify_profile"
+        url = self.base_url + "user"
         output = requests.put(
             url=url, 
             json={
@@ -146,7 +147,7 @@ class TestUser(TestCase):
 
 
         # delete the account
-        url = self.base_url + 'delete_account'
+        url = self.base_url + 'user'
         params = {
             "user_id": id_,
         }
