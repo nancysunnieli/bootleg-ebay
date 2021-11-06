@@ -158,17 +158,17 @@ services:
     volumes:
       - ./data/carts-db:/data/db
 
-  carts-db-mongo-express:
-    image: mongo-express
-    depends_on:
-      - carts-db
-    restart: always
-    ports:
-      - 8084:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
+  # carts-db-mongo-express:
+  #   image: mongo-express
+  #   depends_on:
+  #     - carts-db
+  #   restart: always
+  #   ports:
+  #     - 8084:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
 
   auctions-db:
     image: mongo:latest
