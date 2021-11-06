@@ -139,14 +139,10 @@ class User(ABC):
 
     def modify_profile(
         self, 
-        username: Optional[str] = None, 
-        password: Optional[str] = None, 
         user_info: Optional[Dict[str, Any]] = None) -> None:
         """Update the profile information
 
         Args:
-            username: Updated username
-            password: Updated password
             user_info: Updated user information
         """
 
@@ -154,12 +150,25 @@ class User(ABC):
         self._assert_not_suspended(operation=operation)
         # self._assert_logged_in(operation=operation)
     
-
-        if username is not None:
+        if 'username' in user_info:
+            username = user_info['username']
+            del user_info['username']
             self._username = username
+        else:
+            username = None
 
-        if password is not None:
+        if 'password' in user_info:
+            password = user_info['password']
+            del user_info['password']
             self._password = password
+        else:
+            password = None
+
+        if 'is_admin' in user_info:
+            raise BadInputError('You cannot modify admin priviledges!')
+
+        if 'suspended' in user_info and user_info['suspended'] is False:
+            raise BadInputError('You cannot unsuspend your own account!')
 
         if user_info is not None:
             for k in user_info.keys():

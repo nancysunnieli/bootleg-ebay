@@ -187,24 +187,32 @@ def modify_profile(new_user_info: UserInfo):
         new_user_info: New user information to be updated
     """
 
-    user_info = {}
+    if 'username' in new_user_info:
+        username = new_user_info['username']
+        user = UserDBManager.get_user_by_username(username)
 
-    if 'email' in new_user_info:
-        user_info['email'] = new_user_info['email']
+        if user is not None:
+            raise BadInputError('Username already exists: {}'.format(username))
 
-    if 'suspended' in new_user_info:
-        user_info['suspended'] = new_user_info['suspended']
+    
+    user_id = new_user_info['user_id']
+    del new_user_info['user_id']
+    
+    user = UserDBManager.get_user(user_id)
 
-    user = UserDBManager.get_user(new_user_info['id'])
+    if user is None:
+        raise BadInputError('Cannot find user id {} in database'.format(user_id))
+        
     user.modify_profile(
-        username=new_user_info['username'], 
-        password=new_user_info['password'],
-        user_info=user_info
+        user_info=new_user_info
     )
 
     user_dict = user.to_dict()
 
     UserDBManager.update_by_id(user_dict)
+
+    user = UserDBManager.get_user(user_dict['id'])
+    return user.to_json()
 
 def delete_account(user_id: UserID) -> None:
     UserDBManager.delete_by_id(user_id)

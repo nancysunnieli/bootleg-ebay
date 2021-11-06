@@ -123,14 +123,15 @@ def suspend_account():
     return r.content
 
 
-@users_api.route("/user/<user_id>", methods = ['PUT'])
+@users_api.route("/modify_profile", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)
-def modify_profile(user_id):
-    dict = request.get_json()
-    # TODO
-    
+def modify_profile():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
-    return get_and_post(socket_url) 
+    r = get_and_request(socket_url, 'post')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @users_api.route("/delete_account", methods = ['DELETE'])
 @expects_json(_user_id_schema)
