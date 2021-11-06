@@ -111,11 +111,16 @@ def create_account():
                     status = 200,
                     mimetype = 'application/json')
 
-@users_api.route("/user/<user_id>", methods = ['POST'])
+@users_api.route("/suspend_account", methods = ['POST'])
 @expects_json(_user_id_schema)
 def suspend_account():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account")
-    return get_and_post(socket_url)
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend_account"
+
+    r = get_and_request(socket_url, 'post')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 
 @users_api.route("/user/<user_id>", methods = ['PUT'])
@@ -130,5 +135,9 @@ def modify_profile(user_id):
 @users_api.route("/delete_account", methods = ['DELETE'])
 @expects_json(_user_id_schema)
 def delete_account():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account")
-    return get_and_post(socket_url)
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account"
+    r = get_and_request(socket_url, 'post')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content

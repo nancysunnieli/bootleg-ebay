@@ -51,8 +51,8 @@ class UserDBManager:
         set_cmd = ["{} = %s".format(c) for c in cls.db_cols]
         set_cmd = ", ".join(set_cmd)
         cmd = "UPDATE {} SET {} WHERE id = %s".format(cls.db_name, set_cmd)
+        val = [user_info[c] for c in cls.db_cols] + [user_info['id']]
 
-        val = [user_info[c] for c in cls.db_cols]
         with cls._create_connection() as c:
             with c.cursor() as cursor:
                 cursor.execute(cmd, val)
@@ -168,10 +168,17 @@ def suspend_account(user_id: UserID):
     """Suspend an user account.
     """
     user = UserDBManager.get_user(user_id)
+
+    if user is None:
+        raise BadInputError('Cannot find user id {} in database'.format(user_id))
+
     user.suspend_account()
 
     user_dict = user.to_dict()
     UserDBManager.update_by_id(user_dict)
+
+    user = UserDBManager.get_user(user_id)
+    return user.to_json()
 
 def modify_profile(new_user_info: UserInfo):
     """Modify the 

@@ -24,7 +24,7 @@ class User(ABC):
         self._user_id = user_id
         self._username = username
         self._password = password
-        self._user_info = {'email': None, 'suspended': False}
+        self._user_info = {'email': None, 'suspended': False, 'is_admin': False}
 
         for k in user_info.keys():
             if k not in self._user_info:
@@ -66,6 +66,7 @@ class User(ABC):
 
         user_info = {
             'email': dict_['email'],
+            'is_admin': dict_['is_admin'],
             'suspended': dict_['suspended']
         }
 
@@ -87,6 +88,7 @@ class User(ABC):
             'username': self.username,
             'password': self.password,
             'email': self.user_info['email'],
+            'is_admin': self.user_info['is_admin'],
             'suspended': self.user_info['suspended']
         }
 

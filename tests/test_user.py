@@ -14,7 +14,7 @@ class TestUser(TestCase):
     # @unittest.skip("Skipped because it runs correctly")
     def test_account(self):
 
-        user_name = "jin910"
+        user_name = "jin912"
         password = "123"
 
         # create account successfully
@@ -68,10 +68,16 @@ class TestUser(TestCase):
         # view user 
         url = self.base_url + "view_user"
         output = requests.post(url=url, json={'user_id': id_})
-        # import pdb; pdb.set_trace()
         output_json = output.json()
         self.assertEqual(output_json['username'], user_name)
         self.assertEqual(output_json['password'], password)
+        self.assertTrue(output.ok)
+
+        # suspend the account
+        url = self.base_url + "suspend_account"
+        output = requests.post(url=url, json={'user_id': id_})
+        output_json = output.json()
+        self.assertEqual(output_json["suspended"], True)
         self.assertTrue(output.ok)
 
         # delete account
