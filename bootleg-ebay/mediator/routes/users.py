@@ -53,11 +53,17 @@ _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
 
-@users_api.route("/user/<user_id>", methods = ['POST'])
+@users_api.route("/view_user", methods = ['POST'])
 @expects_json(_user_id_schema)
-def view_user(user_id):
+def view_user():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
-    return get_and_post(socket_url)
+
+    r = get_and_request(socket_url, 'post')
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @users_api.route("/login", methods = ['POST'])
 @expects_json(_login_schema)
@@ -74,7 +80,11 @@ def login():
 @expects_json(_none_schema)
 def logout():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
-    return get_and_post(socket_url)
+    r = get_and_request(socket_url, 'post')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @users_api.route("/create_account", methods = ['POST'])
 @expects_json(_user_info_schema)

@@ -125,7 +125,7 @@ class UserDBManager:
 def view_user(user_id: UserID):
     user = UserDBManager.get_user(user_id)
     if user is None:
-        return {}.to_json()
+        raise BadInputError('Cannot find user id {} in database'.format(user_id))
 
     return user.to_json()
     
@@ -148,7 +148,7 @@ def login(username, password) -> UserInfo:
 def logout():
     """Log out from the account
     """
-    return True
+    return json.dumps({})
 
 def create_account(user_info: UserInfo) -> UserInfo:
     """Create an user account.

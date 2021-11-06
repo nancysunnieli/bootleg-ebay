@@ -12,14 +12,14 @@ class TestUser(TestCase):
 
     # comment / uncomment this decorator to skip test
     # @unittest.skip("Skipped because it runs correctly")
-    def test_create_account(self):
+    def test_account(self):
 
-        user_name = "jin903"
+        user_name = "jin910"
         password = "123"
 
         # create account successfully
         url = self.base_url + "create_account"
-        params = {
+        user_info_params = {
             "username": user_name,
             "email": "jinli7255@gmail.com",
             "password": password,
@@ -27,11 +27,12 @@ class TestUser(TestCase):
             "suspended": False
         }
 
-        output = requests.post(url=url, json=params)
+        output = requests.post(url=url, json=user_info_params)
         self.assertTrue(output.ok)
+        id_ = output.json()['id']
 
         # check that creating account with an existing username fails
-        output = requests.post(url=url, json=params)
+        output = requests.post(url=url, json=user_info_params)
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
         
@@ -45,7 +46,7 @@ class TestUser(TestCase):
         }
 
         output = requests.post(url=url, json=params)
-        # import pdb; pdb.set_trace()
+
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
 
@@ -59,12 +60,25 @@ class TestUser(TestCase):
         output = requests.post(url=url, json=params)
         self.assertTrue(output.ok)
 
+        # logout
+        url = self.base_url + "logout"
+        output2 = requests.post(url=url, json={})
+        self.assertTrue(output2.ok)
+
+        # view user 
+        url = self.base_url + "view_user"
+        output = requests.post(url=url, json={'user_id': id_})
+        # import pdb; pdb.set_trace()
+        output_json = output.json()
+        self.assertEqual(output_json['username'], user_name)
+        self.assertEqual(output_json['password'], password)
+        self.assertTrue(output.ok)
 
         # delete account
         # make sure to delete anything you create for testing
         url = self.base_url + 'delete_account'
         params = {
-            "user_id": output.json()['id'],
+            "user_id": id_,
         }
         output = requests.delete(url=url, json=params)
 
