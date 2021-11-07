@@ -84,13 +84,13 @@ class Item(object):
     def available(self):
         return self._availability
     
-    def from_mongo(self, item, flagged_info):
+    def from_mongo(self, item, flagged_info, photo):
         if item == []:
             return
         self._name = item["name"]
         self._description = item["description"]
         self._category = item["category"]
-        self._photos = item["photos"]
+        self._photos = photo
         self._sellerID = item["sellerID"]
         self._price = item["price"]
         self._isFlagged = item["price"]
@@ -108,7 +108,7 @@ class Item(object):
                 "sellerID": self.price, "isFlagged": self.isFlagged,
                 "watchlist": self.watchlist, "available": self.available}
 
-    def modifyItem(self,
+    def modify_item(self,
                     new_name = None,
                     new_description = None,
                     new_photos = None,
@@ -137,7 +137,7 @@ class Item(object):
         if available:
             self.available = available
     
-    def editCategories(self, new_categories):
+    def edit_categories(self, new_categories):
         self._category = new_categories
     
     def report_item(self, new_flag_reason):
@@ -145,13 +145,13 @@ class Item(object):
             self._isFlagged = True
         self._FlaggedReason.append(new_flag_reason)
 
-    def editAvailability(self):
+    def edit_availability(self):
         if self.availability == False:
             return "Item was already not available."
         self.availability = False
         return "Successfully Put Lock On Item."
     
-    def addUserToWatchlist(self, user):
+    def add_user_to_watchlist(self, user):
         self._watchlist.append(user)
 
     def matches_search(self, keywords):
@@ -167,7 +167,7 @@ class Item(object):
         return matches
 
 
-def Create_Item(name, description, category, photos, 
+def create_item(name, description, category, photos, 
                 sellerID, price, isFlagged, FlaggedReasons, 
                 Watchlist, Available,
                 Id):
