@@ -1,13 +1,29 @@
 import json
 import socket
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 
 
 import auctions_functions
+from auction import APIError
 
 app = Flask(__name__)
 socket_name = socket.gethostbyname(socket.gethostname())
+
+@app.errorhandler(500)
+def handle_exception(err):
+    """Return JSON instead of HTML for server error"""
+    response = {"error": str(err)}
+    return jsonify(response), 500
+
+@app.errorhandler(APIError)
+def handle_api_error(err):
+    """Return custom JSON when APIError"""
+    response = {"error": err.description, "message": ""}
+    if len(err.args) > 0:
+        response["message"] = err.args[0]
+        
+    return jsonify(response), err.code
 
 @app.route('/')
 def base():

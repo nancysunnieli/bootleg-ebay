@@ -2,18 +2,13 @@ import os
 import uuid
 import datetime
 from typing import Sequence
-
-import pymongo
-from pymongo import MongoClient
-
-from auction import Auction, Bid, current_time
 import json
 
-"""
-I have changed the data in the mongodb database for auctions,
-and the code runs on that data.
-- Nancy
-"""
+import pymongo
+
+from auction import Auction, Bid, current_time, BadInputError
+
+
 class AuctionDBManager:
 
     @classmethod
@@ -88,9 +83,11 @@ def create_auction(auction_info):
     auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
     
     if len(AuctionDBManager.query_collection({"_id": auction_id})) > 0:
-        return "SUCCESSFULLY CREATED AUCTION!"
+        auction = AuctionDBManager.get_auction(auction_id)
+        auction_json = auction.to_json()
+        return auction_json
     else:
-        return "UNABLE TO CREATE AUCTION. PLEASE TRY AGAIN"
+        raise BadInputError('We could not create an auction.')
 
 
 def view_current_auctions() -> Sequence:

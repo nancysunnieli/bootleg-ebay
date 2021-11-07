@@ -1,7 +1,8 @@
 from typing import Any, Dict, Optional, Sequence
 import datetime
+import json
 
-AuctionID = int
+AuctionID = str
 BidID = Optional[int]
 UserID = int
 Price = float
@@ -11,6 +12,15 @@ MongoDBData = Dict[str, Any]
 
 def current_time():
     return float(datetime.datetime.now().timestamp())
+
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
 
 class Bid:
     """Represents the bid made by a particular user
@@ -68,7 +78,7 @@ class Bid:
             bid (Bid)
         """
         bid = cls(
-            bid_id=mongodb_data['bid_id'],
+            bid_id=str(mongodb_data['bid_id']),
             price=mongodb_data['price'],
             buyer_id=mongodb_data['buyer_id'],
             bid_time=mongodb_data['bid_time'])
@@ -122,7 +132,6 @@ class Auction:
 
         for k in auction_info.keys():
             if k not in self._auction_info:
-                print(k)
                 raise ValueError('You cannot have key:' + k + ' for `auction_info`')
 
         self._auction_info.update(auction_info)
@@ -139,9 +148,14 @@ class Auction:
             auction (Auction)
         """
 
-        bids = [Bid.from_mongodb_fmt(bid) for bid in mongodb_data['bids']]
-        auction_id = mongodb_data['_id']
-        del mongodb_data['bids']
+        if 'bids' in mongodb_data:
+            bids = [Bid.from_mongodb_fmt(bid) for bid in mongodb_data['bids']]
+            del mongodb_data['bids']
+        else:
+            bids = []
+
+        auction_id = str(mongodb_data['_id'])
+        
         del mongodb_data['_id']
         
         auction = cls(auction_id=auction_id, bids=bids, auction_info=mongodb_data)
@@ -155,6 +169,10 @@ class Auction:
         mongodb_dict['bids'] = [b.to_mongodb_fmt() for b in self.bids]
 
         return mongodb_dict
+
+    def to_json(self):
+        dict_ = self.to_mongodb_fmt()
+        return json.dumps(dict_)
 
     @property
     def auction_id(self):

@@ -15,8 +15,8 @@ from config import *
 _create = {
     'type': 'object',
     'properties': {
-        'start_time': {'type': 'int'},
-        'end_time': {'type': 'int'},
+        'start_time': {'type': 'number'},
+        'end_time': {'type': 'number'},
         'item_id': {'type': 'string'},
         'seller_id': {'type': 'string'},
         'bids': {'type': 'array'}
