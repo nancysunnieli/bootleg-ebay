@@ -53,10 +53,10 @@ _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
 
-@users_api.route("/user", methods = ['GET'])
-@expects_json(_user_id_schema)
-def view_user():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/view_user")
+@users_api.route("/user/<user_id>", methods = ['GET'])
+@expects_json(_none_schema)
+def view_user(user_id):
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id)
 
     r = get_and_request(socket_url, 'get')
 
@@ -91,7 +91,7 @@ def logout():
 def create_account():
     # create account for user
 
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/create_account"
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user"
     r = get_and_request(socket_url, 'post')
     
     # i.e. if there's an issue with the user side
@@ -123,20 +123,20 @@ def suspend():
     return r.content
 
 
-@users_api.route("/user", methods = ['PUT'])
+@users_api.route("/user/<user_id>", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)
-def modify_profile():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/modify_profile")
+def modify_profile(user_id):
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id))
     r = get_and_request(socket_url, 'put')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content
 
-@users_api.route("/user", methods = ['DELETE'])
-@expects_json(_user_id_schema)
-def delete_account():
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/delete_account"
+@users_api.route("/user/<user_id>", methods = ['DELETE'])
+@expects_json(_none_schema)
+def delete_account(user_id):
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id)
     r = get_and_request(socket_url, 'delete')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)

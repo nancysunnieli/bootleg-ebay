@@ -66,8 +66,8 @@ class TestUser(TestCase):
         self.assertTrue(output2.ok)
 
         # view user 
-        url = self.base_url + "user"
-        output = requests.get(url=url, json={'user_id': id_})
+        url = self.base_url + "user/{}".format(id_)
+        output = requests.get(url=url, json={})
         output_json = output.json()
         self.assertEqual(output_json['username'], user_name)
         self.assertEqual(output_json['password'], password)
@@ -82,11 +82,8 @@ class TestUser(TestCase):
 
         # delete account
         # make sure to delete anything you create for testing
-        url = self.base_url + 'user'
-        params = {
-            "user_id": id_,
-        }
-        output = requests.delete(url=url, json=params)
+        url = self.base_url + 'user/{}'.format(id_)
+        output = requests.delete(url=url, json={})
 
         self.assertTrue(output.ok)
         
@@ -116,11 +113,10 @@ class TestUser(TestCase):
         new_email = "email"
 
         # modify account
-        url = self.base_url + "user"
+        url = self.base_url + "user/{}".format(id_)
         output = requests.put(
             url=url, 
             json={
-                'user_id': id_,
                 'username': new_user_name,
                 "password": new_password,
                 'email': new_email
@@ -138,7 +134,6 @@ class TestUser(TestCase):
         output = requests.put(
             url=url, 
             json={
-                'user_id': id_,
                 'is_admin': True
                 }
         )
@@ -147,11 +142,8 @@ class TestUser(TestCase):
 
 
         # delete the account
-        url = self.base_url + 'user'
-        params = {
-            "user_id": id_,
-        }
-        output = requests.delete(url=url, json=params)
+        url = self.base_url + 'user/{}'.format(id_)
+        output = requests.delete(url=url, json={})
 
         self.assertTrue(output.ok)
 
