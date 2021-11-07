@@ -9,3 +9,13 @@ CREATE TABLE `payments` (
   `expiration_date` DATE NOT NULL,
   PRIMARY KEY (`payment_id`)
 );
+
+
+
+CREATE TABLE `transactions` (
+  `transaction_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL,
+  `payment_id` BIGINT unsigned NOT NULL,
+  `money` float NOT NULL,
+  PRIMARY KEY (`transaction_id`)
+);
