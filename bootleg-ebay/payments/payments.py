@@ -52,7 +52,7 @@ class PaymentCard:
     def to_dict(self):
         dict_ = copy.deepcopy(self.card_info)
         dict_['payment_id'] = self.payment_id
-        dict_['expiration_date'] = dict_['expiration_date'].strftime("%Y-%m-%d")
+        dict_['expiration_date'] = dict_['expiration_date'].strftime("%-Y-%-m-%-d")
         return dict_
 
     def to_json(self):
