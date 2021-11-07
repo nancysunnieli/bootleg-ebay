@@ -5,6 +5,15 @@ import json
 CardInfo = Dict[str, Any]
 PaymentID = int
 
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
+    
 class PaymentCard:
     """Class for containing information regarding the payment card
     """
@@ -35,15 +44,15 @@ class PaymentCard:
 
     @classmethod
     def from_dict(cls, dict_):
-        payment_id = dict_['id']
-        del dict_['id']
+        payment_id = dict_['payment_id']
+        del dict_['payment_id']
         payment_card = cls(payment_id, card_info=dict_)
         return payment_card
 
     def to_dict(self):
         dict_ = copy.deepcopy(self.card_info)
-        dict_['id'] = self.payment_id
-
+        dict_['payment_id'] = self.payment_id
+        dict_['expiration_date'] = dict_['expiration_date'].strftime("%Y-%m-%d")
         return dict_
 
     def to_json(self):

@@ -1,13 +1,29 @@
 import json
 import socket
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 
 
 import payments_functions
+from payments import APIError
 
 app = Flask(__name__)
 
+
+@app.errorhandler(500)
+def handle_exception(err):
+    """Return JSON instead of HTML for server error"""
+    response = {"error": str(err)}
+    return jsonify(response), 500
+
+@app.errorhandler(APIError)
+def handle_api_error(err):
+    """Return custom JSON when APIError"""
+    response = {"error": err.description, "message": ""}
+    if len(err.args) > 0:
+        response["message"] = err.args[0]
+        
+    return jsonify(response), err.code
 
 @app.route('/')
 def base():
@@ -15,21 +31,21 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/create_payment_card', methods=['POST'])
+@app.route('/card', methods=['POST'])
 def create_payment_card():
     data = request.get_json()
     return payments_functions.create_payment_card(data)
 
 
-@app.route('/get_payment_card', methods=['GET'])
-def get_payment_card():
-    data = request.get_json()
-    return payments_functions.get_payment_card(data['payment_id'])
+@app.route('/card/<payment_id>', methods=['GET'])
+def get_payment_card(payment_id):
+    # data = request.get_json()
+    return payments_functions.get_payment_card(payment_id)
 
-@app.route('/delete_account', methods=['POST'])
-def delete_account():
-    data = request.get_json()
-    return payments_functions.delete_account(data['payment_id'])
+@app.route('/card/<payment_id>', methods=['DELETE'])
+def delete_account(payment_id):
+    # data = request.get_json()
+    return payments_functions.delete_account(payment_id)
 
 
 
