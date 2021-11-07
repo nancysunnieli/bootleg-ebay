@@ -50,7 +50,7 @@ class ItemsDBManager:
             return results
     
     @classmethod
-    def GetAllItems(cls):
+    def get_all_items(cls):
         """
         This gets all the items from the items collection
         """
@@ -162,7 +162,7 @@ class ItemsDBManager:
         return string_to_return
 
     @classmethod
-    def ConvertToItemObjects(cls, items):
+    def convert_to_item_objects(cls, items):
         """
         This gets all the documents from the items database,
         and uploads them into objects of the items class
@@ -195,7 +195,7 @@ class ItemsDBManager:
 
 
     @classmethod
-    def AddFlaggedItem(cls, item_id, flag_reason):
+    def add_flagged_item(cls, item_id, flag_reason):
         """
         This adds a new flag to the database
         """
@@ -267,7 +267,7 @@ class ItemsDBManager:
             return "Addition Failed. Please try again."
 
     @classmethod
-    def searchItem(cls, keywords):
+    def search_item(cls, keywords):
         """
         This searches the items in the database
         
@@ -284,7 +284,7 @@ class ItemsDBManager:
         return results
 
     @classmethod
-    def modifyAvailability(cls, item_id):
+    def modify_availability(cls, item_id):
         """
         This adjusts the availability of the item. If
         the availability was successfully changed, it indicates it.
@@ -299,7 +299,7 @@ class ItemsDBManager:
             return "Was unable to adjust availability. Item is no longer available."
 
     @classmethod
-    def getFlagReasons(cls, item_id):
+    def get_flag_reasons(cls, item_id):
         """
         This returns back the flagged reasons for a particular id.
         """
@@ -307,6 +307,16 @@ class ItemsDBManager:
         query = {"_id" : item_id}
         result = list(flagged_items_collection.find(query))
         return result
+    
+    @classmethod
+    def get_photo(cls, photo_id):
+        """
+        This returns back the photo with the specified id
+        """
+        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        query = {'_id': photo_id}
+        result = list(photos_collection.find(query))
+        return result[0]["photo"]
 
 
 def view_flagged_items(limit = None):
@@ -314,13 +324,17 @@ def view_flagged_items(limit = None):
     This function searches through all the items and returns
     the ones that are flagged
     """
-    all_items = ItemsDBManager.GetAllItems()
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+
+        photo = ItemsDBManager.get_photo(item["photos"])
+        
+
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
+        new_item.from_mongo(item, flags, photo)
         if new_item.isFlagged:
             new_dict = new_item.to_mongo()
             item_objects.append(new_dict)
@@ -334,15 +348,21 @@ def view_all_items(limit = None):
     """
     This returns back a list of all items
     """
-    all_items = ItemsDBManager.GetAllItems()
+    # The only available items are items
+    # that are currently being auctioned
+
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
+        new_item.from_mongo(item, flags, photo)
         if new_item.available:
             new_dict = new_item.to_mongo()
+            new_dict["_id"] = item_id
             item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
@@ -355,13 +375,15 @@ def search_item(keywords):
     This function searches through all the items and returns
     the ones that match the search criteria
     """
-    all_items = ItemsDBManager.GetAllItems()
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+        
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
+        new_item.from_mongo(item, flags, photo)
         if new_item.matches_search(keywords):
             item_objects.append(new_item.to_mongo())
     return json.dumps(item_objects)
@@ -371,10 +393,12 @@ def add_user_to_watch_list(item_id, user_id):
     This adds a user to the watchlist
     """
     item = ItemsDBManager.get_item(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
+        
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.addUserToWatchlist(user_id)
+    new_item.from_mongo(item, flags, photo)
+    new_item.add_user_to_watchlist(user_id)
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None, None,
                                     None, new_item.watchlist))
 
@@ -389,9 +413,11 @@ def report_item(item_id, reason):
     This reports an item
     """
     item = ItemsDBManager.get_item(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
+        
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
+    new_item.from_mongo(item, flags, photo)
     new_item.report_item(reason)
     return json.dumps(ItemsDBManager.report_item(new_item.id, reason))
 
@@ -399,7 +425,10 @@ def get_item(item_id):
     """
     This gets an item from the database
     """
-    return json.dumps(ItemsDBManager.get_item(item_id)[0])
+    new_item = ItemsDBManager.get_item(item_id)[0]
+    photo = ItemsDBManager.get_photo(new_item["photos"])
+    new_item["photos"] = photo
+    return json.dumps(new_item)
 
 def modify_item(item_id, name = None, description = None,
                 category = None, photos = None, price = None,
@@ -408,10 +437,11 @@ def modify_item(item_id, name = None, description = None,
     This modifies the item
     """
     item = ItemsDBManager.get_item(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.modifyItem(name, description, category, photos,
+    new_item.from_mongo(item, flags, photo)
+    new_item.modify_item(name, description, category, photos,
                         price, watchlist)
     if name:
         new_name = new_item.name
@@ -456,22 +486,25 @@ def add_item(name, description, category,
 
 def edit_categories(item_id, new_categories):
     item = ItemsDBManager.get_item(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
+    new_item.from_mongo(item, flags, photo)
 
-    new_item.editCategories(new_categories)
+    new_item.edit_categories(new_categories)
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, new_item.category,
                                 None, None, None))
 
 def modify_availability(item_id):
     item = ItemsDBManager.get_item(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.modifyItem(None, None, None, None,
+
+    new_item.from_mongo(item, flags, photo)
+    new_item.modify_item(None, None, None, None,
                         None, None, False)
-    return json.dumps(ItemsDBManager.modifyAvailability(new_item.id))
+    return json.dumps(ItemsDBManager.modify_availability(new_item.id))
 
 
 

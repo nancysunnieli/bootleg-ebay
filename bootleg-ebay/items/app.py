@@ -13,6 +13,8 @@ def base():
 @app.route('/view_all_items', methods = ['POST'])
 def view_all_items():
     data = request.get_json()
+    if not data:
+        data = {}
     if "limit" in data:
         limit = data["limit"]
     else:
@@ -22,6 +24,8 @@ def view_all_items():
 @app.route('/view_flagged_items', methods=['POST'])
 def view_flagged_items():
     data = request.get_json()
+    if not data:
+        data = {}
     if "limit" in data:
         limit = data["limit"]
     else:
