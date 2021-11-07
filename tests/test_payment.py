@@ -35,7 +35,6 @@ class TestUser(TestCase):
         }
 
         output = requests.post(url=url, json=card_info_params)
-        import pdb; pdb.set_trace()
         self.assertTrue(output.ok)
         id_ = output.json()['payment_id']
 
