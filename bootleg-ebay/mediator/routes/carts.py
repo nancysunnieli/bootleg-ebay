@@ -31,7 +31,7 @@ _user_item = {
 }
 
 
-@carts_api.route("/new_cart", methods = ['POST'])
+@carts_api.route("/create_cart", methods = ['POST'])
 @expects_json(_user)
 def create_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
@@ -40,7 +40,7 @@ def create_cart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@carts_api.route("/cart_items_addition", methods = ['POST'])
+@carts_api.route("/add_item_to_cart", methods = ['POST'])
 @expects_json(_user_item)
 def add_item_to_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
@@ -49,7 +49,7 @@ def add_item_to_cart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@carts_api.route("/cart_items_deletion", methods = ['POST'])
+@carts_api.route("/delete_item_from_cart", methods = ['POST'])
 @expects_json(_user_item)
 def delete_item_from_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
@@ -58,7 +58,7 @@ def delete_item_from_cart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@carts_api.route("/cart_items", methods = ['POST'])
+@carts_api.route("/get_items_from_cart", methods = ['POST'])
 @expects_json(_user)
 def get_items_from_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
@@ -67,7 +67,7 @@ def get_items_from_cart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@carts_api.route("/empty", methods = ['POST'])
+@carts_api.route("/empty_cart", methods = ['POST'])
 @expects_json(_user)
 def empty_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
