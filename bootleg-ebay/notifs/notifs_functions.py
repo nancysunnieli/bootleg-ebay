@@ -8,7 +8,51 @@ server = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
 adminEmail = "bootlegebay@gmail.com"
 server.login(adminEmail, "bootleg1234!") # Plaintext :)
 
-def SendEmail(configuration):
+def send_email(configuration):
+    """
+    Configuration has attributes subject, body, and recipient.
+    """
     message = f"Subject: {configuration['subject']}\n\n {configuration['body']}"
     server.sendmail(adminEmail, configuration["recipient"], message)
     return "OK"
+
+
+def watchlist_notification(recipient, item_id):
+    """
+    This sends an email to the specified recipient that
+    the item they want is now available.
+    """
+    body = "An item on your watchlist is now available! View it here at: http://localhost:3000/items/%s" % item_id
+    subject = "Watchlist item available!"
+    configuration = {"body": body, "subject": subject, "recipient": recipient}
+    return send_email(configuration)
+
+def alert_seller_bid(recipient, item_id):
+    """
+    This sends an email to the seller when their item has been bid on.
+    """
+    body = "Congratulations. Your item has been bid on. View it here at: http://localhost:3000/items/%s" % item_id
+    subject = "Your item has been bid on!"
+    configuration = {"body": body, "subject": subject, "recipient": recipient}
+    return send_email(configuration)
+
+def alert_buyer_bid(recipient, item_id):
+    """
+    This sends an email to the buyer when an item they previously bid on
+    has been outbid.
+    """
+    body = "Your bid has been outbid! Place a higher bid here at: http:localhost:3000/items/%s" % item_id
+    subject = "You have been outbid."
+    configuration = {"body": body, "subject": subject, "recipient": recipient}
+    return send_email(configuration)
+
+def alert_before(recipient, item_id, time_left):
+    """
+    Alerts seller or buyer of the time left in an auction
+
+    time_left will take the values 'One Day', 'One Hour'
+    """
+    body = "There is only %s left in your auction. View it here: http:localhost:3000/items/%s" % (time_left, item_id)
+    subject = time_left + " left in auction."
+    configuration = {"body": body, "subject": subject, "recipient": recipient}
+    return send_email(configuration)
