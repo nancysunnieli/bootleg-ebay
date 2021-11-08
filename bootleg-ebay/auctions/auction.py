@@ -165,7 +165,7 @@ class Auction:
         """Export this class to mongodb format
         """
         mongodb_dict = self.auction_info
-        mongodb_dict['_id'] = self.auction_id
+        mongodb_dict['auction_id'] = self.auction_id
         mongodb_dict['bids'] = [b.to_mongodb_fmt() for b in self.bids]
 
         return mongodb_dict

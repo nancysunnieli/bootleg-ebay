@@ -32,15 +32,15 @@ def base():
                     mimetype = 'application/json')
 
 
-@app.route('/create_auction', methods=['POST'])
+@app.route('/auction', methods=['POST'])
 def create_auction():
     data = request.get_json()
     return auctions_functions.create_auction(data)
 
-@app.route('/get_auction', methods=['POST'])
-def get_auction():
-    data = request.get_json()
-    auction_id = data['_id']
+@app.route('/auction/<auction_id>', methods=['GET'])
+def get_auction(auction_id):
+    # data = request.get_json()
+    # auction_id = data['_id']
     return auctions_functions.get_auction(auction_id)
 
 @app.route('/view_current_auctions', methods=['POST'])

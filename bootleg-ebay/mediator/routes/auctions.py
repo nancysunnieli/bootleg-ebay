@@ -5,7 +5,7 @@ import json
 from flask_expects_json import expects_json
 from flask import Response, request, Blueprint
 
-from utils import get_and_post
+from utils import get_and_request
 from config import *
 
 # getting IP Address of auctions container
@@ -60,18 +60,28 @@ _bid = {
 auctions_api = Blueprint('auctions', __name__)
 
 
-@auctions_api.route("/create_auction", methods = ['POST'])
+@auctions_api.route("/auction", methods = ['POST'])
 @expects_json(_create)
 def create_auction():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_auction")
-    return get_and_post(socket_url)
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction")
+    r = get_and_request(socket_url, 'post')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 
-@auctions_api.route("/get_auction", methods = ['POST'])
-@expects_json(_item)
-def get_auction():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/get_auction")
-    return get_and_post(socket_url)
+@auctions_api.route("/auction/<auction_id>", methods = ['GET'])
+@expects_json(_none_schema)
+def get_auction(auction_id):
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction/{}".format(auction_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @auctions_api.route("/view_current_auctions", methods = ['POST'])
 @expects_json(_none_schema)

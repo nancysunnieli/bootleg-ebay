@@ -5,6 +5,7 @@ from typing import Sequence
 import json
 
 import pymongo
+from bson.objectid import ObjectId
 
 from auction import Auction, Bid, current_time, BadInputError
 
@@ -50,8 +51,13 @@ class AuctionDBManager:
     def get_auction(cls, auction_id) -> Auction:
         """Get an auction by id
         """
-        query = {"_id": auction_id}
-        result = cls.query_collection(query)[0]
+        query = {"_id": ObjectId(auction_id)}
+        result = cls.query_collection(query)
+        
+        if len(result) == 0:
+            raise BadInputError('We could not find any auctions with id {}'.format(auction_id))
+        result = result[0]
+        
         auction = Auction.from_mongodb_fmt(result)
         return auction
 
@@ -71,9 +77,8 @@ def get_auction(auction_id):
     This is used in place of `examineAuctionMetrics()`
     """
 
-    query = {'_id': auction_id}
-    auctions = AuctionDBManager.query_collection(query)
-    return json.dumps(auctions)
+    auctions = AuctionDBManager.get_auction(auction_id)
+    return auctions.to_json()
 
 def create_auction(auction_info):
     """
