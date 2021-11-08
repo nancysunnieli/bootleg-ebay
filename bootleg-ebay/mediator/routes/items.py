@@ -103,6 +103,8 @@ def items_service_status():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/")
     r = requests.get(url = socket_url)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -119,6 +121,9 @@ def view_all_items():
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content).content
 
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     all_items = []
     for item in json.loads(r):
         if item["_id"] in available:
@@ -132,6 +137,8 @@ def view_flagged_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/view_flagged_items")
     r = requests.get(url = socket_url)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -142,6 +149,8 @@ def search_item():
                      ITEMS_PORT + "/search_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -152,6 +161,8 @@ def add_user_to_watch_list():
                      ITEMS_PORT + "/add_user_to_watch_list")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -167,6 +178,8 @@ def remove_item():
                      ITEMS_PORT + "/remove_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -177,6 +190,8 @@ def report_item():
                      ITEMS_PORT + "/report_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -187,6 +202,8 @@ def get_item():
                      ITEMS_PORT + "/get_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -197,6 +214,8 @@ def modify_item():
                     ITEMS_PORT + "/modify_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -207,6 +226,8 @@ def add_item():
                     ITEMS_PORT + "/add_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -217,6 +238,8 @@ def edit_categories():
                     ITEMS_PORT + "/edit_categories")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -227,4 +250,6 @@ def modify_availability():
                     ITEMS_PORT + "/modify_availability")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content

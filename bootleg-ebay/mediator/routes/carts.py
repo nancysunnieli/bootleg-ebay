@@ -38,6 +38,8 @@ def create_cart():
                     CARTS_PORT + "/create_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/add_item_to_cart", methods = ['POST'])
@@ -47,6 +49,8 @@ def add_item_to_cart():
                     CARTS_PORT + "/add_item_to_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/delete_item_from_cart", methods = ['POST'])
@@ -56,6 +60,8 @@ def delete_item_from_cart():
                     CARTS_PORT + "/delete_item_from_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/get_items_from_cart", methods = ['POST'])
@@ -65,6 +71,8 @@ def get_items_from_cart():
                     CARTS_PORT + "/get_items_from_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/empty_cart", methods = ['POST'])
@@ -74,6 +82,8 @@ def empty_cart():
                     CARTS_PORT + "/empty_cart")
     data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/checkout", methods = ['POST'])
