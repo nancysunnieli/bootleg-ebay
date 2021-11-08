@@ -85,7 +85,7 @@ class Bid:
 
         return bid
 
-    def to_mongodb_fmt(self) -> MongoDBData:
+    def to_dict(self) -> MongoDBData:
         """Export this class to mongodb format
         """
 
@@ -161,17 +161,17 @@ class Auction:
         auction = cls(auction_id=auction_id, bids=bids, auction_info=mongodb_data)
         return auction
 
-    def to_mongodb_fmt(self):
+    def to_dict(self):
         """Export this class to mongodb format
         """
         mongodb_dict = self.auction_info
         mongodb_dict['auction_id'] = self.auction_id
-        mongodb_dict['bids'] = [b.to_mongodb_fmt() for b in self.bids]
+        mongodb_dict['bids'] = [b.to_dict() for b in self.bids]
 
         return mongodb_dict
 
     def to_json(self):
-        dict_ = self.to_mongodb_fmt()
+        dict_ = self.to_dict()
         return json.dumps(dict_)
 
     @property

@@ -39,18 +39,14 @@ def create_auction():
 
 @app.route('/auction/<auction_id>', methods=['GET'])
 def get_auction(auction_id):
-    # data = request.get_json()
-    # auction_id = data['_id']
     return auctions_functions.get_auction(auction_id)
 
-@app.route('/view_current_auctions', methods=['POST'])
+@app.route('/current_auctions', methods=['GET'])
 def view_current_auctions():
     return auctions_functions.view_current_auctions()
 
-@app.route('/remove_auction', methods=['POST'])
-def remove_auction():
-    data = request.get_json()
-    auction_id = data['_id']
+@app.route('/auction/<auction_id>', methods=['DELETE'])
+def remove_auction(auction_id):
     return auctions_functions.remove_auction(auction_id)
 
 

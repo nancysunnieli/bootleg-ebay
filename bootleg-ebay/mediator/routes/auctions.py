@@ -83,18 +83,30 @@ def get_auction(auction_id):
 
     return r.content
 
-@auctions_api.route("/view_current_auctions", methods = ['POST'])
+@auctions_api.route("/current_auctions", methods = ['GET'])
 @expects_json(_none_schema)
 def view_current_auctions():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_current_auctions")
-    return get_and_post(socket_url)
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
+
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 
-@auctions_api.route("/remove_auction", methods = ['POST'])
-@expects_json(_item)
-def remove_auction():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/remove_auction")
-    return get_and_post(socket_url)
+
+@auctions_api.route("/auction/<auction_id>", methods = ['DELETE'])
+@expects_json(_none_schema)
+def remove_auction(auction_id):
+    socket_url = "http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction/{}".format(auction_id)
+    r = get_and_request(socket_url, 'delete')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 
 @auctions_api.route("/bids_by_user", methods = ['POST'])

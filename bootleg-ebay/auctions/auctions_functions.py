@@ -66,7 +66,7 @@ class AuctionDBManager:
         """Update an auction that already exists
         """
 
-        values = auction.to_mongodb_fmt()
+        values = auction.to_dict()
         query = { "_id": auction.auction_id}
         cls.update_one(query, values)
 
@@ -104,8 +104,10 @@ def view_current_auctions() -> Sequence:
     query = {"start_time": {"$lte": time}, 
             "end_time": {"$gte": time}}
 
-    auctions = AuctionDBManager.query_collection(query)
-    return json.dumps(auctions)
+    auctions_mongo = AuctionDBManager.query_collection(query)
+    auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
+    auctions_json = json.dumps([a.to_dict() for a in auctions])
+    return auctions_json
 
 def remove_auction(auction_id) -> None:
     """
@@ -113,12 +115,12 @@ def remove_auction(auction_id) -> None:
     This is used when the auction itself
     is force deleted by the admin if it violates conditions.
     """
-    query = {"_id" : auction_id}
+    query = {"_id" : ObjectId(auction_id)}
     AuctionDBManager.delete_one(query)
     if len(AuctionDBManager.query_collection({"_id": auction_id})) == 0:
-        return "Auction Successfully deleted!"
+        return json.dumps({})
     else:
-        return "Auction was unable to be successfully deleted."
+        raise BadInputError('We could not delete auction with id {}'.format(auction_id))
 
 
 def bids_by_user(buyer_id):
@@ -130,7 +132,7 @@ def bids_by_user(buyer_id):
     for current_auction in all_auctions:
         auction = AuctionDBManager.get_auction(current_auction["_id"])
         bids = auction.view_bids(buyer_id=buyer_id)
-        all_bids += [b.to_mongodb_fmt() for b in bids]
+        all_bids += [b.to_dict() for b in bids]
     return json.dumps(all_bids)
 
 def create_bid(auction_id, price, user_id):
@@ -153,7 +155,7 @@ def view_bids(auction_id):
     auction = AuctionDBManager.get_auction(auction_id)
 
     bids = auction.view_bids(buyer_id=None)
-    bids = [b.to_mongodb_fmt() for b in bids]
+    bids = [b.to_dict() for b in bids]
     return json.dumps(bids)
     
 
