@@ -11,5 +11,6 @@ ENV CARTSAPIHOST=carts-api
 ENV USERAPIHOST=users-api
 ENV PAYMENTSAPIHOST=payments-api
 ENV AUCTIONSAPIHOST=auctions-api
+ENV NOTIFSAPIHOST=notifs-api
 
 CMD ["python", "app.py"]

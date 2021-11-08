@@ -13,88 +13,85 @@ from config import *
 
 carts_api = Blueprint('carts', __name__)
 
-_user = {
+
+_none_schema = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'}
     },
-    'required': ['user_id']
+    'required': []
 }
 
-_user_item = {
+_item = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'},
         'item_id': {'type': 'string'}
     },
     'required': ['user_id', 'item_id']
 }
 
 
-@carts_api.route("/create_cart", methods = ['POST'])
-@expects_json(_user)
-def create_cart():
+@carts_api.route("/creation/<user_id>", methods = ['POST'])
+@expects_json(_none_schema)
+def create_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/create_cart")
-    data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    r = requests.post(url = socket_url, data = {"user_id": user_id})
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/add_item_to_cart", methods = ['POST'])
-@expects_json(_user_item)
-def add_item_to_cart():
+@carts_api.route("/addition/<user_id>", methods = ['POST'])
+@expects_json(_item)
+def add_item_to_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/add_item_to_cart")
-    data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    data_content = json.loads(request.get_json())
+    data_content["user_id"] = user_id
+    r = requests.post(url = socket_url, json = json.dumps(data_content))
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/delete_item_from_cart", methods = ['POST'])
-@expects_json(_user_item)
-def delete_item_from_cart():
+@carts_api.route("/removal/<user_id>", methods = ['POST'])
+@expects_json(_item)
+def delete_item_from_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/delete_item_from_cart")
-    data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    data_content = json.loads(request.get_json())
+    data_content["user_id"] = user_id
+    r = requests.post(url = socket_url, data = json.dumps(data_content))
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/get_items_from_cart", methods = ['POST'])
-@expects_json(_user)
-def get_items_from_cart():
+@carts_api.route("/cart/<user_id>", methods = ['POST'])
+@expects_json(_none_schema)
+def get_items_from_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/get_items_from_cart")
     data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    r = requests.post(url = socket_url, data = {"user_id": user_id})
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/empty_cart", methods = ['POST'])
-@expects_json(_user)
-def empty_cart():
+@carts_api.route("/empty/<user_id>", methods = ['POST'])
+@expects_json(_none_schema)
+def empty_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
-    data_content = request.get_json()
-    r = requests.post(socket_url, json = data_content)
+    r = requests.post(socket_url, json = {"user_id": user_id})
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/checkout", methods = ['POST'])
-@expects_json(_user)
-def checkout():
-    data_content = request.get_json()
-
+@carts_api.route("/checkout/<user_id>", methods = ['POST'])
+@expects_json(_none_schema)
+def checkout(user_id):
     # gets all items in user's cart
     get_items_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/get_items_from_cart")
-    items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
+    items = json.loads((requests.post(url = get_items_url, data = {"user_id": user_id})).content)
 
 
     # checks availability of all items
@@ -116,7 +113,7 @@ def checkout():
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
-    r = requests.post(empty_cart_url, json = data_content)
+    r = requests.post(empty_cart_url, data = {"user_id": user_id})
     return r.content
 
 
