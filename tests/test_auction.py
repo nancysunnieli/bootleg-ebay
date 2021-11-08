@@ -40,12 +40,14 @@ class TestAuction(TestCase):
         # create sucessful bids
         buyer_id1 =  12321
         buyer_id2 = 21454
+        buyer1_num_bids = 3
+        buyer2_num_bids = 4
 
         url = self.base_url + "bid"
 
         initial_price = 10.0
         price = initial_price
-        for i in range(3):
+        for _ in range(buyer1_num_bids):
             bid_info = {
                 "price": price,
                 "auction_id": id_,
@@ -55,7 +57,7 @@ class TestAuction(TestCase):
             output = requests.post(url=url, json=bid_info)
             self.assertTrue(output.ok)
 
-        for i in range(4):
+        for _ in range(buyer2_num_bids):
             bid_info = {
                 "price": price,
                 "auction_id": id_,
@@ -74,6 +76,24 @@ class TestAuction(TestCase):
         output = requests.post(url=url, json=bid_info)
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
+
+        # view all bids
+        url = self.base_url + "bids"
+        output = requests.get(url=url, json={'auction_id': id_})
+        output_json = output.json()
+        self.assertEqual(len(output_json), buyer1_num_bids + buyer2_num_bids)
+        self.assertTrue(output.ok)
+
+        # view bids by users
+        for b_id in [buyer_id1, buyer_id2]:
+            url = self.base_url + "bids/{}".format(b_id)
+            output = requests.get(url=url, json={})
+            output_json = output.json()
+            self.assertGreaterEqual(len(output_json), 1)
+            self.assertTrue(output.ok)
+
+
+
 
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)
