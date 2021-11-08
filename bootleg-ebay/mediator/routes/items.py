@@ -56,7 +56,7 @@ _category = {
 _view_items_schema = {
     'type': 'object',
     'properties': {
-        'limit' : {'type': 'int'}
+        'limit' : {'type': 'number'}
     },
     'required': []
 }
@@ -106,7 +106,7 @@ def items_service_status():
     return r.content
 
 
-@items_api.route('/all_items', methods=['POST'])
+@items_api.route('/view_all_items', methods=['POST'])
 @expects_json(_view_items_schema)
 def view_all_items():
     current_auctions = json.loads(view_current_auctions())
@@ -126,7 +126,7 @@ def view_all_items():
             all_items.append(item)
     return json.dumps(all_items)
 
-@items_api.route('/flagged_items', methods=['POST'])
+@items_api.route('/view_flagged_items', methods=['POST'])
 @expects_json(_view_items_schema)
 def view_flagged_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -135,7 +135,7 @@ def view_flagged_items():
     return r.content
 
 
-@items_api.route('/search', methods=['POST'])
+@items_api.route('/search_item', methods=['POST'])
 @expects_json(_search_items)
 def search_item():
     socket_url = ("http://" +ITEMS_SERVICE_HOST +
@@ -145,7 +145,7 @@ def search_item():
     return r.content
 
 
-@items_api.route('/watch_list_addition', methods = ['POST'])
+@items_api.route('/add_user_to_watch_list', methods = ['POST'])
 @expects_json(_watchlist)
 def add_user_to_watch_list():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -156,7 +156,7 @@ def add_user_to_watch_list():
 
 
 
-@items_api.route('/removal', methods = ['POST'])
+@items_api.route('/remove_item', methods = ['POST'])
 @expects_json(_item)
 def remove_item():
     if view_bids().length == 0:
@@ -170,7 +170,7 @@ def remove_item():
     return r.content
 
 
-@items_api.route('/report', methods = ['POST'])
+@items_api.route('/report_item', methods = ['POST'])
 @expects_json(_report)
 def report_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
@@ -180,7 +180,7 @@ def report_item():
     return r.content
 
 
-@items_api.route("/item", methods = ['POST'])
+@items_api.route("/get_item", methods = ['POST'])
 @expects_json(_item)
 def get_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -190,7 +190,7 @@ def get_item():
     return r.content
 
 
-@items_api.route("/item_updates", methods = ['POST'])
+@items_api.route("/modify_item", methods = ['POST'])
 @expects_json(_unrequired_attributes)
 def modify_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -200,7 +200,7 @@ def modify_item():
     return r.content
 
 
-@items_api.route("/item_additions", methods = ['POST'])
+@items_api.route("/add_item", methods = ['POST'])
 @expects_json(_required_attributes)
 def add_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -210,7 +210,7 @@ def add_item():
     return r.content
 
 
-@items_api.route("/categories", methods = ['POST'])
+@items_api.route("/edit_categories", methods = ['POST'])
 @expects_json(_category)
 def edit_categories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -220,7 +220,7 @@ def edit_categories():
     return r.content
 
 
-@items_api.route("/availability", methods = ['POST'])
+@items_api.route("/modify_availability", methods = ['POST'])
 @expects_json(_item)
 def modify_availability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
