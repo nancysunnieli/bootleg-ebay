@@ -86,6 +86,9 @@ def create_auction(auction_info):
     Create an auction
     """
 
+    if auction_info['end_time'] <= auction_info['start_time']:
+        raise BadInputError('The end time must be greater than the start time.')
+        
     auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
     
     if len(AuctionDBManager.query_collection({"_id": auction_id})) > 0:

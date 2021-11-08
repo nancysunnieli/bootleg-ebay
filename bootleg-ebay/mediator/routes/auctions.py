@@ -18,7 +18,7 @@ _create = {
         'start_time': {'type': 'number'},
         'end_time': {'type': 'number'},
         'item_id': {'type': 'string'},
-        'seller_id': {'type': 'string'},
+        'seller_id': {'type': 'integer'},
         'bids': {'type': 'array'}
     },
     'required': ['start_time', 'end_time', 'item_id', 'seller_id']
