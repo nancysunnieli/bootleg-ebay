@@ -111,10 +111,12 @@ def items_service_status():
 @items_api.route('/view_all_items', methods=['POST'])
 @expects_json(_view_items_schema)
 def view_all_items():
+    """
     current_auctions = json.loads(view_current_auctions())
     available = set()
     for auction in current_auctions:
         available.add(auction["item_id"])
+    """
 
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/view_all_items")
@@ -126,9 +128,8 @@ def view_all_items():
 
     all_items = []
     for item in json.loads(r):
-        if item["_id"] in available:
-            del item["_id"]
-            all_items.append(item)
+        del item["_id"]
+        all_items.append(item)
     return json.dumps(all_items)
 
 @items_api.route('/view_flagged_items', methods=['POST'])
