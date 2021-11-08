@@ -77,8 +77,14 @@ class Bid:
         Returns:
             bid (Bid)
         """
+
+        if '_id' in mongodb_data:
+            bid_id = str(mongodb_data['_id'])
+        else:
+            bid_id = None
+
         bid = cls(
-            bid_id=str(mongodb_data['bid_id']),
+            bid_id=bid_id,
             price=mongodb_data['price'],
             buyer_id=mongodb_data['buyer_id'],
             bid_time=mongodb_data['bid_time'])
@@ -101,6 +107,9 @@ class Bid:
 
         return bid_info
 
+    def to_json(self):
+        dict_ = self.to_dict()
+        return json.dumps(dict_)
 
 class Auction:
     """Represents the auction
@@ -211,21 +220,19 @@ class Auction:
         auction_info = self._auction_info
         
         if auction_info['start_time'] > bid.bid_time:
-            raise ValueError('You cannot place a bid on an action that has not started.')
+            raise BadInputError('You cannot place a bid on an action that has not started.')
 
         if auction_info['end_time'] < bid.bid_time:
-            raise ValueError('You cannot place a bid on an auction that has finished.')
+            raise BadInputError('You cannot place a bid on an auction that has finished.')
 
         
         highest_price, latest_bid = self.previous_bid()
 
         if bid.price > highest_price and bid.bid_time > latest_bid:
             self._bids.append(bid)
-            successful = True
         else:
-            successful = False
+            raise BadInputError('You can only place a bid higher than the current price!')
 
-        return successful
 
     def view_bids(self, buyer_id: Optional[UserID] = None) -> Sequence[Bid]:
         """View all the bids

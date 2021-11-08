@@ -50,21 +50,21 @@ def remove_auction(auction_id):
     return auctions_functions.remove_auction(auction_id)
 
 
-@app.route('/bids_by_user', methods=['POST'])
-def bids_by_user():
-    data = request.get_json()
-    return auctions_functions.bids_by_user(data['buyer_id'])
+@app.route('/bids/<user_id>', methods=['GET'])
+def user_bids(user_id):
+    user_id = int(user_id)
+    return auctions_functions.user_bids(user_id)
 
-@app.route('/create_bid', methods=['POST'])
+@app.route('/bid', methods=['POST'])
 def create_bid():
     data = request.get_json()
-    auction_id = data['_id']
-    return auctions_functions.create_bid(auction_id, data['price'], data['buyer_id'])
+    auction_id = data['auction_id']
+    return auctions_functions.create_bid(auction_id, data['price'], data['user_id'])
 
-@app.route('/view_bids', methods=['POST'])
+@app.route('/bids', methods=['GET'])
 def view_bids():
     data = request.get_json()
-    auction_id = data['_id']
+    auction_id = data['auction_id']
     return auctions_functions.view_bids(auction_id)
 
 if __name__ == '__main__':

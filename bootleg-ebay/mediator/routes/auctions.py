@@ -24,7 +24,7 @@ _create = {
     'required': ['start_time', 'end_time', 'item_id', 'seller_id']
 }
 
-_item = {
+_auction = {
     'type': 'object',
     'properties': {
         'auction_id' : {'type': 'string'}
@@ -41,7 +41,7 @@ _none_schema = {
 _user = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'}
+        'user_id': {'type': 'integer'}
     },
     'required': ['user_id']
 }
@@ -49,10 +49,11 @@ _user = {
 _bid = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'},
-        'item_id': {'type': 'string'}
+        'user_id': {'type': 'integer'},
+        'auction_id': {'type': 'string'},
+        'price': {'type': 'number'}
     },
-    'required': ['user_id', 'item_id']
+    'required': ['user_id', 'auction_id', 'price']
 }
 
 
@@ -109,21 +110,36 @@ def remove_auction(auction_id):
     return r.content
 
 
-@auctions_api.route("/bids_by_user", methods = ['POST'])
-@expects_json(_user)
-def bids_by_user():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids_by_user")
-    return get_and_post(socket_url)
+@auctions_api.route("/bids/<user_id>", methods = ['GET'])
+@expects_json(_none_schema)
+def user_bids(user_id):
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids/{}".format(user_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 
-@auctions_api.route("/create_bid", methods = ['POST'])
+@auctions_api.route("/bid", methods = ['POST'])
 @expects_json(_bid)
 def create_bid():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/create_bid")
-    return get_and_post(socket_url)
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bid")
+    r = get_and_request(socket_url, 'post')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
 
-@auctions_api.route("/view_bids", methods = ['POST'])
-@expects_json(_item)
+    return r.content
+
+@auctions_api.route("/bids", methods = ['GET'])
+@expects_json(_auction)
 def view_bids():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/view_bids")
-    return get_and_post(socket_url)
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content

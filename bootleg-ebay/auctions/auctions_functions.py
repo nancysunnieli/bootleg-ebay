@@ -67,7 +67,8 @@ class AuctionDBManager:
         """
 
         values = auction.to_dict()
-        query = { "_id": auction.auction_id}
+        del values['auction_id']
+        query = { "_id": ObjectId(auction.auction_id)}
         cls.update_one(query, values)
 
 def get_auction(auction_id):
@@ -123,7 +124,7 @@ def remove_auction(auction_id) -> None:
         raise BadInputError('We could not delete auction with id {}'.format(auction_id))
 
 
-def bids_by_user(buyer_id):
+def user_bids(buyer_id):
     """
     This returns back a list of bids by user
     """
@@ -142,11 +143,14 @@ def create_bid(auction_id, price, user_id):
     """
 
     auction = AuctionDBManager.get_auction(auction_id)
-    successful = auction.place_bid(price=price, buyer_id=user_id)
-    if successful:
-        AuctionDBManager.update_auction(auction=auction)
-        return "SUCCESSFULLY CREATED BID"
-    return "WAS UNABLE TO CREATE BID. PLEASE TRY AGAIN."
+    auction.place_bid(price=price, buyer_id=user_id)
+    AuctionDBManager.update_auction(auction=auction)
+
+    auction = AuctionDBManager.get_auction(auction_id)
+    if len(auction.bids) == 0:
+        raise ValueError('Bid was placed unsuccessfully')
+    bid = auction.bids[-1]
+    return bid.to_json()
 
 def view_bids(auction_id):
     """
@@ -178,7 +182,7 @@ if __name__ == "__main__":
     ]
     }))
     """
-    #print(bids_by_user('db6ef937-1e3'))
+    #print(user_bids('db6ef937-1e3'))
     #print(view_current_auctions())
     #print(get_auction('dd965614-cb9'))
     #print(remove_auction('dd965614-cb9'))
