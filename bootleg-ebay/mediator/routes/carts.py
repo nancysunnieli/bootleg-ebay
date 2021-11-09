@@ -26,7 +26,7 @@ _item = {
     'properties': {
         'item_id': {'type': 'string'}
     },
-    'required': ['user_id', 'item_id']
+    'required': ['item_id']
 }
 
 
