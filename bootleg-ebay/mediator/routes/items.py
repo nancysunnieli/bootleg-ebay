@@ -20,10 +20,11 @@ _required_attributes = {
     'properties': {
         'name': {'type': 'string'},
         'description' : {'type' : 'string'},
-        'category': {'type': 'string'},
+        'category': {'type': 'array'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
-        'price': {'type': 'number'}
+        'price': {'type': 'number'},
+        'quantity': {'type': 'number'}
     },
     'required': ['name', 'description', 'category', 'photos', 'sellerID', 'price']
 }
@@ -34,10 +35,11 @@ _unrequired_attributes = {
         'item_id': {'type': 'string'},
         'name': {'type': 'string'},
         'description' : {'type' : 'string'},
-        'category': {'type': 'string'},
+        'category': {'type': 'array'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
-        'price': {'type': 'number'}
+        'price': {'type': 'number'},
+        'quantity': {'type': 'number'}
     },
     'required': ['item_id']
 }
@@ -158,25 +160,24 @@ def add_user_to_watch_list():
 @items_api.route('/removal', methods = ['POST'])
 @expects_json(_item_schema)
 def remove_item():
-    """
+    
     # getting auction name
     data_content = request.get_json()
+    item_id = data_content["item_id"]
+
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
     r = get_and_request(socket_url, 'get')
-
     auction_id = None
-    for auction in r.content:
-        if auction["item_id"] == json.loads(data_content)["item_id"]:
-            auction_id = auction["_id"]
+    for auction in json.loads(r.content):
+        if auction["item_id"] == item_id:
+            auction_id = auction["auction_id"]
 
     if auction_id:
-        # auctions isn't working
         socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
         r = get_and_request(socket_url, 'get')
-        return r.content
         if len(r.content) != 0:
             return "There are already bids on this item! It cannot be deleted"
-    """
+    
     data_content = request.get_json()
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/remove_item")
@@ -235,11 +236,11 @@ def edit_categories():
     return r.content
 
 
-@items_api.route("/availability", methods = ['POST'])
+@items_api.route("/lock", methods = ['POST'])
 @expects_json(_item_schema)
-def modify_availability():
+def modify_quantity():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/modify_availability")
+                    ITEMS_PORT + "/lock")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content

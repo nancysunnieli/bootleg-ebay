@@ -20,8 +20,8 @@ class Item(object):
 
     def __init__(self, name = None, description = None, category = None, 
                 photos = None, sellerID = None, price = None, isFlagged = None, 
-                FlaggedReason = None, watchlist = None, availability = None, id = None):
-        self.availability = availability
+                FlaggedReason = None, watchlist = None, quantity = None, id = None):
+        self._quantity = quantity
         self._name = name
         self._description = description
         self._category = category
@@ -82,8 +82,8 @@ class Item(object):
         return self._watchlist
 
     @property
-    def available(self):
-        return self._availability
+    def quantity(self):
+        return self._quantity
     
     def from_mongo(self, item, flagged_info, photo):
         if item == []:
@@ -99,7 +99,7 @@ class Item(object):
             self._watchlist = []
         else:
             self._watchlist = item["watchlist"]
-        self._availability = item["available"]
+        self._quantity = item["quantity"]
         self._FlaggedReason = []
         if self._isFlagged:
             for info in flagged_info:
@@ -110,7 +110,7 @@ class Item(object):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
                 "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
-                "watchlist": self.watchlist, "available": self.available}
+                "watchlist": self.watchlist, "quantity": self.quantity}
 
     def modify_item(self,
                     new_name = None,
@@ -119,7 +119,7 @@ class Item(object):
                     new_price = None,
                     new_categories = None,
                     new_watchlist = None,
-                    available = None):
+                    quantity = None):
         """
         This modifies the specified attributes.
         The attributes that can be modified by this
@@ -138,8 +138,8 @@ class Item(object):
             self._category = new_categories
         if new_watchlist:
             self._watchlist = new_watchlist
-        if available:
-            self.available = available
+        if quantity:
+            self._quantity = quantity
     
     def edit_categories(self, new_categories):
         self._category = new_categories
@@ -149,10 +149,10 @@ class Item(object):
             self._isFlagged = True
         self._FlaggedReason.append(new_flag_reason)
 
-    def edit_availability(self):
-        if self.availability == False:
-            return "Item was already not available."
-        self.availability = False
+    def edit_quantity(self):
+        if self.quantity == 0:
+            return "Item is sold out."
+        self._quantity -= 1
         return "Successfully Put Lock On Item."
     
     def add_user_to_watchlist(self, user):
@@ -173,14 +173,14 @@ class Item(object):
 
 def create_item(name, description, category, photos, 
                 sellerID, price, isFlagged, FlaggedReasons, 
-                Watchlist, Available,
+                Watchlist, Quantity,
                 Id):
     """
     This creates a new item of the item class and
     returns it
     """
     new_item = Item(name, description, category, photos, sellerID, 
-                    price, isFlagged, FlaggedReasons, Watchlist, Available, Id)
+                    price, isFlagged, FlaggedReasons, Watchlist, Quantity, Id)
     return new_item
 
 
