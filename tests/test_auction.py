@@ -26,14 +26,13 @@ class TestAuction(TestCase):
         }
 
         output = requests.post(url=url, json=auction_info)
-        # import pdb; pdb.set_trace()
         self.assertTrue(output.ok)
         id_ = output.json()['auction_id']
 
 
         # view current auctions
         url = self.base_url + "current_auctions"
-        output = requests.get(url=url, json={})
+        output = requests.get(url=url, json=None)
         self.assertTrue(output.ok)
 
 
@@ -87,7 +86,7 @@ class TestAuction(TestCase):
         # view bids by users
         for b_id in [buyer_id1, buyer_id2]:
             url = self.base_url + "bids/{}".format(b_id)
-            output = requests.get(url=url, json={})
+            output = requests.get(url=url, json=None)
             output_json = output.json()
             self.assertGreaterEqual(len(output_json), 1)
             self.assertTrue(output.ok)
@@ -97,5 +96,5 @@ class TestAuction(TestCase):
 
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)
-        output = requests.delete(url=url, json={})
+        output = requests.delete(url=url, json=None)
         self.assertTrue(output.ok)
