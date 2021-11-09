@@ -68,4 +68,5 @@ def view_bids():
     return auctions_functions.view_bids(auction_id)
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 2222, host = socket_name)
+    app.run(debug = True, port = 2222, host = 'localhost')
+    #app.run(debug = True, port = 2222, host = socket_name)

@@ -130,7 +130,7 @@ def create_bid():
     
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
-
+    
     return r.content
 
 @auctions_api.route("/bids", methods = ['GET'])
