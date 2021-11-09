@@ -18,6 +18,7 @@ def randcard_number():
 class TestUser(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, PAYMENTS_NAME)
 
+
     def test_card(self):
         card_number = randcard_number()
         user_id = randint()
@@ -56,3 +57,45 @@ class TestUser(TestCase):
         url = self.base_url + 'card/{}'.format(id_)
         output = requests.delete(url=url, json=None)
         self.assertTrue(output.ok)
+
+    def test_transaction(self):
+
+        user_id = 22
+        payment_id = 213
+        item_id = "sdsadsa"
+        money = 10.5
+        quantity = 2
+
+        # create successfully
+        url = self.base_url + "transaction"
+        transaction_info = {
+            "user_id": user_id,
+            "payment_id": payment_id,
+            "item_id": item_id,
+            "money": money,
+            "quantity": quantity
+        }
+
+        output = requests.post(url=url, json=transaction_info)
+        self.assertTrue(output.ok)
+        id_ = output.json()['transaction_id']
+
+
+        # view successfully
+        url = self.base_url + "transaction/{}".format(id_)
+        output = requests.get(url=url, json=None)
+        output_json = output.json()
+        self.assertEqual(output_json["user_id"], user_id)
+        self.assertEqual(output_json["payment_id"], payment_id)
+        self.assertEqual(output_json["item_id"], item_id)
+        self.assertEqual(output_json["money"], money)
+        self.assertEqual(output_json["quantity"], quantity)
+        self.assertTrue(output.ok)
+
+        # delete successfully
+        output = requests.delete(url=url, json=None)
+        self.assertTrue(output.ok)
+
+
+
+

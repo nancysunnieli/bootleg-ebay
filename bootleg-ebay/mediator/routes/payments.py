@@ -39,6 +39,18 @@ _none_schema = {
     'required': []
 }
 
+_transaction_schema = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'integer'},
+        'payment_id': {'type': 'integer'},
+        'item_id': {'type': 'string'},
+        'money': {'type': 'number'},
+        'quantity': {'type': 'integer'}
+    },
+    'required': []
+}
+
 @payments_api.route("/card", methods = ['POST'])
 @expects_json(_payment_info_schema)
 def create_payment_card():
@@ -66,6 +78,39 @@ def get_payment_card(payment_id):
 # @expects_json(_none_schema)
 def payments_delete_account(payment_id):
     socket_url = (PAYMENTS_URL + "/card/{}".format(payment_id))
+    r = get_and_request(socket_url, 'delete')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+
+@payments_api.route('/transaction', methods=['POST'])
+@expects_json(_transaction_schema)
+def create_transaction():
+    socket_url = (PAYMENTS_URL + "/transaction")
+
+    r = get_and_request(socket_url, 'post')
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+@payments_api.route("/transaction/<transaction_id>", methods = ['GET'])
+def get_transaction(transaction_id):
+    socket_url = (PAYMENTS_URL + "/transaction/{}".format(transaction_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+@payments_api.route("/transaction/<transaction_id>", methods = ['DELETE'])
+def delete_transaction(transaction_id):
+    socket_url = (PAYMENTS_URL + "/transaction/{}".format(transaction_id))
     r = get_and_request(socket_url, 'delete')
     
     if not r.ok:

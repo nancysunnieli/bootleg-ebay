@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_URL } from "../config";
 
 const register = async (username, email, password) => {
-    const response = await axios.post(API_URL + "Users/create_account", {
+    const response = await axios.post(API_URL + "users/user", {
         username,
         email,
         password,
@@ -14,20 +14,25 @@ const register = async (username, email, password) => {
 };
 
 const login = async (username, password) => {
-    const response = await axios.post(API_URL + "Users/login", {
-        username,
-        password,
-    });
-    localStorage.setItem("user", JSON.stringify(response.data));
-    return response.data;
+    console.log("username", username, password);
+    // const response = await axios.post(API_URL + "users/login", {
+    //     username,
+    //     password,
+    // });
+    // localStorage.setItem("user", JSON.stringify(response.data));
+    // return response.data;
+    const user = JSON.parse(localStorage.getItem("user"));
+    return user;
 };
 
 const logout = () => {
     localStorage.removeItem("user");
 };
 
-export default {
+const AuthService = {
     register,
     login,
     logout,
 };
+
+export default AuthService;

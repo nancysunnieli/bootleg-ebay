@@ -1,5 +1,4 @@
-import { useCallback } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { logout } from "../../slices/auth";
 
