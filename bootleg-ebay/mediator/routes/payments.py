@@ -52,7 +52,7 @@ def create_payment_card():
     return r.content
 
 @payments_api.route("/card/<payment_id>", methods = ['GET'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def get_payment_card(payment_id):
     socket_url = (PAYMENTS_URL + "/card/{}".format(payment_id))
     r = get_and_request(socket_url, 'get')
@@ -63,7 +63,7 @@ def get_payment_card(payment_id):
     return r.content
 
 @payments_api.route("/card/<payment_id>", methods = ['DELETE'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def payments_delete_account(payment_id):
     socket_url = (PAYMENTS_URL + "/card/{}".format(payment_id))
     r = get_and_request(socket_url, 'delete')
