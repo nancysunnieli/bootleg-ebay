@@ -43,9 +43,9 @@ def get_payment_card(payment_id):
     return payments_functions.get_payment_card(payment_id)
 
 @app.route('/card/<payment_id>', methods=['DELETE'])
-def delete_account(payment_id):
+def delete_payment_card(payment_id):
     # data = request.get_json()
-    return payments_functions.delete_account(payment_id)
+    return payments_functions.delete_payment_card(payment_id)
 
 
 
