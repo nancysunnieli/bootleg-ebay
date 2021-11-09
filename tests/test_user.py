@@ -45,7 +45,7 @@ class TestUser(TestCase):
             "password": "WRONG_PASSWORD"
         }
 
-        output = requests.get(url=url, json=params)
+        output = requests.post(url=url, json=params)
 
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
@@ -57,17 +57,17 @@ class TestUser(TestCase):
             "password": password
         }
 
-        output = requests.get(url=url, json=params)
+        output = requests.post(url=url, json=params)
         self.assertTrue(output.ok)
 
         # logout
         url = self.base_url + "logout"
-        output2 = requests.get(url=url, json={})
+        output2 = requests.get(url=url, json=None)
         self.assertTrue(output2.ok)
 
         # view user 
         url = self.base_url + "user/{}".format(id_)
-        output = requests.get(url=url, json={})
+        output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(output_json['username'], user_name)
         self.assertEqual(output_json['password'], password)
@@ -78,6 +78,13 @@ class TestUser(TestCase):
         output = requests.put(url=url, json={'user_id': id_})
         output_json = output.json()
         self.assertEqual(output_json["suspended"], True)
+        self.assertTrue(output.ok)
+
+        # unsuspend the account
+        url = self.base_url + "unsuspend"
+        output = requests.put(url=url, json={'user_id': id_})
+        output_json = output.json()
+        self.assertEqual(output_json["suspended"], False)
         self.assertTrue(output.ok)
 
         # delete account

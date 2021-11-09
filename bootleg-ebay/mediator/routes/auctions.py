@@ -64,7 +64,7 @@ auctions_api = Blueprint('auctions', __name__)
 @auctions_api.route("/auction", methods = ['POST'])
 @expects_json(_create)
 def create_auction():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction")
+    socket_url = (AUCTIONS_URL + "/auction")
     r = get_and_request(socket_url, 'post')
     
     if not r.ok:
@@ -74,9 +74,9 @@ def create_auction():
 
 
 @auctions_api.route("/auction/<auction_id>", methods = ['GET'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def get_auction(auction_id):
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction/{}".format(auction_id))
+    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
     r = get_and_request(socket_url, 'get')
     
     if not r.ok:
@@ -85,9 +85,9 @@ def get_auction(auction_id):
     return r.content
 
 @auctions_api.route("/current_auctions", methods = ['GET'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def view_current_auctions():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
+    socket_url = (AUCTIONS_URL + "/current_auctions")
 
     r = get_and_request(socket_url, 'get')
     
@@ -99,9 +99,9 @@ def view_current_auctions():
 
 
 @auctions_api.route("/auction/<auction_id>", methods = ['DELETE'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def remove_auction(auction_id):
-    socket_url = "http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/auction/{}".format(auction_id)
+    socket_url = AUCTIONS_URL + "/auction/{}".format(auction_id)
     r = get_and_request(socket_url, 'delete')
     
     if not r.ok:
@@ -111,9 +111,9 @@ def remove_auction(auction_id):
 
 
 @auctions_api.route("/bids/<user_id>", methods = ['GET'])
-@expects_json(_none_schema)
+# @expects_json(_none_schema)
 def user_bids(user_id):
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids/{}".format(user_id))
+    socket_url = (AUCTIONS_URL + "/bids/{}".format(user_id))
     r = get_and_request(socket_url, 'get')
     
     if not r.ok:
@@ -125,7 +125,7 @@ def user_bids(user_id):
 @auctions_api.route("/bid", methods = ['POST'])
 @expects_json(_bid)
 def create_bid():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bid")
+    socket_url = (AUCTIONS_URL + "/bid")
     r = get_and_request(socket_url, 'post')
     
     if not r.ok:
@@ -133,10 +133,10 @@ def create_bid():
     
     return r.content
 
-@auctions_api.route("/bids", methods = ['GET'])
-@expects_json(_auction)
-def view_bids():
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
+@auctions_api.route("/<auction_id>/bids", methods = ['GET'])
+# @expects_json(_auction)
+def view_bids(auction_id):
+    socket_url = AUCTIONS_URL + "/{}/bids".format(auction_id)
     r = get_and_request(socket_url, 'get')
     
     if not r.ok:
