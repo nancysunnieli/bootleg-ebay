@@ -2,6 +2,7 @@ import pymongo
 from pymongo import MongoClient
 import csv
 import re
+from bson.objectid import ObjectId
 
 client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27017")
 db = client["items"]
@@ -25,7 +26,7 @@ def create_photos_database(data_file_path, collection = photos_collection):
     all_entries = []
     for row in csvreader:
         photo = {"_id": None, "photo": None}
-        photo["_id"] = row[0]
+        photo["_id"] = ObjectId(row[0])
         photo["photo"] = row[1]
         all_entries.append(photo)
     file.close()
@@ -38,7 +39,7 @@ def create_flagged_items_database(data_file_path, collection = flagged_items_col
     all_entries = []
     for row in csvreader:
         flagged_item = {"_id": None, "itemID": None, "FlagReason": None}
-        flagged_item["_id"] = row[0]
+        flagged_item["_id"] = ObjectId(row[0])
         flagged_item["itemID"] = row[1]
         flagged_item["FlagReason"] = row[2]
         all_entries.append(flagged_item)
@@ -63,7 +64,7 @@ def create_items_database(data_file_path, collection = items_collection):
         item = {"_id": None, "name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
                 "price": None, "isFlagged": None}
-        item["_id"] = row[0]
+        item["_id"] = ObjectId(row[0])
         item["name"] = row[1]
         item["description"] = row[2]
         item["category"] = reformat_list_csv(row[3])

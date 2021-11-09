@@ -1,6 +1,7 @@
 import pymongo
 from pymongo import MongoClient
 import csv
+from bson.objectid import ObjectId
 
 client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27019")
 db = client["auctions"]
@@ -21,7 +22,7 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
     all_bids = []
     for row in csvreader:
         bid = {}
-        bid["bid_id"] = row[0]
+        bid["bid_id"] = ObjectId(row[0])
         bid["AuctionID"] = row[1]
         bid["bid_time"] = int(row[2])
         bid["price"] = float(row[3])
@@ -36,7 +37,7 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
     all_entries = []
     for row in csvreader:
         auction = {}
-        auction["_id"] = row[0]
+        auction["_id"] = ObjectId(row[0])
         auction["start_time"] = int(row[1])
         auction["end_time"] = int(row[2])
         auction["item_id"] = row[3]

@@ -110,6 +110,15 @@ def time():
         return Response(response=r.text, status=r.status_code)
     return r.content   
 
+@notifs_api.route('/inbox', methods = ['GET'])
+def inbox():
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/inbox")
+    r = requests.get(url = socket_url)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    return r.content
+
 
 
 

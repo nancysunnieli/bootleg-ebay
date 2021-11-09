@@ -23,7 +23,7 @@ _required_attributes = {
         'category': {'type': 'string'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
-        'price': {'type': 'string'}
+        'price': {'type': 'number'}
     },
     'required': ['name', 'description', 'category', 'photos', 'sellerID', 'price']
 }
@@ -31,22 +31,24 @@ _required_attributes = {
 _unrequired_attributes = {
     'type': 'object',
     'properties': {
+        'item_id': {'type': 'string'},
         'name': {'type': 'string'},
         'description' : {'type' : 'string'},
         'category': {'type': 'string'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
-        'price': {'type': 'string'}
+        'price': {'type': 'number'}
     },
-    'required': []
+    'required': ['item_id']
 }
 
 _category = {
     'type': 'object',
     'properties': {
+        'item_id': {'type': 'string'},
         'category': {'type': 'array'}
     },
-    'required': ['category']
+    'required': ['item_id', 'category']
 }
 
 _view_items_schema = {
@@ -68,18 +70,20 @@ _search_items = {
 _watchlist = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'}
+        'item_id': {'type': 'string'},
+        'user_id': {'type': 'string'},
     },
-    'required': ['user_id']
+    'required': ['user_id', 'item_id']
 }
 
 
 _report = {
     'type': 'object',
     'properties': {
+        'item_id': {'type': 'string'},
         'reason': {'type': 'string'}
     },
-    'required': ['reason']
+    'required': ['item_id', 'reason']
 }
 
 _none_schema = {
@@ -89,14 +93,20 @@ _none_schema = {
     'required': []
 }
 
+_item_schema = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+    },
+    'required': ['item_id']
+}
+
 
 @items_api.route('/', methods=['GET'])
 def items_service_status():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/")
     r = requests.get(url = socket_url)
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -109,9 +119,6 @@ def view_all_items():
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content).content
 
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
-
     all_items = []
     for item in json.loads(r):
         del item["_id"]
@@ -123,9 +130,8 @@ def view_all_items():
 def view_flagged_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/view_flagged_items")
-    r = requests.get(url = socket_url)
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
@@ -136,75 +142,76 @@ def search_item():
                      ITEMS_PORT + "/search_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
-@items_api.route('/watchlist/<item_id>', methods = ['POST'])
+@items_api.route('/watchlist', methods = ['POST'])
 @expects_json(_watchlist)
-def add_user_to_watch_list(item_id):
+def add_user_to_watch_list():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/add_user_to_watch_list")
     data_content = request.get_json()
-    user_id = data_content["user_id"]
-    r = requests.post(url = socket_url, data = {"item_id": item_id, "user_id": user_id})
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route('/removal/<item_id>', methods = ['POST'])
-@expects_json(_none_schema)
-def remove_item(item_id):
-    socket_url = (AUCTIONS_URL + "/bids")
+@items_api.route('/removal', methods = ['POST'])
+@expects_json(_item_schema)
+def remove_item():
+    """
+    # getting auction name
+    data_content = request.get_json()
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
     r = get_and_request(socket_url, 'get')
-    if len(r.content) != 0:
-        return """There are already bids on 
-                this item! It cannot be deleted"""
-    
+
+    auction_id = None
+    for auction in r.content:
+        if auction["item_id"] == json.loads(data_content)["item_id"]:
+            auction_id = auction["_id"]
+
+    if auction_id:
+        # auctions isn't working
+        socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
+        r = get_and_request(socket_url, 'get')
+        return r.content
+        if len(r.content) != 0:
+            return "There are already bids on this item! It cannot be deleted"
+    """
+    data_content = request.get_json()
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/remove_item")
-    r = requests.post(url = socket_url, data = {"item_id": item_id})
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route('/report/<item_id>', methods = ['POST'])
+@items_api.route('/report', methods = ['POST'])
 @expects_json(_report)
-def report_item(item_id):
+def report_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST+
                      ITEMS_PORT + "/report_item")
     data_content = request.get_json()
-    reason = data_content["reason"]
-    r = requests.post(url = socket_url, data = {"reason": reason, "item_id": item_id})
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/item/<item_id>", methods = ['POST'])
-@expects_json(_none_schema)
-def get_item(item_id):
+@items_api.route("/item", methods = ['POST'])
+@expects_json(_item_schema)
+def get_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/get_item")
-    r = requests.post(url = socket_url, data = {"item_id": item_id})
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/modification/<item_id>", methods = ['POST'])
+@items_api.route("/modification", methods = ['POST'])
 @expects_json(_unrequired_attributes)
-def modify_item(item_id):
+def modify_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/modify_item")
-    data_content = json.loads(request.get_json())
-    data_content["item_id"] = item_id
-    r = requests.post(url = socket_url, json = json.dumps(data_content))
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
@@ -215,30 +222,24 @@ def add_item():
                     ITEMS_PORT + "/add_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
-@items_api.route("/categories/<item_id>", methods = ['POST'])
+@items_api.route("/categories", methods = ['POST'])
 @expects_json(_category)
-def edit_categories(item_id):
+def edit_categories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/edit_categories")
-    data_content = json.loads(request.get_json())
-    data_content["item_id"] = item_id
-    r = requests.post(url = socket_url, json = json.dumps(data_content))
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
 
-@items_api.route("/availability/<item_id>", methods = ['POST'])
-@expects_json(_none_schema)
-def modify_availability(item_id):
+@items_api.route("/availability", methods = ['POST'])
+@expects_json(_item_schema)
+def modify_availability():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/modify_availability")
-    r = requests.post(url = socket_url, data = {"item_id": item_id})
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     return r.content

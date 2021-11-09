@@ -1,4 +1,8 @@
 import smtplib, ssl
+import poplib
+import email
+import getpass
+import json
 
 port = 465  # For SSL
 
@@ -56,3 +60,38 @@ def alert_before(recipient, item_id, time_left):
     subject = time_left + " left in auction."
     configuration = {"body": body, "subject": subject, "recipient": recipient}
     return send_email(configuration)
+
+def fetch_messages():
+    """
+    This gets the emails from the admin mailbox
+    """
+    non_read = ["The Google team <google-noreply@google.com>"]
+    pop_conn = poplib.POP3_SSL('pop.gmail.com')
+    pop_conn.user('bootlegebay@gmail.com')
+    pop_conn.pass_("bootleg1234!")
+
+    num_messages = len(pop_conn.list()[1])
+    print(num_messages)
+
+    # each email will be an array that has from, subject, and message
+    all_emails = []
+    for i in range(0, num_messages):
+        raw_email = b"\n".join(pop_conn.retr(i+1)[1])
+        parsed_email = email.message_from_bytes(raw_email)
+        if "google" not in parsed_email["From"]:
+            if parsed_email.is_multipart():
+                parts = []
+                for part in parsed_email.get_payload():
+                    parts.append(part.get_payload())
+                message = " ".join(parts)
+            else:
+                message = parsed_email.get_payload()
+        all_emails.append([parsed_email["From"], parsed_email["Subject"], message])
+    return json.dumps(all_emails)
+
+
+
+
+if __name__ == "__main__":
+    print(fetch_messages())
+

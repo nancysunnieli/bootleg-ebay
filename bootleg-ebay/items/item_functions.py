@@ -7,6 +7,7 @@ import uuid
 import items
 
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 
 
@@ -74,7 +75,7 @@ class ItemsDBManager:
         This edits the categories for an item
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = { "_id" : item_id }
+        query = {"_id": id}
         new_categories = { "$set": { "category": updated_categories } }
         result = items_collection.update_one(query, new_categories)
         if result.modified_count > 0:
@@ -92,6 +93,7 @@ class ItemsDBManager:
         item = {"name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
                 "price": None, "isFlagged": False, "watchlist": None, "available": None}
+        item["_id"] = str(uuid.uuid4())[:12]
         item["name"] = name
         item["description"] = description
         item["category"] = category
@@ -120,7 +122,7 @@ class ItemsDBManager:
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
 
-        query = { "_id" : id }
+        query = {"_id": id}
         modifications = []
         if name:
             new_name = { "$set": { "name": name } }
@@ -140,7 +142,7 @@ class ItemsDBManager:
         if watchlist:
             new_watchlist = { "$set": { "watchlist": watchlist } }
             modifications.append(new_watchlist)
-
+        print(modifications)
         success = []
         failure = []
         for modification in modifications:
@@ -223,7 +225,7 @@ class ItemsDBManager:
 
         
         # updates flagged items database
-        result = cls.AddFlaggedItem(id, flag_reason)
+        result = cls.add_flagged_item(id, flag_reason)
         if (result == "Flag Successfully Added!"):
             return "Item Reported Successfully!"
         else:
@@ -291,7 +293,7 @@ class ItemsDBManager:
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
         query = {"_id" : item_id}
-        modification = { "$set": {"available" : False }}
+        modification = { "$set": {"available" : "False" }}
         result = items_collection.update_one(query, modification)
         if result.modified_count > 0:
             return "Successfully adjusted availability."
@@ -315,8 +317,12 @@ class ItemsDBManager:
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
         query = {'_id': photo_id}
+        print(query)
         result = list(photos_collection.find(query))
-        return result[0]["photo"]
+        if len(result) > 0:
+            return result[0]["photo"]
+        else:
+            return None
 
 
 def view_flagged_items(limit = None):
@@ -329,7 +335,6 @@ def view_flagged_items(limit = None):
     for item in all_items:
         item_id = item["_id"]
         flags = ItemsDBManager.get_flag_reasons(item_id)
-
         photo = ItemsDBManager.get_photo(item["photos"])
         
 
@@ -441,12 +446,13 @@ def modify_item(item_id, name = None, description = None,
     photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
     new_item.from_mongo(item, flags, photo)
-    new_item.modify_item(name, description, category, photos,
-                        price, watchlist)
+    new_item.modify_item(name, description, photos,
+                        price, category, watchlist)
+
     if name:
         new_name = new_item.name
     else:
-        name = None
+        new_name = None
     if description:
         new_description = new_item.description
     else:

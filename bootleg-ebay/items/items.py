@@ -1,4 +1,5 @@
 import json
+from bson.objectid import ObjectId
 
 class Item(object):
     """
@@ -93,8 +94,11 @@ class Item(object):
         self._photos = photo
         self._sellerID = item["sellerID"]
         self._price = item["price"]
-        self._isFlagged = item["price"]
-        self._watchlist = item["watchlist"]
+        self._isFlagged = item["isFlagged"]
+        if tuple(item["watchlist"]) == tuple(["True"]):
+            self._watchlist = []
+        else:
+            self._watchlist = item["watchlist"]
         self._availability = item["available"]
         self._FlaggedReason = []
         if self._isFlagged:
@@ -105,7 +109,7 @@ class Item(object):
     def to_mongo(self):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
-                "sellerID": self.price, "isFlagged": self.isFlagged,
+                "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
                 "watchlist": self.watchlist, "available": self.available}
 
     def modify_item(self,
