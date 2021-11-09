@@ -7,6 +7,8 @@ import re
 import uuid
 from PIL import Image
 import io
+from bson.objectid import ObjectId
+
 
 def convert_image_to_string(image_directory):
     image = Image.open(image_directory)
@@ -29,7 +31,7 @@ def generate_random_date(start_date, end_date):
     return random_date_epoch_time
 
 def generate_random_id():
-    return str(uuid.uuid4())[:12]
+    return ObjectId()
 
 def generate_random_bool():
     random_bit = random.getrandbits(1)
