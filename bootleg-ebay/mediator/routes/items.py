@@ -157,7 +157,7 @@ def add_user_to_watch_list(item_id):
 @items_api.route('/removal/<item_id>', methods = ['POST'])
 @expects_json(_none_schema)
 def remove_item(item_id):
-    socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
+    socket_url = (AUCTIONS_URL + "/bids")
     r = get_and_request(socket_url, 'get')
     if len(r.content) != 0:
         return """There are already bids on 
