@@ -41,7 +41,7 @@ def view_user(user_id):
     # user_id = data["user_id"]
     return users_functions.view_user(user_id)
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data["username"]

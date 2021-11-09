@@ -45,7 +45,7 @@ class TestUser(TestCase):
             "password": "WRONG_PASSWORD"
         }
 
-        output = requests.get(url=url, json=params)
+        output = requests.post(url=url, json=params)
 
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
@@ -57,7 +57,7 @@ class TestUser(TestCase):
             "password": password
         }
 
-        output = requests.get(url=url, json=params)
+        output = requests.post(url=url, json=params)
         self.assertTrue(output.ok)
 
         # logout

@@ -65,11 +65,11 @@ def view_user(user_id):
 
     return r.content
 
-@users_api.route("/login", methods = ['GET'])
+@users_api.route("/login", methods = ['POST'])
 @expects_json(_login_schema)
 def login():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
-    r = get_and_request(socket_url, 'get')
+    r = get_and_request(socket_url, 'post')
 
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
