@@ -180,3 +180,11 @@ def create_transaction(transaction_info):
 
     return transaction.to_json()
 
+def get_transaction(transaction_id):
+    transaction = TransactionDBManager.get_transaction(transaction_id)
+
+    if transaction is None:
+        raise BadInputError('There is no transaction information for transaction id: {}'.format(transaction_id))
+
+    return transaction.to_json()
+

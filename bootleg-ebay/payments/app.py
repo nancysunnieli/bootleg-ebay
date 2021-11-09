@@ -52,6 +52,11 @@ def create_transaction():
     data = request.get_json()
     return payments_functions.create_transaction(data)
 
+@app.route('/transaction/<transaction_id>', methods=['GET'])
+def get_transaction(transaction_id):
+    # data = request.get_json()
+    return payments_functions.get_transaction(transaction_id)
+
 
 
 
