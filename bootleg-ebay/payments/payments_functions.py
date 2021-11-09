@@ -188,3 +188,13 @@ def get_transaction(transaction_id):
 
     return transaction.to_json()
 
+def delete_transaction(transaction_id):
+    transaction = TransactionDBManager.get_transaction(transaction_id)
+
+    if transaction is None:
+        raise BadInputError('There is no transaction information for transaction id: {}'.format(transaction_id))
+
+    TransactionDBManager.delete_by_id(transaction_id)
+
+    return transaction.to_json()
+

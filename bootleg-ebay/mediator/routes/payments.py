@@ -108,3 +108,13 @@ def get_transaction(transaction_id):
 
     return r.content
 
+@payments_api.route("/transaction/<transaction_id>", methods = ['DELETE'])
+def delete_transaction(transaction_id):
+    socket_url = (PAYMENTS_URL + "/transaction/{}".format(transaction_id))
+    r = get_and_request(socket_url, 'delete')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+

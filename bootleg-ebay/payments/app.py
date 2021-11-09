@@ -54,8 +54,11 @@ def create_transaction():
 
 @app.route('/transaction/<transaction_id>', methods=['GET'])
 def get_transaction(transaction_id):
-    # data = request.get_json()
     return payments_functions.get_transaction(transaction_id)
+
+@app.route('/transaction/<transaction_id>', methods=['DELETE'])
+def delete_transaction(transaction_id):
+    return payments_functions.delete_transaction(transaction_id)
 
 
 
