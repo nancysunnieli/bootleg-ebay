@@ -62,12 +62,12 @@ class TestUser(TestCase):
 
         # logout
         url = self.base_url + "logout"
-        output2 = requests.get(url=url, json={})
+        output2 = requests.get(url=url, json=None)
         self.assertTrue(output2.ok)
 
         # view user 
         url = self.base_url + "user/{}".format(id_)
-        output = requests.get(url=url, json={})
+        output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(output_json['username'], user_name)
         self.assertEqual(output_json['password'], password)
@@ -87,7 +87,7 @@ class TestUser(TestCase):
 
         self.assertTrue(output.ok)
         
-    # @unittest.skip("Skipped because it runs correctly")
+    @unittest.skip("Skipped because it runs correctly")
     def test_modify(self):
 
         user_name = id_generator()

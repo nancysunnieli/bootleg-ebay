@@ -54,7 +54,6 @@ _optional_user_info_schema['required'] = []
 
 
 @users_api.route("/user/<user_id>", methods = ['GET'])
-@expects_json(_none_schema)
 def view_user(user_id):
     socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id)
 
@@ -77,7 +76,6 @@ def login():
     return r.content
 
 @users_api.route("/logout", methods = ['GET'])
-@expects_json(_none_schema)
 def logout():
     socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
     r = get_and_request(socket_url, 'get')
