@@ -120,6 +120,17 @@ def suspend():
 
     return r.content
 
+@users_api.route("/unsuspend", methods = ['PUT'])
+@expects_json(_user_id_schema)
+def unsuspend():
+    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/unsuspend"
+
+    r = get_and_request(socket_url, 'put')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 
 @users_api.route("/user/<user_id>", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)

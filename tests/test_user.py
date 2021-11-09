@@ -80,6 +80,13 @@ class TestUser(TestCase):
         self.assertEqual(output_json["suspended"], True)
         self.assertTrue(output.ok)
 
+        # unsuspend the account
+        url = self.base_url + "unsuspend"
+        output = requests.put(url=url, json={'user_id': id_})
+        output_json = output.json()
+        self.assertEqual(output_json["suspended"], False)
+        self.assertTrue(output.ok)
+
         # delete account
         # make sure to delete anything you create for testing
         url = self.base_url + 'user/{}'.format(id_)
@@ -87,7 +94,7 @@ class TestUser(TestCase):
 
         self.assertTrue(output.ok)
         
-    @unittest.skip("Skipped because it runs correctly")
+    # @unittest.skip("Skipped because it runs correctly")
     def test_modify(self):
 
         user_name = id_generator()

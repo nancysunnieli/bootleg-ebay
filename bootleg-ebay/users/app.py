@@ -63,6 +63,12 @@ def suspend():
     user_id = data["user_id"]
     return users_functions.suspend(user_id)
 
+@app.route('/unsuspend', methods=['PUT'])
+def unsuspend():
+    data = request.get_json()
+    user_id = data["user_id"]
+    return users_functions.unsuspend(user_id)
+
 @app.route('/user/<user_id>', methods=['PUT'])
 def modify_profile(user_id):
     data = request.get_json()
