@@ -1,10 +1,9 @@
 import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/esm/Container";
 import { useDispatch, useSelector } from "react-redux";
-import Card from "react-bootstrap/Card";
+import { deleteAccount, setEditModalVisible, suspendAccount } from "../../slices/profile";
 import EditModalInfo from "./EditInfoModal";
-import { useState } from "react";
-import { setEditModalVisible } from "../../slices/profile";
 
 const Profile = () => {
     const { user } = useSelector((state) => state.auth);
@@ -13,11 +12,11 @@ const Profile = () => {
     const setShowEditModal = (visibility) => dispatch(setEditModalVisible(visibility));
 
     const handleDelete = () => {
-        window.alert("TODO");
+        dispatch(deleteAccount(user.id));
     };
 
     const handleSuspend = () => {
-        window.alert("TODO");
+        dispatch(suspendAccount({ id: user.id, suspended: user.suspended === 0 ? 1 : 0 }));
     };
 
     return (
@@ -29,6 +28,8 @@ const Profile = () => {
                 <Card>
                     <Card.Body>
                         <Card.Title>Account settings</Card.Title>
+                        <Card.Text>Email: {user.email}</Card.Text>
+                        <Card.Text>Suspended: {user.suspended === 0 ? "No" : "Yes"}</Card.Text>
                         <Button variant="info" onClick={() => setShowEditModal(true)}>
                             Update Info
                         </Button>{" "}
@@ -36,12 +37,11 @@ const Profile = () => {
                             Delete
                         </Button>{" "}
                         <Button variant="warning" onClick={handleSuspend}>
-                            Suspend
+                            {user.suspended === 0 ? "Suspend" : "Unsuspend"}
                         </Button>
                     </Card.Body>
                 </Card>
                 <br />
-                <h3>Active Auctions</h3>
             </Container>
             <EditModalInfo show={editModalVisible} handleClose={() => setShowEditModal(false)} />
         </div>

@@ -2,13 +2,15 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { modifyProfile } from "../../slices/profile";
 
 const EditModalInfo = ({ show, handleClose }) => {
     const { user } = useSelector((state) => state.auth);
     const [email, setEmail] = useState(user.email);
     const [password, setPassword] = useState(user.password);
-    // const dispatch = useDispatch();
+    const dispatch = useDispatch();
+    const isSaving = useSelector((state) => state.profile.isSaving);
 
     const close = () => {
         setEmail(user.email);
@@ -16,7 +18,10 @@ const EditModalInfo = ({ show, handleClose }) => {
         handleClose();
     };
 
-    const handleSave = () => {};
+    const handleSave = () => {
+        console.log("saving");
+        dispatch(modifyProfile({ id: user.id, email, password }));
+    };
 
     return (
         <Modal show={show} onHide={handleClose}>
@@ -43,10 +48,10 @@ const EditModalInfo = ({ show, handleClose }) => {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={close}>
+                <Button variant="secondary" onClick={close} disabled={isSaving}>
                     Close
                 </Button>
-                <Button variant="primary" onClick={handleSave}>
+                <Button variant="primary" onClick={handleSave} disabled={isSaving}>
                     Save Changes
                 </Button>
             </Modal.Footer>

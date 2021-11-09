@@ -1,11 +1,23 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import UserService from "../services/user.service";
-import { setUser } from "./auth";
+import CartService from "../services/cart.service";
 
 const initialState = {
-    visible: false,
-    isSaving: false,
+    items: [],
 };
+
+export const addItemToCart = createAsyncThunk(
+    "cart/addItemToCart",
+    async ({ id, item_id }, thunkAPI) => {
+        try {
+            const data = await CartService.addItemToCart(id, item_id);
+            thunkAPI.dispatch(setUser(data));
+            return {};
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 
 export const modifyProfile = createAsyncThunk(
     "auth/modifyProfile",
