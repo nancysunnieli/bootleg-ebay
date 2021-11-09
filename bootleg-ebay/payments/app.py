@@ -47,6 +47,11 @@ def delete_payment_card(payment_id):
     # data = request.get_json()
     return payments_functions.delete_payment_card(payment_id)
 
+@app.route('/transaction', methods=['POST'])
+def create_transaction():
+    data = request.get_json()
+    return payments_functions.create_transaction(data)
+
 
 
 

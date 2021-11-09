@@ -3,10 +3,12 @@ import json
 
 from mysql.connector import connect, Error
 
-from payments import PaymentCard, BadInputError
+from payments import PaymentCard, Transaction, BadInputError
 
 PaymentInfo = Dict[str, Any]
+TransactionInfo = Dict[str, Any]
 PaymentID = int
+TransactionID = int
 UserID = int
 
 class PaymentsDBManager:
@@ -18,36 +20,40 @@ class PaymentsDBManager:
             port="3306",
             user="%s" % ("root"),
             password="%s" % ("bootleg2"),
-            database=cls.db_name,
+            database="payments",
         )
         return connection
 
     @classmethod
-    def insert_many(cls, data: Sequence):
-        """Insert many rows into payments database.
+    def insert(cls, data: Sequence):
+        """Insert row into payments database.
 
         Args: 
             data: List of rows to be inserted
         """
         cmd = "INSERT INTO {} ({}) VALUES ({})".format(
-            cls.db_name, 
-            ', '.join(cls.db_cols),
-            ', '.join(['%s'] * len(cls.db_cols)))
+            cls.table_name, 
+            ', '.join(cls.table_cols),
+            ', '.join(['%s'] * len(cls.table_cols)))
 
         with cls._create_connection() as c:
             with c.cursor() as cursor:
-                cursor.executemany(cmd, data)
+                cursor.execute(cmd, data)
+
+            last_row_id = cursor.lastrowid
             c.commit()
+
+        return last_row_id
 
     @classmethod
     def update_by_id(cls, info: Dict) -> None:
         """Update the database by id
         """
-        set_cmd = ["{} = %s".format(c) for c in cls.db_cols]
+        set_cmd = ["{} = %s".format(c) for c in cls.table_cols]
         set_cmd = ", ".join(set_cmd)
-        cmd = "UPDATE {} SET {} WHERE {} = %s".format(cls.db_name, set_cmd, cls.id_name)
+        cmd = "UPDATE {} SET {} WHERE {} = %s".format(cls.table_name, set_cmd, cls.id_name)
 
-        val = [info[c] for c in cls.db_cols]
+        val = [info[c] for c in cls.table_cols]
         with cls._create_connection() as c:
             with c.cursor() as cursor:
                 cursor.execute(cmd, val)
@@ -57,7 +63,7 @@ class PaymentsDBManager:
     def delete_by_id(cls, id_) -> None:
         """Delete a row from the database by id
         """
-        cmd = "DELETE FROM {} WHERE {} = %s".format(cls.db_name, cls.id_name)
+        cmd = "DELETE FROM {} WHERE {} = %s".format(cls.table_name, cls.id_name)
         val = (id_, )
 
         with cls._create_connection() as c:
@@ -84,10 +90,23 @@ class PaymentsDBManager:
 
         return single
 
+class TransactionDBManager(PaymentsDBManager):
+    table_name = "payments.transactions"
+    table_cols = ["user_id", "payment_id", "item_id", "money", "quantity"]
+    id_name = "transaction_id"
+    class_ = Transaction
+
+    @classmethod
+    def get_transaction(cls, transaction_id: TransactionID) -> Optional[Transaction]:
+        cmd = "SELECT * FROM {} WHERE {} = %s".format(cls.table_name, cls.id_name)
+        val = (transaction_id, )
+        
+        transaction = cls._get_single_by_query(cmd, val)
+        return transaction
 
 class PaymentCardsDBManager(PaymentsDBManager):
-    db_name = "payments"
-    db_cols = ["user_id", "card_number", "security_code", "expiration_date"]
+    table_name = "payments"
+    table_cols = ["user_id", "card_number", "security_code", "expiration_date"]
     id_name = "payment_id"
     class_ = PaymentCard
 
@@ -99,7 +118,7 @@ class PaymentCardsDBManager(PaymentsDBManager):
         Returns:
             payment_card: Returns `None` if we couldn't find the payment. Otherwise, return the payment card.
         """
-        cmd = "SELECT * FROM {} WHERE {} = %s".format(cls.db_name, cls.id_name)
+        cmd = "SELECT * FROM {} WHERE {} = %s".format(cls.table_name, cls.id_name)
         val = (payment_id, )
         
         payment_card = cls._get_single_by_query(cmd, val)
@@ -112,7 +131,7 @@ class PaymentCardsDBManager(PaymentsDBManager):
         Returns:
             payment_card: Returns `None` if we couldn't find the payment. Otherwise, return the payment card.
         """
-        cmd = "SELECT * FROM {} WHERE user_id = %s".format(cls.db_name)
+        cmd = "SELECT * FROM {} WHERE user_id = %s".format(cls.table_name)
         val = (user_id, )
         
         payment_card = cls._get_single_by_query(cmd, val)
@@ -130,8 +149,8 @@ def create_payment_card(payment_info: PaymentInfo):
 
     # payment_card = PaymentCard.from_dict(payment_info)
     # payment_info = payment_card.to_dict()
-    rows = [[payment_info[c] for c in PaymentCardsDBManager.db_cols]]
-    PaymentCardsDBManager.insert_many(rows)
+    rows = [payment_info[c] for c in PaymentCardsDBManager.table_cols]
+    PaymentCardsDBManager.insert(rows)
 
     payment_card = PaymentCardsDBManager.get_payment_card_by_user_id(user_id)
 
@@ -152,3 +171,12 @@ def delete_payment_card(payment_id: PaymentID) -> None:
     PaymentCardsDBManager.delete_by_id(payment_id)
 
     return payment_card.to_json()
+
+def create_transaction(transaction_info):
+    rows = [transaction_info[c] for c in TransactionDBManager.table_cols]
+    transaction_id = TransactionDBManager.insert(rows)
+
+    transaction = TransactionDBManager.get_transaction(transaction_id)
+
+    return transaction.to_json()
+

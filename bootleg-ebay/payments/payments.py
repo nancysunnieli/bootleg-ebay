@@ -72,7 +72,9 @@ class Transaction:
         self._transaction_info = {
             'user_id': None,
             'payment_id': None,
+            'item_id': None,
             'money': None,
+            'quantity': None
         }
 
         for k in transaction_info.keys():
@@ -93,7 +95,7 @@ class Transaction:
     def from_dict(cls, dict_):
         transaction_id = dict_['transaction_id']
         del dict_['transaction_id']
-        transaction = cls(transaction_id, card_info=dict_)
+        transaction = cls(transaction_id, dict_)
         return transaction
 
     def to_dict(self):

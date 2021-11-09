@@ -11,11 +11,13 @@ CREATE TABLE `payments` (
 );
 
 
-
+DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `transaction_id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int unsigned NOT NULL,
-  `payment_id` BIGINT unsigned NOT NULL,
+  `payment_id` int unsigned NOT NULL,
+  `item_id` varchar(100) NOT NULL,
   `money` float NOT NULL,
+  `quantity` int unsigned NOT NULL, 
   PRIMARY KEY (`transaction_id`)
 );
