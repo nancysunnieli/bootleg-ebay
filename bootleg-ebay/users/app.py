@@ -41,7 +41,7 @@ def view_user(user_id):
     # user_id = data["user_id"]
     return users_functions.view_user(user_id)
 
-@app.route('/login', methods=['GET'])
+@app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data["username"]
@@ -62,6 +62,12 @@ def suspend():
     data = request.get_json()
     user_id = data["user_id"]
     return users_functions.suspend(user_id)
+
+@app.route('/unsuspend', methods=['PUT'])
+def unsuspend():
+    data = request.get_json()
+    user_id = data["user_id"]
+    return users_functions.unsuspend(user_id)
 
 @app.route('/user/<user_id>', methods=['PUT'])
 def modify_profile(user_id):

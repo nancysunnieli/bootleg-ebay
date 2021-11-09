@@ -137,6 +137,9 @@ class User(ABC):
 
         self._user_info['suspended'] = True
 
+    def unsuspend(self) -> None:
+        self._user_info['suspended'] = False
+
     def modify_profile(
         self, 
         user_info: Optional[Dict[str, Any]] = None) -> None:

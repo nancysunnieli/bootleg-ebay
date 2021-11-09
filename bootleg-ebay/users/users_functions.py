@@ -180,6 +180,22 @@ def suspend(user_id: UserID):
     user = UserDBManager.get_user(user_id)
     return user.to_json()
 
+def unsuspend(user_id: UserID):
+    """Un-suspend an user account.
+    """
+    user = UserDBManager.get_user(user_id)
+
+    if user is None:
+        raise BadInputError('Cannot find user id {} in database'.format(user_id))
+
+    user.unsuspend()
+
+    user_dict = user.to_dict()
+    UserDBManager.update_by_id(user_dict)
+
+    user = UserDBManager.get_user(user_id)
+    return user.to_json()
+
 def modify_profile(new_user_info: UserInfo):
     """Modify the 
 

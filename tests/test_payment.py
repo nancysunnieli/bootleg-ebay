@@ -45,7 +45,7 @@ class TestUser(TestCase):
 
         # view successfully
         url = self.base_url + "card/{}".format(id_)
-        output = requests.get(url=url, json={})
+        output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(output_json["card_number"], card_number)
         self.assertEqual(output_json["expiration_date"], expiration_date)
@@ -54,5 +54,5 @@ class TestUser(TestCase):
 
         # delete successfully
         url = self.base_url + 'card/{}'.format(id_)
-        output = requests.delete(url=url, json={})
+        output = requests.delete(url=url, json=None)
         self.assertTrue(output.ok)
