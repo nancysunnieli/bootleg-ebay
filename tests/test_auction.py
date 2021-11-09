@@ -76,9 +76,9 @@ class TestAuction(TestCase):
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
 
-        # view all bids
-        url = self.base_url + "bids"
-        output = requests.get(url=url, json={'auction_id': id_})
+        # view all bids in that auction
+        url = self.base_url + "/{}/bids".format(id_)
+        output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(len(output_json), buyer1_num_bids + buyer2_num_bids)
         self.assertTrue(output.ok)

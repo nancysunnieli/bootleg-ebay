@@ -133,10 +133,10 @@ def create_bid():
 
     return r.content
 
-@auctions_api.route("/bids", methods = ['GET'])
-@expects_json(_auction)
-def view_bids():
-    socket_url = (AUCTIONS_URL + "/bids")
+@auctions_api.route("/<auction_id>/bids", methods = ['GET'])
+# @expects_json(_auction)
+def view_bids(auction_id):
+    socket_url = AUCTIONS_URL + "/{}/bids".format(auction_id)
     r = get_and_request(socket_url, 'get')
     
     if not r.ok:

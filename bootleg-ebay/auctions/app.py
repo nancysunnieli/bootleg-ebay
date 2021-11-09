@@ -61,10 +61,10 @@ def create_bid():
     auction_id = data['auction_id']
     return auctions_functions.create_bid(auction_id, data['price'], data['user_id'])
 
-@app.route('/bids', methods=['GET'])
-def view_bids():
-    data = request.get_json()
-    auction_id = data['auction_id']
+@app.route('/<auction_id>/bids', methods=['GET'])
+def view_bids(auction_id):
+    # data = request.get_json()
+    # auction_id = data['auction_id']
     return auctions_functions.view_bids(auction_id)
 
 if __name__ == '__main__':
