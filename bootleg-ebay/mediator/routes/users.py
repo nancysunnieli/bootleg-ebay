@@ -55,7 +55,7 @@ _optional_user_info_schema['required'] = []
 
 @users_api.route("/user/<user_id>", methods = ['GET'])
 def view_user(user_id):
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id)
+    socket_url = USERS_URL + "/user/{}".format(user_id)
 
     r = get_and_request(socket_url, 'get')
 
@@ -67,7 +67,7 @@ def view_user(user_id):
 @users_api.route("/login", methods = ['POST'])
 @expects_json(_login_schema)
 def login():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/login")
+    socket_url = (USERS_URL + "/login")
     r = get_and_request(socket_url, 'post')
 
     if not r.ok:
@@ -77,7 +77,7 @@ def login():
 
 @users_api.route("/logout", methods = ['GET'])
 def logout():
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/logout")
+    socket_url = (USERS_URL + "/logout")
     r = get_and_request(socket_url, 'get')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -89,7 +89,7 @@ def logout():
 def create_account():
     # create account for user
 
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user"
+    socket_url = USERS_URL + "/user"
     r = get_and_request(socket_url, 'post')
     
     # i.e. if there's an issue with the user side
@@ -112,7 +112,7 @@ def create_account():
 @users_api.route("/suspend", methods = ['PUT'])
 @expects_json(_user_id_schema)
 def suspend():
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/suspend"
+    socket_url = USERS_URL + "/suspend"
 
     r = get_and_request(socket_url, 'put')
     if not r.ok:
@@ -123,7 +123,7 @@ def suspend():
 @users_api.route("/unsuspend", methods = ['PUT'])
 @expects_json(_user_id_schema)
 def unsuspend():
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/unsuspend"
+    socket_url = USERS_URL + "/unsuspend"
 
     r = get_and_request(socket_url, 'put')
     if not r.ok:
@@ -135,7 +135,7 @@ def unsuspend():
 @users_api.route("/user/<user_id>", methods = ['PUT'])
 @expects_json(_optional_user_info_schema)
 def modify_profile(user_id):
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id))
+    socket_url = (USERS_URL + "/user/{}".format(user_id))
     r = get_and_request(socket_url, 'put')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -145,7 +145,7 @@ def modify_profile(user_id):
 @users_api.route("/user/<user_id>", methods = ['DELETE'])
 @expects_json(_none_schema)
 def delete_account(user_id):
-    socket_url = "http://" + USERS_SERVICE_HOST + USERS_PORT + "/user/{}".format(user_id)
+    socket_url = USERS_URL + "/user/{}".format(user_id)
     r = get_and_request(socket_url, 'delete')
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
