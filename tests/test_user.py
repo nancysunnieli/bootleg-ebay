@@ -3,6 +3,7 @@
 import unittest
 from unittest import TestCase
 import requests
+import random
 
 from config import *
 from utils import id_generator
@@ -146,6 +147,38 @@ class TestUser(TestCase):
         )
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
+
+        # check that we can update ratings
+        url = self.base_url + "user/rating/{}".format(id_)
+
+        num_ratings = 5
+        ratings = []
+        for _ in range(num_ratings):
+            rating = random.randint(1, 5)
+            ratings.append(rating)
+            output = requests.put(
+                url=url, 
+                json={
+                    'rating': rating
+                    }
+            )
+            self.assertTrue(output.ok)
+
+        output_json = output.json()
+        self.assertEqual(output_json['number_of_ratings'], num_ratings)
+        self.assertEqual(output_json['total_rating'], sum(ratings))
+
+
+        # check that we can't give a rating less than 1 or greater than 5
+        for rating in [-1, 0, 6, 7]:
+            output = requests.put(
+                url=url, 
+                json={
+                    'rating': rating
+                    }
+            )
+            self.assertFalse(output.ok)
+            self.assertEqual(output.status_code, 400)
 
 
         # delete the account
