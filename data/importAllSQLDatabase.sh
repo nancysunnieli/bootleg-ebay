@@ -5,5 +5,7 @@ cd "$parent_path"
 
 /bin/bash ../bootleg-ebay/advertisements/db/import.sh &
 /bin/bash ../bootleg-ebay/users/db/import.sh &
+/bin/bash ../bootleg-ebay/payments/db/import.sh &
+
 wait 
 echo "Done!"
