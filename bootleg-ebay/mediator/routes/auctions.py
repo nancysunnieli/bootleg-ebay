@@ -83,6 +83,17 @@ def get_auction(auction_id):
 
     return r.content
 
+@auctions_api.route("/auctions_by_item/<item_id>", methods = ['GET'])
+def get_auctions_by_item_id(item_id):
+    socket_url = (AUCTIONS_URL + "/auctions_by_item/{}".format(item_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+
 @auctions_api.route("/auction_metrics", methods = ['POST'])
 def get_auction_metrics():
     socket_url = (AUCTIONS_URL + "/auction_metrics")
