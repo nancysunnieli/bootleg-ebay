@@ -32,7 +32,7 @@ Start mysql
 ```
 docker exec -it 0dfc203c9d89 bash
 mysql -uroot -pbootleg2 payments
-
+mysql -uroot -pbootleg users
 ```
 
 # MongoDB issues for M1 Mac

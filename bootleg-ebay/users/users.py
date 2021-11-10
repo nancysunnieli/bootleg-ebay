@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import json
+import copy
 from typing import Any, Dict, Optional
 
 class APIError(Exception):
@@ -24,7 +25,12 @@ class User(ABC):
         self._user_id = user_id
         self._username = username
         self._password = password
-        self._user_info = {'email': None, 'suspended': False, 'is_admin': False}
+        self._user_info = {
+            'email': None, 
+            'suspended': False, 
+            'is_admin': False,
+            'total_rating': None,
+            'number_of_ratings': None}
 
         for k in user_info.keys():
             if k not in self._user_info:
@@ -64,14 +70,14 @@ class User(ABC):
         Returns
         """
 
-        user_info = {
-            'email': dict_['email'],
-            'is_admin': dict_['is_admin'],
-            'suspended': dict_['suspended']
-        }
+        
+        user_info = copy.deepcopy(dict_)
+        del user_info['user_id']
+        del user_info['username']
+        del user_info['password']
 
         new_instance = cls(
-            user_id=dict_['id'],
+            user_id=dict_['user_id'],
             username=dict_['username'],
             password=dict_['password'],
             user_info=user_info
@@ -84,13 +90,12 @@ class User(ABC):
         """
 
         user_info = {
-            'id': self.user_id,
+            'user_id': self.user_id,
             'username': self.username,
-            'password': self.password,
-            'email': self.user_info['email'],
-            'is_admin': self.user_info['is_admin'],
-            'suspended': self.user_info['suspended']
+            'password': self.password
         }
+
+        user_info.update(self.user_info)
 
         return user_info
 
@@ -139,6 +144,22 @@ class User(ABC):
 
     def unsuspend(self) -> None:
         self._user_info['suspended'] = False
+
+    def update_rating(self, rating) -> None:
+        """Update the rating. Rating has to be between 1 and 5 inclusively
+        """
+
+        if not isinstance(rating, int):
+            raise BadInputError('The rating must be an integer!')
+
+        if rating <= 0 or rating > 5:
+            raise BadInputError('The rating must be between 1 and 5 inclusively!')
+
+        if self._user_info['is_admin']:
+            raise BadInputError('You cannot rate an admin!')
+
+        self._user_info['total_rating'] += rating
+        self._user_info['number_of_ratings'] += 1
 
     def modify_profile(
         self, 
