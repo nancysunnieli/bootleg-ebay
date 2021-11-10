@@ -146,6 +146,7 @@ def user_bids(user_id):
 @auctions_api.route("/bid", methods = ['POST'])
 @expects_json(_bid)
 def create_bid():
+    
     socket_url = (AUCTIONS_URL + "/bid")
     r = get_and_request(socket_url, 'post')
     
@@ -155,6 +156,50 @@ def create_bid():
     # notify the seller and buyers that there have been
     # new bids
 
+    # first I need to get the seller and buyers in the auction
+    data_content = request.get_json()
+    auction_id = data_content["auction_id"]
+    username = data_content["user_id"]
+
+
+    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
+    auction_info = json.loads(get_and_request(socket_url, 'get').content)
+
+    buyers = []
+    for bid in auction_info["bids"]:
+        buyers.append(bid["buyer_id"])
+    seller = auction_info["seller_id"]
+
+    # now I must get the contact information of the buyers
+    # and seller
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + seller)
+    seller_info = json.loads(get_and_request(socket_url, 'get').content)
+    seller_email = seller_info["email"]
+
+    buyer_emails = []
+    for buyer in buyers:
+        socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + buyer)
+        buyer_info = json.loads(get_and_request(socket_url, 'get').content)
+        buyer_email = buyer_info["email"]
+        buyer_emails.append(buyer_email)
+
+    # next I need to get the item_id
+    item_id = auction_info["item_id"]
+
+    # send email to seller
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/seller_bid")
+    data = json.dumps({"recipient": seller_email, "item_id": item_id})
+    requests.post(url = socket_url, json = data)
+
+    # send emails to buyers
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/buyer_bid")
+    for buyer_email in buyer_emails:
+        data = json.dumps({"recipient": buyer_email, "item_id": item_id})
+        requests.post(url = socket_url, json = data)
+
+    # return new bid content
     return r.content
 
 @auctions_api.route("/<auction_id>/bids", methods = ['GET'])

@@ -121,7 +121,7 @@ def checkout():
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
                     + "/card_by_user/" + user_id)
     r = requests.get(socket_url)
-    payment = json.loads(r.content)
+    payment = r.content
     if "error" in payment:
         return "User does not have payment information yet. Please enter your payment information before checking out."
     payment_id = payment["payment_id"]
