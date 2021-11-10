@@ -136,6 +136,11 @@ def view_user(user_id: UserID):
     _assert_not_none_user(user, user_id)
     return user.to_json()
     
+def view_user_by_username(username: str):
+    user = UserDBManager.get_user_by_username(username)
+    if user is None:
+        raise BadInputError('Cannot find username {} in database'.format(username))
+    return user.to_json()
 
 def login(username, password) -> UserInfo:
     """Login to an account

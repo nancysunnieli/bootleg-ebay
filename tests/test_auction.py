@@ -16,7 +16,7 @@ class TestAuction(TestCase):
         # create auction successfully
         url = self.base_url + "auction"
         time = current_time()
-        item_id = "sdsadsa"
+        item_id = id_generator(size=10)
         seller_id = 242312
         auction_info = {
             "start_time": time,
@@ -28,6 +28,21 @@ class TestAuction(TestCase):
         output = requests.post(url=url, json=auction_info)
         self.assertTrue(output.ok)
         id_ = output.json()['auction_id']
+
+        # view auction
+        url = self.base_url + "auction/{}".format(id_)
+        output = requests.get(url=url, json=None)
+        self.assertTrue(output.ok)
+
+        # view auctions by item id
+        url = self.base_url + "auctions_by_item/{}".format(item_id)
+        output = requests.get(url=url, json=None)
+        output_json = output.json()
+        self.assertGreaterEqual(len(output_json), 1)
+        self.assertTrue(output.ok)
+        
+
+
 
 
         # view current auctions

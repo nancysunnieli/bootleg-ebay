@@ -37,9 +37,11 @@ def base():
 
 @app.route('/user/<user_id>', methods=['GET'])
 def view_user(user_id):
-    # data = request.get_json()
-    # user_id = data["user_id"]
     return users_functions.view_user(user_id)
+
+@app.route('/user_by_name/<username>', methods=['GET'])
+def view_user_by_username(username):
+    return users_functions.view_user_by_username(username)
 
 @app.route('/login', methods=['POST'])
 def login():

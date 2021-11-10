@@ -7,6 +7,7 @@ from flask import Response, request, Blueprint
 
 from utils import get_and_post
 from config import *
+import time
 
 # getting IP Address of carts container
 # The following are functions for the carts microservice
@@ -96,7 +97,7 @@ def checkout():
                     CARTS_PORT + "/get_items_from_cart")
     items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
 
-
+    
     # checks availability of all items
     items_availability_url = ("http://" + ITEMS_SERVICE_HOST +
                             ITEMS_PORT + "/lock")
@@ -108,16 +109,23 @@ def checkout():
             unavailable_items.append(item)
         else:
             available_items.append(item)
-            
+    
+    # get user_id from username
+    username = data_content["user_id"]
+    
+    user_id_url = ("http://" + USERS_SERVICE_HOST +
+                    USERS_PORT + "/user_by_name/" + username)
+    user_id = requests.get(url = user_id_url).content
+
     # GET CREDIT CARD INFO
-    user_id = data_content["user_id"]
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
                     + "/card_by_user/" + user_id)
     r = requests.get(socket_url)
-    payment = json.loads(r.content)
+    payment = r.content
     if "error" in payment:
         return "User does not have payment information yet. Please enter your payment information before checking out."
     payment_id = payment["payment_id"]
+    
 
     # CREATE TRANSACTION INFO
     items_info_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -125,17 +133,41 @@ def checkout():
     transaction_url = ("http://" + PAYMENTS_SERVICE_HOST +
                             PAYMENTS_PORT + "/transaction")
 
+    # getting current time to compare with auction end times
+    current_time = int(time.time())
     successfully_bought = []
+    seen_auctions = []
     for item in available_items:
         item_info = (requests.post(url = items_info_url, data = {"item_id": item})).content
         # for price, I need to figure out whether its an auction or a buy now
         # transaction
-        total_price = item_info["price"] + item_info["shipping"]
+
+        # I have to call get auction by item id
+        auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                            AUCTIONS_PORT + "/auctions_by_item/" + item)
+        auctions = json.loads(requests.get(auction_url).content)
+        total_price = None
+        for auction in auctions:
+            if auction["auction_id"] not in seen_auctions:
+                if auction["end_time"] < current_time:
+                    most_recent_bid_time = 0
+                    most_recent_buyer = None
+                    most_recent_price = None
+                    for bid in auction["bids"]:
+                        if bid["bid_time"] > most_recent_bid_time:
+                            most_recent_bid_time = bid["bid_time"]
+                            most_recent_buyer = bid["buyer_id"]
+                            most_recent_price = bid["price"]
+                    if most_recent_buyer == username:
+                        seen_auctions.append(auction["auction_id"])
+                        total_price = item_info["shipping"] + most_recent_price
+                        break
+        if not total_price:
+            total_price = item_info["price"] + item_info["shipping"]
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}
         r = requests.post(transaction_url, data = transaction)
         successfully_bought.append(r.content)
-
 
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +

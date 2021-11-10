@@ -41,6 +41,10 @@ def create_auction():
 def get_auction(auction_id):
     return auctions_functions.get_auction(auction_id)
 
+@app.route('/auctions_by_item/<item_id>', methods=['GET'])
+def get_auctions_by_item_id(item_id):
+    return auctions_functions.get_auctions_by_item_id(item_id)
+
 @app.route('/auction_metrics', methods=['POST'])
 def get_auction_metrics():
     data = request.get_json()

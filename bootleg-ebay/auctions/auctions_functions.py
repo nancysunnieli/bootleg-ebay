@@ -80,6 +80,23 @@ def get_auction(auction_id):
     auctions = AuctionDBManager.get_auction(auction_id)
     return auctions.to_json()
 
+def get_auctions_by_item_id(item_id):
+    """Get all the auctions corresponding to an item.
+    """
+
+    query = {"item_id": item_id}
+    auctions_mongo = AuctionDBManager.query_collection(query)
+    
+    if len(auctions_mongo) == 0:
+        raise BadInputError('We could not find any auctions with item_id {}'.format(item_id))
+
+    auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
+    auctions_json = json.dumps([a.to_dict() for a in auctions])
+    return auctions_json  
+
+
+
+
 def create_auction(auction_info):
     """
     Create an auction
