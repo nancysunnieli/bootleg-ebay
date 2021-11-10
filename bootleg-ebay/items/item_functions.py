@@ -415,6 +415,7 @@ def view_flagged_items(limit = None):
         new_item.from_mongo(item, flags, photo)
         if new_item.isFlagged:
             new_dict = new_item.to_mongo()
+            print(new_dict)
             new_dict["_id"] = str(item_id)
             item_objects.append(new_dict)
         if limit:
@@ -464,7 +465,9 @@ def search_item(keywords, category):
         new_item = items.Item()
         new_item.from_mongo(item, flags, photo)
         if new_item.matches_search(keywords, category):
-            item_objects.append(new_item.to_mongo())
+            new_dict = new_item.to_mongo()
+            new_dict["_id"] = str(item_id)
+            item_objects.append(new_dict)
     return json.dumps(item_objects)
 
 def add_user_to_watch_list(item_id, user_id):
@@ -614,9 +617,11 @@ def remove_categories(category):
 
 # executing tests for my functions
 if __name__ == '__main__':
+    print(view_all_items())
+    """
     print(add_categories("Food"))
     print(remove_categories("Food"))
-    """
+
     print("Search Item Test: ")
     print(search_item(["and"]))
 

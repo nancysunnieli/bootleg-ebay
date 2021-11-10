@@ -134,7 +134,6 @@ def view_all_items():
 
     all_items = []
     for item in json.loads(r):
-        del item["_id"]
         all_items.append(item)
     return json.dumps(all_items)
 

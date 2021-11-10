@@ -9,6 +9,8 @@ from PIL import Image
 import io
 from bson.objectid import ObjectId
 
+import base64
+
 
 def convert_image_to_string(image_directory):
     image = Image.open(image_directory)
@@ -389,9 +391,11 @@ def photos():
     """
     all_photos = []
     for i in range(0, 30):
+        with open("sample1.png", "rb") as img_file:
+            my_string = base64.b64encode(img_file.read())
         id = generate_random_id()
-        photo = convert_image_to_string("sample1.png")
-        all_photos.append([id, photo])
+        all_photos.append([id, my_string])
+        img_file.close()
     
     with open('photos.csv', 'w', newline = "") as f:
         writer = csv.writer(f)

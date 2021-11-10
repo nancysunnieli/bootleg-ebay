@@ -64,6 +64,5 @@ def delete_transaction(transaction_id):
 
 
 
-
 if __name__ == '__main__':
     app.run(debug = True, port = 1003, host = socket.gethostbyname(socket.gethostname()))

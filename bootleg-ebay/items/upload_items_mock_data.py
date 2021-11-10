@@ -19,6 +19,9 @@ def reformat_list_csv(array):
     for i in range(0, len(result)):
         result[i] = re.sub("[\[\]]", "", result[i])
         result[i] = result[i].replace("'", "")
+        result[i] = result[i].replace('"', "")
+        if result[i][0] == " ":
+            result[i] = result[i][1:]
     return result
 
 def create_categories(data_file_path, collection = categories_collection):

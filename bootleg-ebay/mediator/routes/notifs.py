@@ -71,7 +71,7 @@ def email():
 def watchlist():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/watchlist")
-    data = requests.get_json()
+    data = request.get_json()
     r = requests.post(url = socket_url, json = data)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -82,7 +82,7 @@ def watchlist():
 def alert_seller():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/seller_bid")
-    data = requests.get_json()
+    data = request.get_json()
     r = requests.post(url = socket_url, json = data)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -93,7 +93,7 @@ def alert_seller():
 def alert_buyer():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/buyer_bid")
-    data = requests.get_json()
+    data = request.get_json()
     r = requests.post(url = socket_url, json = data)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -104,7 +104,7 @@ def alert_buyer():
 def time():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/time")
-    data = requests.get_json()
+    data = request.get_json()
     r = requests.post(url = socket_url, json = data)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
