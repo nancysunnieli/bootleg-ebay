@@ -163,6 +163,13 @@ def get_payment_card(payment_id: PaymentID):
 
     return payment_card.to_json()
 
+def get_payment_card_by_user_id(user_id: UserID):
+    payment_card = PaymentCardsDBManager.get_payment_card_by_user_id(user_id)
+    if payment_card is None:
+        raise BadInputError('There is no payment information for user id: {}'.format(user_id))
+
+    return payment_card.to_json()
+
 def delete_payment_card(payment_id: PaymentID) -> None:
     payment_card = PaymentCardsDBManager.get_payment_card(payment_id)
     if payment_card is None:

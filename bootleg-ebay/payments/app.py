@@ -39,12 +39,14 @@ def create_payment_card():
 
 @app.route('/card/<payment_id>', methods=['GET'])
 def get_payment_card(payment_id):
-    # data = request.get_json()
     return payments_functions.get_payment_card(payment_id)
+
+@app.route('/card_by_user/<user_id>', methods=['GET'])
+def get_payment_card_by_user_id(user_id):
+    return payments_functions.get_payment_card_by_user_id(user_id)
 
 @app.route('/card/<payment_id>', methods=['DELETE'])
 def delete_payment_card(payment_id):
-    # data = request.get_json()
     return payments_functions.delete_payment_card(payment_id)
 
 @app.route('/transaction', methods=['POST'])

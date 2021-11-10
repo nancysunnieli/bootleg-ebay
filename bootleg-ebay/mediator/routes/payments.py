@@ -74,6 +74,16 @@ def get_payment_card(payment_id):
 
     return r.content
 
+@payments_api.route("/card_by_user/<user_id>", methods = ['GET'])
+def get_payment_card_by_user_id(user_id):
+    socket_url = (PAYMENTS_URL + "/card_by_user/{}".format(user_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 @payments_api.route("/card/<payment_id>", methods = ['DELETE'])
 # @expects_json(_none_schema)
 def payments_delete_account(payment_id):
