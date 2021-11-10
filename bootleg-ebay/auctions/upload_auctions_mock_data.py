@@ -37,7 +37,7 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
     all_entries = []
     for row in csvreader:
         auction = {}
-        auction["_id"] = ObjectId(row[0])
+        auction["_id"] = row[0]
         auction["start_time"] = int(row[1])
         auction["end_time"] = int(row[2])
         auction["item_id"] = row[3]
@@ -49,6 +49,7 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
                 if bid["AuctionID"] == auction["_id"]:
                     del bid["AuctionID"]
                     auction["bids"].append(bid)
+        auction["_id"] = ObjectId(row[0])
 
         all_entries.append(auction)
     file.close()
