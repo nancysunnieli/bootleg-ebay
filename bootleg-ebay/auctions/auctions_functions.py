@@ -75,7 +75,6 @@ def get_auction(auction_id):
     """
     Get an auction. Can either be completed or currently running
 
-    This is used in place of `examineAuctionMetrics()`
     """
 
     auctions = AuctionDBManager.get_auction(auction_id)
@@ -99,11 +98,58 @@ def create_auction(auction_info):
         raise BadInputError('We could not create an auction.')
 
 
+
+
+def get_auction_metrics(start, end):
+    """Examine the auctions that have been completed
+    """
+    query = {"start_time": {"$lte": start}, 
+            "end_time": {"$gte": end}}
+
+    time = current_time()
+    auctions_mongo = AuctionDBManager.query_collection(query)
+
+    auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
+
+    # get the completed auctions
+    auctions = list(filter(lambda x: x.auction_info['end_time'] <= time, auctions))
+
+    if len(auctions) == 0:
+        metrics = {
+            'average_auction_time': -1,
+            'longest_auction_time': -1,
+            'shortest_auction_time': -1,
+            'mean_price': -1,
+            'highest_price': -1,
+            'lowest_price': -1
+        }
+    else:
+        auction_times = []
+        prices = []
+        for a in auctions:
+            auction_times.append(a.auction_info['end_time'] - a.auction_info['start_time'])
+            prices.append(a.bids[-1].price)
+
+        metrics = {
+            'average_auction_time': sum(auction_times) / len(auction_times),
+            'longest_auction_time': max(auction_times),
+            'shortest_auction_time': min(auction_times),
+            'mean_price': sum(prices) / len(prices),
+            'highest_price': max(prices),
+            'lowest_price': min(prices)
+        }
+
+    return json.dumps(metrics)
+
+
+
+
+
 def view_current_auctions() -> Sequence:
     """
     Get the auctions that are currently running.
     """
-    
+
     time = current_time()
     query = {"start_time": {"$lte": time}, 
             "end_time": {"$gte": time}}

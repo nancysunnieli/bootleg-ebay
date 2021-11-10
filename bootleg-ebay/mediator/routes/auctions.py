@@ -74,7 +74,6 @@ def create_auction():
 
 
 @auctions_api.route("/auction/<auction_id>", methods = ['GET'])
-# @expects_json(_none_schema)
 def get_auction(auction_id):
     socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
     r = get_and_request(socket_url, 'get')
@@ -84,8 +83,19 @@ def get_auction(auction_id):
 
     return r.content
 
+@auctions_api.route("/auction_metrics", methods = ['POST'])
+def get_auction_metrics():
+    socket_url = (AUCTIONS_URL + "/auction_metrics")
+
+    r = get_and_request(socket_url, 'post')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+
 @auctions_api.route("/current_auctions", methods = ['GET'])
-# @expects_json(_none_schema)
 def view_current_auctions():
     socket_url = (AUCTIONS_URL + "/current_auctions")
 

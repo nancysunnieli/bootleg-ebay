@@ -36,6 +36,11 @@ class TestAuction(TestCase):
         self.assertTrue(output.ok)
 
 
+        # view auction metrics
+        url = self.base_url + "auction_metrics"
+        output = requests.post(url=url, json={'start': time, 'end': time + 1000000000})
+        self.assertTrue(output.ok)
+
         # create sucessful bids
         buyer_id1 =  12321
         buyer_id2 = 21454
