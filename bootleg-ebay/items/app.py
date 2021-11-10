@@ -44,7 +44,7 @@ def search_item():
         category = data["category"]
     else:
         category = None
-    return item_functions.search_item(keywords)
+    return item_functions.search_item(keywords, category)
 
 @app.route('/add_user_to_watch_list', methods = ['POST'])
 def add_user_to_watch_list():
@@ -153,17 +153,17 @@ def get_categories():
     return item_functions.get_categories()
 
 
-@app.route("/categories/add", method = ['POST'])
+@app.route("/add_category", methods = ['POST'])
 def add_category():
     data = request.get_json()
     category = data["category"]
     return item_functions.add_categories(category)
 
-@app.route("/categories/remove", method = ['POST'])
-def add_category():
+@app.route("/remove_category", methods = ['POST'])
+def remove_category():
     data = request.get_json()
     category = data["category"]
-    return item_functions.remove_category(category)
+    return item_functions.remove_categories(category)
 
 
 if __name__ == '__main__':
