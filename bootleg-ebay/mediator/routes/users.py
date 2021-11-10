@@ -44,7 +44,9 @@ _user_info_schema = {
         'password': {'type': 'string'},
         'email': {'type': 'string'},
         'suspended': {'type': 'boolean'},
-        'is_admin': {'type': 'boolean'}
+        'is_admin': {'type': 'boolean'},
+        'total_rating': {'type': 'integer'},
+        'number_of_ratings': {'type': 'integer'},
     },
     'required': ["username", "password", "email", "suspended", "is_admin"]
 }
@@ -52,6 +54,14 @@ _user_info_schema = {
 _optional_user_info_schema = copy.deepcopy(_user_info_schema)
 _optional_user_info_schema['required'] = []
 
+
+_rating_schema = {
+    'type': 'object',
+    'properties': {
+        'rating': {'type': 'integer'},
+    },
+    'required': ['rating']
+}
 
 @users_api.route("/user/<user_id>", methods = ['GET'])
 def view_user(user_id):
@@ -101,7 +111,7 @@ def create_account():
     
     # create cart
     socket_url = ("http://" + CARTS_SERVICE_HOST + CARTS_PORT + "/create_cart")
-    r = requests.post(url = socket_url, json ={"user_id": new_user_dict["id"]})
+    r = requests.post(url = socket_url, json ={"user_id": new_user_dict["user_id"]})
     # if not r.ok:
     #     return Response(response=r.text, status=r.status_code)
     
@@ -141,6 +151,19 @@ def modify_profile(user_id):
         return Response(response=r.text, status=r.status_code)
 
     return r.content
+
+
+@users_api.route("/user/rating/<user_id>", methods = ['PUT'])
+@expects_json(_rating_schema)
+def update_rating(user_id):
+    socket_url = USERS_URL + "/user/rating/{}".format(user_id)
+
+    r = get_and_request(socket_url, 'put')
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 
 @users_api.route("/user/<user_id>", methods = ['DELETE'])
 @expects_json(_none_schema)

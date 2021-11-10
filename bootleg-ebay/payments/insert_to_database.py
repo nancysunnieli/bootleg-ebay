@@ -3,12 +3,14 @@
 
 import csv
 
-from payments_functions import PaymentsDBManager
+from payments_functions import PaymentCardsDBManager
 
 def load_data_into_db(data_path):
     with open(data_path) as f:
         rows = list(csv.reader(f))
-    PaymentsDBManager.insert_many(rows)
+
+    for row in rows:
+        PaymentCardsDBManager.insert(row)
 
 
 

@@ -151,7 +151,7 @@ def users():
 
     So we won't use `generate_random_id`
 
-    Schema: username, password, email, suspended, is_admin 
+    Schema: username, password, email, suspended, is_admin, total_rating, number_of_ratings 
     """
     all_users = []
     existing_usernames = set()
@@ -170,7 +170,11 @@ def users():
         isAdmin = int(generate_random_bool())
         suspended = int(generate_random_bool())
         password_hash = get_random_words(3, "")
-        all_users.append([username, password_hash, email, suspended, isAdmin])
+        total_rating = 0
+        number_of_ratings = 0
+        all_users.append([
+            username, password_hash, email, suspended, isAdmin,
+            total_rating, number_of_ratings])
 
     with open('users.csv', 'w', newline = "") as f:
         writer = csv.writer(f)

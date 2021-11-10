@@ -75,6 +75,12 @@ def modify_profile(user_id):
     data['user_id'] = user_id
     return users_functions.modify_profile(data)
 
+
+@app.route('/user/rating/<user_id>', methods=['PUT'])
+def update_rating(user_id):
+    data = request.get_json()
+    return users_functions.update_rating(user_id, data['rating'])
+
 @app.route('/user/<user_id>', methods=['DELETE'])
 def delete_account(user_id):
     # data = request.get_json()

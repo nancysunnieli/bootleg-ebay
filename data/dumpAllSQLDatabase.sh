@@ -5,5 +5,6 @@ cd "$parent_path"
 
 /bin/bash ../bootleg-ebay/advertisements/db/dump.sh &
 /bin/bash ../bootleg-ebay/users/db/dump.sh &
+/bin/bash ../bootleg-ebay/payments/db/dump.sh &
 wait 
 echo "Done!"
