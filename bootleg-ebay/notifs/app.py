@@ -44,7 +44,7 @@ def time_left():
     item_id = data["item_id"]
     recipient = data["recipient"]
     time_left = data["time_left"]
-    return notifs_functions.alert_buyer_bid(recipient, item_id, time_left)
+    return notifs_functions.alert_before(recipient, item_id, time_left)
 
 @app.route('/inbox', methods = ['GET'])
 def fetch_messages():

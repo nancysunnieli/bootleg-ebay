@@ -108,7 +108,7 @@ def checkout():
             unavailable_items.append(item)
         else:
             available_items.append(item)
-            
+
     # GET CREDIT CARD INFO
     user_id = data_content["user_id"]
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
@@ -126,15 +126,21 @@ def checkout():
                             PAYMENTS_PORT + "/transaction")
 
     successfully_bought = []
+    auction_items = []
     for item in available_items:
         item_info = (requests.post(url = items_info_url, data = {"item_id": item})).content
         # for price, I need to figure out whether its an auction or a buy now
         # transaction
+
+        # I have to call get auction by item id, and append it to auction_items
+
         total_price = item_info["price"] + item_info["shipping"]
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}
         r = requests.post(transaction_url, data = transaction)
         successfully_bought.append(r.content)
+
+    # loop through auction_items and delete the relevant auctions
 
 
     # DELETE ALL ITEMS FROM CART

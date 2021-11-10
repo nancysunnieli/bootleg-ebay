@@ -116,7 +116,7 @@ class Item(object):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
                 "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
-                "watchlist": self.watchlist, "quantity": self.quantity, "shipping": self.shipping}
+                "watchlist": self.watchlist, "quantity": self.quantity, "shipping": self.shipping, "_id": self._id}
 
     def modify_item(self,
                     new_name = None,
