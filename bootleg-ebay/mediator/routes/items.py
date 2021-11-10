@@ -24,9 +24,10 @@ _required_attributes = {
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
         'price': {'type': 'number'},
-        'quantity': {'type': 'number'}
+        'quantity': {'type': 'number'},
+        'shipping': {'type': 'number'}
     },
-    'required': ['name', 'description', 'category', 'photos', 'sellerID', 'price']
+    'required': ['name', 'description', 'category', 'photos', 'sellerID', 'price', 'shipping']
 }
 
 _unrequired_attributes = {
@@ -39,7 +40,8 @@ _unrequired_attributes = {
         'photos': {'type': 'string'},
         'sellerID': {'type': 'string'},
         'price': {'type': 'number'},
-        'quantity': {'type': 'number'}
+        'quantity': {'type': 'number'},
+        'shipping': {'type': 'number'},
     },
     'required': ['item_id']
 }
@@ -64,9 +66,10 @@ _view_items_schema = {
 _search_items = {
     'type': 'object',
     'properties': {
-        'keywords' : {'type': 'array'}
+        'keywords' : {'type': 'array'},
+        'category' : {'type': 'string'}
     },
-    'required': ['keywords']
+    'required': []
 }
 
 _watchlist = {
@@ -101,6 +104,14 @@ _item_schema = {
         'item_id': {'type': 'string'},
     },
     'required': ['item_id']
+}
+
+_category = {
+    'type': 'object',
+    'properties': {
+        'category': {'type': 'string'},
+    },
+    'required': ['category']
 }
 
 
@@ -244,3 +255,31 @@ def modify_quantity():
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
+
+
+@items_api.route("/categories", methods = ['GET'])
+def get_categories():
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                    ITEMS_PORT + "/categories")
+    r = requests.get(url = socket_url)
+    return r.content
+
+
+@items_api.route("/category/add", methods = ['POST'])
+@expects_json(_category)
+def add_category():
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                    ITEMS_PORT + "/categories/add")
+    data_content = request.get_json()
+    r = requests.get(url = socket_url, json = data_content)
+    return r.content
+
+@items_api.route("/category/remove", methods = ['POST'])
+@expects_json(_category)
+def remove_category():
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                    ITEMS_PORT + "/categories/remove")
+    data_content = request.get_json()
+    r = requests.get(url = socket_url, json = data_content)
+    return r.content
+

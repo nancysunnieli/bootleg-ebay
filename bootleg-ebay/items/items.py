@@ -20,7 +20,7 @@ class Item(object):
 
     def __init__(self, name = None, description = None, category = None, 
                 photos = None, sellerID = None, price = None, isFlagged = None, 
-                FlaggedReason = None, watchlist = None, quantity = None, id = None):
+                FlaggedReason = None, watchlist = None, quantity = None, shipping = None, id = None):
         self._quantity = quantity
         self._name = name
         self._description = description
@@ -30,6 +30,7 @@ class Item(object):
         self._price = price
         self._isFlagged = isFlagged
         self._id = id
+        self._shipping = shipping
         if FlaggedReason == None:
             self._FlaggedReason = []
         else:
@@ -84,6 +85,10 @@ class Item(object):
     @property
     def quantity(self):
         return self._quantity
+
+    @property
+    def shipping(self):
+        return self._shipping
     
     def from_mongo(self, item, flagged_info, photo):
         if item == []:
@@ -100,6 +105,7 @@ class Item(object):
         else:
             self._watchlist = item["watchlist"]
         self._quantity = item["quantity"]
+        self._shipping = item["shipping"]
         self._FlaggedReason = []
         if self._isFlagged:
             for info in flagged_info:
@@ -110,7 +116,7 @@ class Item(object):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
                 "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
-                "watchlist": self.watchlist, "quantity": self.quantity}
+                "watchlist": self.watchlist, "quantity": self.quantity, "shipping": self.shipping}
 
     def modify_item(self,
                     new_name = None,
@@ -119,7 +125,8 @@ class Item(object):
                     new_price = None,
                     new_categories = None,
                     new_watchlist = None,
-                    quantity = None):
+                    quantity = None,
+                    shipping = None):
         """
         This modifies the specified attributes.
         The attributes that can be modified by this
@@ -140,6 +147,8 @@ class Item(object):
             self._watchlist = new_watchlist
         if quantity:
             self._quantity = quantity
+        if shipping:
+            self._shipping = shipping
     
     def edit_categories(self, new_categories):
         self._category = new_categories
@@ -158,17 +167,31 @@ class Item(object):
     def add_user_to_watchlist(self, user):
         self._watchlist.append(user)
 
-    def matches_search(self, keywords):
+    def matches_search(self, keywords, category):
         """
         Returns back True if it matches the search.
         Returns back False if it does not.
         """
-        matches = False
-        for word in keywords:
-            if word in self.name or word in self.description:
-                matches = True
-                break
-        return matches
+        if keywords and category:
+            matches = False
+            for word in keywords:
+                if word in self.name or word in self.description:
+                    matches = True
+                    break
+            if category not in self.category:
+                matches = False
+            return matches
+        elif keywords:
+            matches = False
+            for word in keywords:
+                if word in self.name or word in self.description:
+                    matches = True
+                    break
+            return matches
+        elif category:
+            if category not in self.category:
+                return False
+            return True
 
 
 def create_item(name, description, category, photos, 
