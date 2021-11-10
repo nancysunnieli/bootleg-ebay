@@ -29,7 +29,7 @@ class TestUser(TestCase):
 
         output = requests.post(url=url, json=user_info_params)
         self.assertTrue(output.ok)
-        id_ = output.json()['id']
+        id_ = output.json()['user_id']
 
         # check that creating account with an existing username fails
         output = requests.post(url=url, json=user_info_params)
@@ -112,7 +112,7 @@ class TestUser(TestCase):
 
         output = requests.post(url=url, json=user_info_params)
         self.assertTrue(output.ok)
-        id_ = output.json()['id']
+        id_ = output.json()['user_id']
 
 
         new_user_name = id_generator()
