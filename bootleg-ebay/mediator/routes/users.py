@@ -74,6 +74,17 @@ def view_user(user_id):
 
     return r.content
 
+@users_api.route("/user_by_name/<username>", methods = ['GET'])
+def view_user_by_username(username):
+    socket_url = USERS_URL + "/user_by_name/{}".format(username)
+
+    r = get_and_request(socket_url, 'get')
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 @users_api.route("/login", methods = ['POST'])
 @expects_json(_login_schema)
 def login():

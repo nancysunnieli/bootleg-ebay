@@ -74,6 +74,15 @@ class TestUser(TestCase):
         self.assertEqual(output_json['password'], password)
         self.assertTrue(output.ok)
 
+        # view user by username
+        url = self.base_url + "user_by_name/{}".format(user_name)
+        output = requests.get(url=url, json=None)
+        output_json = output.json()
+        self.assertEqual(output_json['user_id'], id_)
+        self.assertEqual(output_json['password'], password)
+        self.assertTrue(output.ok)
+
+
         # suspend the account
         url = self.base_url + "suspend"
         output = requests.put(url=url, json={'user_id': id_})
