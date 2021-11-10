@@ -141,6 +141,9 @@ def create_bid():
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     
+    # notify the seller and buyers that there have been
+    # new bids
+
     return r.content
 
 @auctions_api.route("/<auction_id>/bids", methods = ['GET'])
