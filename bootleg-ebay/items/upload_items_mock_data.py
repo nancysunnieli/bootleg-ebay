@@ -74,7 +74,7 @@ def create_items_database(data_file_path, collection = items_collection):
         item["isFlagged"] = row[7]
         watchlist = reformat_list_csv(row[8])
         item["watchlist"] = watchlist
-        item["available"] = row[9]
+        item["quantity"] = int(row[9])
 
         all_items.append(item)
     file.close()

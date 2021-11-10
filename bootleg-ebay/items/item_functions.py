@@ -29,7 +29,7 @@ class ItemsDBManager:
         in sorted order
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = {"available" : True}
+        query = {"quantity" : {"$gte": 0}}
         results = list(items_collection.find(query))
         if limit:
             return results[:limit]
@@ -75,7 +75,7 @@ class ItemsDBManager:
         This edits the categories for an item
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = {"_id": id}
+        query = {"_id": item_id}
         new_categories = { "$set": { "category": updated_categories } }
         result = items_collection.update_one(query, new_categories)
         if result.modified_count > 0:
@@ -85,15 +85,15 @@ class ItemsDBManager:
     
     @classmethod
     def add_item(cls, name, description, category, photos, 
-                sellerID, price):
+                sellerID, price, quantity):
         """
         This adds an item to the items collection
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
         item = {"name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
-                "price": None, "isFlagged": False, "watchlist": None, "available": None}
-        item["_id"] = str(uuid.uuid4())[:12]
+                "price": None, "isFlagged": False, "watchlist": None, "quantity": None}
+        item["_id"] = ObjectId()
         item["name"] = name
         item["description"] = description
         item["category"] = category
@@ -101,7 +101,7 @@ class ItemsDBManager:
         item["sellerID"] = sellerID
         item["price"] = price
         item["watchlist"] = []
-        item["available"] = True
+        item["quantity"] = quantity
         result = items_collection.insert_one(item)
 
         if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
@@ -112,7 +112,7 @@ class ItemsDBManager:
     @classmethod
     def modify_item(cls, id, name = None, description = None,
                 category = None, photos = None, price = None,
-                watchlist = None):
+                watchlist = None, quantity = None):
         """
         With this function, I can modify the item
         that matches the given id.
@@ -142,7 +142,9 @@ class ItemsDBManager:
         if watchlist:
             new_watchlist = { "$set": { "watchlist": watchlist } }
             modifications.append(new_watchlist)
-        print(modifications)
+        if quantity:
+            new_quantity = {"$set": {"quantity": quantity}}
+            modifications.append(new_quantity)
         success = []
         failure = []
         for modification in modifications:
@@ -189,10 +191,10 @@ class ItemsDBManager:
                     FlaggedReason.append(result["FlagReason"])
                 flags = {}
             watchlist = item["watchlist"]
-            available = item["available"]
+            quantity = item["quantity"]
             all_items.append(items.Item(name, description, category, photos,
                         sellerID, price, isFlagged, FlaggedReason,
-                        watchlist, available, id))
+                        watchlist, quantity, id))
         return all_items
 
 
@@ -286,19 +288,21 @@ class ItemsDBManager:
         return results
 
     @classmethod
-    def modify_availability(cls, item_id):
+    def modify_quantity(cls, item_id):
         """
-        This adjusts the availability of the item. If
-        the availability was successfully changed, it indicates it.
+        This adjusts the quantity of the item. If
+        the quantity was successfully changed, it indicates it.
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
         query = {"_id" : item_id}
-        modification = { "$set": {"available" : "False" }}
+        item = list(items_collection.find(query))
+        quantity = item[0]["quantity"]
+        modification = { "$set": {"quantity" : quantity - 1 }}
         result = items_collection.update_one(query, modification)
         if result.modified_count > 0:
-            return "Successfully adjusted availability."
+            return "Successfully adjusted quantity."
         else:
-            return "Was unable to adjust availability. Item is no longer available."
+            return "Was unable to adjust quantity. Item is sold out."
 
     @classmethod
     def get_flag_reasons(cls, item_id):
@@ -316,8 +320,8 @@ class ItemsDBManager:
         This returns back the photo with the specified id
         """
         items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        photo_id = ObjectId(photo_id)
         query = {'_id': photo_id}
-        print(query)
         result = list(photos_collection.find(query))
         if len(result) > 0:
             return result[0]["photo"]
@@ -342,6 +346,7 @@ def view_flagged_items(limit = None):
         new_item.from_mongo(item, flags, photo)
         if new_item.isFlagged:
             new_dict = new_item.to_mongo()
+            new_dict["_id"] = str(item_id)
             item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
@@ -365,9 +370,9 @@ def view_all_items(limit = None):
 
         new_item = items.Item()
         new_item.from_mongo(item, flags, photo)
-        if new_item.available:
+        if new_item.quantity > 0:
             new_dict = new_item.to_mongo()
-            new_dict["_id"] = item_id
+            new_dict["_id"] = str(item_id)
             item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
@@ -397,6 +402,7 @@ def add_user_to_watch_list(item_id, user_id):
     """
     This adds a user to the watchlist
     """
+    item_id = ObjectId(item_id)
     item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.get_flag_reasons(item_id)
     photo = ItemsDBManager.get_photo(item["photos"])
@@ -411,12 +417,14 @@ def remove_item(item_id):
     """
     This removes an item from the database
     """
+    item_id = ObjectId(item_id)
     return json.dumps(ItemsDBManager.remove_item(item_id))
 
 def report_item(item_id, reason):
     """
     This reports an item
     """
+    item_id = ObjectId(item_id)
     item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.get_flag_reasons(item_id)
     photo = ItemsDBManager.get_photo(item["photos"])
@@ -430,24 +438,27 @@ def get_item(item_id):
     """
     This gets an item from the database
     """
+    item_id = ObjectId(item_id)
     new_item = ItemsDBManager.get_item(item_id)[0]
     photo = ItemsDBManager.get_photo(new_item["photos"])
     new_item["photos"] = photo
+    new_item["_id"] = str(item_id)
     return json.dumps(new_item)
 
 def modify_item(item_id, name = None, description = None,
                 category = None, photos = None, price = None,
-                watchlist = None):
+                watchlist = None, quantity = None):
     """
     This modifies the item
     """
+    item_id = ObjectId(item_id)
     item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.get_flag_reasons(item_id)
     photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
     new_item.from_mongo(item, flags, photo)
     new_item.modify_item(name, description, photos,
-                        price, category, watchlist)
+                        price, category, watchlist, quantity)
 
     if name:
         new_name = new_item.name
@@ -473,24 +484,28 @@ def modify_item(item_id, name = None, description = None,
         new_watchlist = new_item.watchlist
     else:
         new_watchlist = None
-    
+    if quantity:
+        new_quantity = new_item.quantity
+    else:
+        new_quantity = None
     return json.dumps(ItemsDBManager.modify_item(item_id, new_name, new_description,
                                         new_category, new_photos, new_price, 
-                                        new_watchlist))
+                                        new_watchlist, new_quantity))
 
 def add_item(name, description, category, 
-                photos, sellerID, price):
+                photos, sellerID, price, quantity):
     """
     This adds the item
     """
     new_item = items.Item(name, description, category,
                             photos, sellerID, price, False,
-                            None, None, True, None)
+                            None, None, quantity, None)
     return json.dumps(ItemsDBManager.add_item(new_item.name, new_item.description,
                             new_item.category, new_item.photos,
-                            new_item.sellerID, new_item.price))
+                            new_item.sellerID, new_item.price, new_item.quantity))
 
 def edit_categories(item_id, new_categories):
+    item_id = ObjectId(item_id)
     item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.get_flag_reasons(item_id)
     photo = ItemsDBManager.get_photo(item["photos"])
@@ -501,7 +516,8 @@ def edit_categories(item_id, new_categories):
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, new_item.category,
                                 None, None, None))
 
-def modify_availability(item_id):
+def modify_quantity(item_id):
+    item_id = ObjectId(item_id)
     item = ItemsDBManager.get_item(item_id)[0]
     flags = ItemsDBManager.get_flag_reasons(item_id)
     photo = ItemsDBManager.get_photo(item["photos"])
@@ -509,44 +525,55 @@ def modify_availability(item_id):
 
     new_item.from_mongo(item, flags, photo)
     new_item.modify_item(None, None, None, None,
-                        None, None, False)
-    return json.dumps(ItemsDBManager.modify_availability(new_item.id))
+                        None, None, new_item.quantity - 1)
+    return json.dumps(ItemsDBManager.modify_quantity(new_item.id))
 
 
 
 # executing tests for my functions
 if __name__ == '__main__':
-    
+    pass
+    """
     print("Search Item Test: ")
-    print(search_item(["caught"]))
-    
-    print("Add User To Watchlist Test: ")
-    print(add_user_to_watch_list("7ed25c8c-89b", "d35d484e-d66"))
-
-    print("Remove Item From Items List Test: ")
-    print(remove_item("4e889ad4-74b"))
-
-    print("Report Item Test/ Add Flagged Item Test: ")
-    print(report_item("e176a0d8-1a2", "counterfeit"))
-
-    print("Get Item Test: ")
-    print(get_item("0ff1cb38-5d1"))
-
-    print("Modify Item Test: ")
-    print(modify_item("0ff1cb38-5d1", "lemon bars"))
+    print(search_item(["and"]))
 
     print("Add Items: ")
     print(add_item("potato test",
-            "re you do by for and not almost of  I to  an dark but not ran",
-            ["Jewelry", "Watches"], "0aa271bf-1b4", "492674a4-bbe",
-            23.82))
+            "test",
+            ["Jewelry", "Watches"], "618ac0a5c43212f2d81be436", "for_see_room",
+            23.82, 6))
+    
 
+    print("Add User To Watchlist Test: ")
+    print(add_user_to_watch_list("618af8fde27c0181a0bc9bac", "example_user"))
+
+    
+
+    
+    print("Report Item Test/ Add Flagged Item Test: ")
+    print(report_item("618af8fde27c0181a0bc9bac", "counterfeit"))
+    
+    
+    print("Get Item Test: ")
+    print(get_item("618af8fde27c0181a0bc9bac"))
+
+    
+    print("Modify Item Test: ")
+    print(modify_item("618af8fde27c0181a0bc9bac", "lemon bars"))
+
+    
     print("Edit Categories Test: ")
-    print(edit_categories("0ff1cb38-5d1", ["potato"]))
-
+    print(edit_categories("618af8fde27c0181a0bc9bac", ["potato"]))
+    
     print("View Flagged Items Test: ")
     print(view_flagged_items())
-
-    print("Modify Availability Test: ")
-    print(modify_availability("0ff1cb38-5d1"))
+    
+    
+    print("Modify Quantity Test: ")
+    print(modify_quantity("618af8fde27c0181a0bc9bac"))
+    
+    
+    print("Remove Item From Items List Test: ")
+    print(remove_item("618af8fde27c0181a0bc9bac"))
+    """
     

@@ -3,6 +3,7 @@ import json
 app = Flask(__name__)
 import item_functions
 import socket
+from bson.objectid import ObjectId
 
 @app.route('/')
 def base():
@@ -93,11 +94,19 @@ def modify_item():
         price = data["price"]
     else:
         price = None
+    if "watchlist" in data:
+        watchlist = data["watchlist"]
+    else:
+        watchlist = None
+    if "quantity" in data:
+        quantity = data["quantity"]
+    else:
+        quantity = None
 
     return item_functions.modify_item(id, name,
                                     description, 
                                     category, photos, 
-                                    price)
+                                    price, watchlist, quantity)
 
 @app.route("/add_item", methods = ['POST'])
 def add_item():
@@ -108,9 +117,10 @@ def add_item():
     photos = data["photos"]
     sellerID = data["sellerID"]
     price = data["price"]
+    quantity = data["quantity"]
 
     return item_functions.add_item(name, description, category,
-                                photos, sellerID, price)
+                                photos, sellerID, price, quantity)
 
 @app.route("/edit_categories", methods = ['POST'])
 def edit_categories():
@@ -119,15 +129,14 @@ def edit_categories():
     category = data["category"]
     return item_functions.edit_categories(id, category)
 
-@app.route("/modify_availability", methods = ['POST'])
-def modify_availability():
+@app.route("/lock", methods = ['POST'])
+def modify_quantity():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.modify_availability(id)
+    return item_functions.modify_quantity(id)
 
 
 if __name__ == '__main__':
     # Don't set host as localhost, otherwise it wont be reachable through docker networks
     # Should run this file with docker-compose up, and talk to it via localhost:8011 on your system
-    # app.run(debug = True, port = 8099, host = "localhost")
     app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()))

@@ -83,6 +83,7 @@ def items():
             price, isFlagged
     """
     # getting names of potential sellers
+    
     file = open("users.csv")
     csvreader = csv.reader(file)
     all_users = []
@@ -112,9 +113,9 @@ def items():
             new = random.choice(all_users)
             if new not in watch_list:
                 watch_list.append(new)
-        available = True
+        quantity = random.choice(range(1, 11))
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged, watch_list, available])
+                            seller_id, price, isFlagged, watch_list, quantity])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
