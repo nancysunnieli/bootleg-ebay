@@ -364,6 +364,7 @@ class ItemsDBManager:
         result = list(categories_collection.find({}))
         return result[0]["categories"]
     
+    @classmethod
     def add_category(cls, category):
         """
         This adds a category to the existing list of categories
@@ -371,17 +372,14 @@ class ItemsDBManager:
         items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         result = list(categories_collection.find({}))
         query = {'_id': result[0]["_id"]}
-        current_categories = result[0]["categories"]
-        current_categories.append(category)
-
-        modification = { "$set": {"categories" : current_categories }}
-
-        result = items_collection.update_one(query, modification)
+        modification = { "$addToSet": {"categories" : category }}
+        result = categories_collection.update_one(query, modification)
         if result.modified_count > 0:
             return "Successfully added category!"
         else:
             return "Was unable to add category. The category either exists, or you should try again later."
     
+    @classmethod
     def remove_category(cls, category):
         items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         result = list(categories_collection.find({}))
@@ -391,7 +389,7 @@ class ItemsDBManager:
 
         modification = { "$set": {"categories" : current_categories }}
 
-        result = items_collection.update_one(query, modification)
+        result = categories_collection.update_one(query, modification)
         if result.modified_count > 0:
             return "Successfully removed category!"
         else:
@@ -609,14 +607,15 @@ def get_categories():
 def add_categories(category):
     return json.dumps(ItemsDBManager.add_category(category))
 
-def remove_category(category):
+def remove_categories(category):
     return json.dumps(ItemsDBManager.remove_category(category))
 
 
 
 # executing tests for my functions
 if __name__ == '__main__':
-    pass
+    print(add_categories("Food"))
+    print(remove_categories("Food"))
     """
     print("Search Item Test: ")
     print(search_item(["and"]))

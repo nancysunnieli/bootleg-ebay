@@ -106,7 +106,7 @@ _item_schema = {
     'required': ['item_id']
 }
 
-_category = {
+_category_only = {
     'type': 'object',
     'properties': {
         'category': {'type': 'string'},
@@ -257,7 +257,7 @@ def modify_quantity():
     return r.content
 
 
-@items_api.route("/categories", methods = ['GET'])
+@items_api.route("/all_categories", methods = ['GET'])
 def get_categories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/categories")
@@ -265,21 +265,21 @@ def get_categories():
     return r.content
 
 
-@items_api.route("/category/add", methods = ['POST'])
-@expects_json(_category)
+@items_api.route("/category_addition", methods = ['POST'])
+@expects_json(_category_only)
 def add_category():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/categories/add")
+                    ITEMS_PORT + "/add_category")
     data_content = request.get_json()
-    r = requests.get(url = socket_url, json = data_content)
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@items_api.route("/category/remove", methods = ['POST'])
-@expects_json(_category)
+@items_api.route("/category_removal", methods = ['POST'])
+@expects_json(_category_only)
 def remove_category():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
-                    ITEMS_PORT + "/categories/remove")
+                    ITEMS_PORT + "/remove_category")
     data_content = request.get_json()
-    r = requests.get(url = socket_url, json = data_content)
+    r = requests.post(url = socket_url, json = data_content)
     return r.content
 
