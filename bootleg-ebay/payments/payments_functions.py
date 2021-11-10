@@ -149,8 +149,8 @@ def create_payment_card(payment_info: PaymentInfo):
 
     # payment_card = PaymentCard.from_dict(payment_info)
     # payment_info = payment_card.to_dict()
-    rows = [payment_info[c] for c in PaymentCardsDBManager.table_cols]
-    PaymentCardsDBManager.insert(rows)
+    row = [payment_info[c] for c in PaymentCardsDBManager.table_cols]
+    PaymentCardsDBManager.insert(row)
 
     payment_card = PaymentCardsDBManager.get_payment_card_by_user_id(user_id)
 
