@@ -36,7 +36,14 @@ def view_flagged_items():
 @app.route('/search_item', methods=['POST'])
 def search_item():
     data = request.get_json()
-    keywords = data["keywords"]
+    if "keywords" in data:
+        keywords = data["keywords"]
+    else:
+        keywords = None
+    if "category" in data:
+        category = data["category"]
+    else:
+        category = None
     return item_functions.search_item(keywords)
 
 @app.route('/add_user_to_watch_list', methods = ['POST'])
@@ -102,11 +109,16 @@ def modify_item():
         quantity = data["quantity"]
     else:
         quantity = None
+    if "shipping" in data:
+        shipping = data["shipping"]
+    else:
+        shipping = None
 
     return item_functions.modify_item(id, name,
                                     description, 
                                     category, photos, 
-                                    price, watchlist, quantity)
+                                    price, watchlist, quantity,
+                                    shipping)
 
 @app.route("/add_item", methods = ['POST'])
 def add_item():
@@ -118,9 +130,10 @@ def add_item():
     sellerID = data["sellerID"]
     price = data["price"]
     quantity = data["quantity"]
+    shipping = data["shipping"]
 
     return item_functions.add_item(name, description, category,
-                                photos, sellerID, price, quantity)
+                                photos, sellerID, price, quantity, shipping)
 
 @app.route("/edit_categories", methods = ['POST'])
 def edit_categories():
@@ -134,6 +147,23 @@ def modify_quantity():
     data = request.get_json()
     id = data["item_id"]
     return item_functions.modify_quantity(id)
+
+@app.route("/categories", methods = ['GET'])
+def get_categories():
+    return item_functions.get_categories()
+
+
+@app.route("/categories/add", method = ['POST'])
+def add_category():
+    data = request.get_json()
+    category = data["category"]
+    return item_functions.add_categories(category)
+
+@app.route("/categories/remove", method = ['POST'])
+def add_category():
+    data = request.get_json()
+    category = data["category"]
+    return item_functions.remove_category(category)
 
 
 if __name__ == '__main__':

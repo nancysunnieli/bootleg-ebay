@@ -114,12 +114,31 @@ def items():
             if new not in watch_list:
                 watch_list.append(new)
         quantity = random.choice(range(1, 11))
+        shipping = random.choice([5, 10, 15])
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged, watch_list, quantity])
+                            seller_id, price, isFlagged, watch_list, quantity, shipping])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
         writer.writerows(all_items)
+    f.close()
+
+def categories():
+    category = ["Auto Parts and Accessories", "Automotive Tools & Supplies",
+                    "Other Vehicles and Trailers", "Motorcycles",
+                    "Powersport Vehicles", "Boats", "Top Vehicle Makes",
+                    "Fashion", "Women's Clothing", "Women's Shoes",
+                    "Women's Accessories", "Women's Bags & Handbangs",
+                    "Men's Clothing", "Men's Shoes", "Men's Accessories",
+                    "Kid's Clothing, Shoes, & Accessories", 
+                    "Baby Clothing, Shoes, & Accessories", "Jewelry",
+                    "Watches, Parts & Accessories"]
+    all = []
+    for c in category:
+        all.append([c])
+    with open('category.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all)
     f.close()
 
 def users():
@@ -216,7 +235,7 @@ def flagged_items():
         itemID = item[0]
         item_index = all_items.index(item)
         flagReason = random.choice(flagReasons)
-        all_items[item_index][-2] = True
+        all_items[item_index][7] = True
         all_flagged_items.append([id, itemID, flagReason])
         
     with open('flagged_items.csv', 'w', newline = "") as f:
@@ -440,6 +459,7 @@ def generate_all_data():
     photos()
     users()
     items()
+    categories()
     auctions()
     flagged_items()
     bids()
