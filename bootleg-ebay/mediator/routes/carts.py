@@ -99,7 +99,7 @@ def checkout():
 
     # checks availability of all items
     items_availability_url = ("http://" + ITEMS_SERVICE_HOST +
-                            ":8099" + "/get_items_from_cart")
+                            ITEMS_PORT + "/lock")
     available_items = []
     unavailable_items = []
     for item in items:
@@ -108,20 +108,42 @@ def checkout():
             unavailable_items.append(item)
         else:
             available_items.append(item)
-    
+            
     # GET CREDIT CARD INFO
-    
+    user_id = data_content["user_id"]
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
+                    + "/card_by_user/" + user_id)
+    r = requests.get(socket_url)
+    payment = json.loads(r.content)
+    if "error" in payment:
+        return "User does not have payment information yet. Please enter your payment information before checking out."
+    payment_id = payment["payment_id"]
 
-    # CREATE PAYMENT INFO
+    # CREATE TRANSACTION INFO
+    items_info_url = ("http://" + ITEMS_SERVICE_HOST +
+                            ITEMS_PORT + "/get_item")
+    transaction_url = ("http://" + PAYMENTS_SERVICE_HOST +
+                            PAYMENTS_PORT + "/transaction")
 
-
+    successfully_bought = []
+    for item in available_items:
+        item_info = (requests.post(url = items_info_url, data = {"item_id": item})).content
+        # for price, I need to figure out whether its an auction or a buy now
+        # transaction
+        total_price = item_info["price"] + item_info["shipping"]
+        transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
+                        "money": total_price, "quantity": 1}
+        r = requests.post(transaction_url, data = transaction)
+        successfully_bought.append(r.content)
 
 
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
     r = requests.post(empty_cart_url, data = {"user_id": user_id})
-    return r.content
+
+    # return transaction information for successful transactions
+    return json.dumps(successfully_bought)
 
 
 
