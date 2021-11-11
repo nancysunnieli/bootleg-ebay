@@ -16,7 +16,7 @@ class TestAuction(TestCase):
         # create auction successfully
         url = self.base_url + "auction"
         time = current_time()
-        item_id = id_generator(size=10)
+        item_id = "618c54028f3def6e8f10add5"
         seller_id = "into_leave_an"
         auction_info = {
             "start_time": time,
