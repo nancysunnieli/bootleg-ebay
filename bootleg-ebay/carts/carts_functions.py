@@ -33,7 +33,9 @@ class CartsDBManager:
         result = carts_collection.insert_one(shopping_cart)
 
         if len(list(carts_collection.find({ "_id": shopping_cart["_id"]}))) == 1:
-                return "Cart Successfully Created!"
+                cart = list(carts_collection.find({ "_id": shopping_cart["_id"]}))[0]
+                cart["_id"] = str(cart["_id"])
+                return cart
         else:
             return "Cart was not successfully Created. Please Try Again."
 

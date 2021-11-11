@@ -212,7 +212,7 @@ def get_item():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/get_item")
     data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
+    r = requests.post(url = socket_url, json = json.dumps(data_content))
     return r.content
 
 
