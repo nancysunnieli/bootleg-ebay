@@ -40,12 +40,12 @@ class TestAuction(TestCase):
 
         # add item then remove it
         url = self.base_url + "addition"
+        item = {'user_id': 'test', 'item_id': "618c54028f3def6e8f10add5"}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
-        url = self.base_url + "removal/" + user["user_id"]
-        remove_item = {'item_id': "618c54028f3def6e8f10add5"}
-        output = requests.post(url = url, json = remove_item)
+        url = self.base_url + "removal"
+        output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
         # add item then empty cart
