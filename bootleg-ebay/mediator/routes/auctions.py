@@ -3,7 +3,7 @@ import requests
 import json
 
 from flask_expects_json import expects_json
-from flask import Response, request, Blueprint
+from flask import Response, request, Blueprint, current_app
 
 from utils import get_and_request
 from config import *
@@ -67,6 +67,11 @@ def create_auction():
     socket_url = (AUCTIONS_URL + "/auction")
     r = get_and_request(socket_url, 'post')
     
+    result = current_app.celery.send_task('celery_tasks.add_together',args=[121232,61232])
+    # add_result = result.get()
+    # print('Processing is {}'.format( add_result ))
+    # print('XXXXXXX')
+
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 

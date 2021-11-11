@@ -37,6 +37,10 @@ services:
     depends_on:
       - items-api
       - carts-api
+      - payments-api
+      - notifs-api
+      - auctions-api
+      - rabbitmq-server
 
   users-db:
     image: mysql:8
@@ -200,6 +204,13 @@ services:
       - 1002:1002
     volumes:
       - ./bootleg-ebay/auctions:/auctions
+
+  rabbitmq-server:
+    image: rabbitmq:latest
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
 # networking for the Redis container
 #networks:
 #  node_net:
