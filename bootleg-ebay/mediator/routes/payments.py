@@ -42,11 +42,11 @@ _none_schema = {
 _transaction_schema = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'integer'},
-        'payment_id': {'type': 'integer'},
+        'user_id': {'type': 'number'},
+        'payment_id': {'type': 'number'},
         'item_id': {'type': 'string'},
         'money': {'type': 'number'},
-        'quantity': {'type': 'integer'}
+        'quantity': {'type': 'number'}
     },
     'required': []
 }
