@@ -68,7 +68,7 @@ def report_item():
 
 @app.route("/get_item", methods = ['POST'])
 def get_item():
-    data = request.get_json()
+    data = json.loads(request.get_json())
     item = data["item_id"]
     return item_functions.get_item(item)
 

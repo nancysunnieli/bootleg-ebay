@@ -18,7 +18,7 @@ _create = {
         'start_time': {'type': 'number'},
         'end_time': {'type': 'number'},
         'item_id': {'type': 'string'},
-        'seller_id': {'type': 'integer'},
+        'seller_id': {'type': 'string'},
         'bids': {'type': 'array'}
     },
     'required': ['start_time', 'end_time', 'item_id', 'seller_id']
@@ -38,22 +38,23 @@ _none_schema = {
     'required': []
 }
 
-_user = {
-    'type': 'object',
-    'properties': {
-        'user_id': {'type': 'integer'}
-    },
-    'required': ['user_id']
-}
-
 _bid = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'integer'},
+        'buyer_id': {'type': 'string'},
         'auction_id': {'type': 'string'},
         'price': {'type': 'number'}
     },
-    'required': ['user_id', 'auction_id', 'price']
+    'required': ['buyer_id', 'auction_id', 'price']
+}
+
+_time = {
+    'type': 'object',
+    'properties': {
+        'start': {'type': 'number'},
+        'end': {'type': 'number'}
+    },
+    'required': ['start', 'end']
 }
 
 
@@ -100,6 +101,7 @@ def get_auctions_by_item_id(item_id):
 
 
 @auctions_api.route("/auction_metrics", methods = ['POST'])
+@expects_json(_time)
 def get_auction_metrics():
     socket_url = (AUCTIONS_URL + "/auction_metrics")
 
@@ -139,7 +141,7 @@ def remove_auction(auction_id):
 @auctions_api.route("/bids/<user_id>", methods = ['GET'])
 # @expects_json(_none_schema)
 def user_bids(user_id):
-    socket_url = (AUCTIONS_URL + "/bids/{}".format(user_id))
+    socket_url = AUCTIONS_URL + ("/bids/%s" % (user_id)) 
     r = get_and_request(socket_url, 'get')
     
     if not r.ok:
@@ -151,15 +153,61 @@ def user_bids(user_id):
 @auctions_api.route("/bid", methods = ['POST'])
 @expects_json(_bid)
 def create_bid():
+    
     socket_url = (AUCTIONS_URL + "/bid")
     r = get_and_request(socket_url, 'post')
     
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
-    
+
     # notify the seller and buyers that there have been
     # new bids
 
+    # first I need to get the seller and buyers in the auction
+    data_content = request.get_json()
+    auction_id = data_content["auction_id"]
+    username = data_content["buyer_id"]
+
+
+    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
+    auction_info = get_and_request(socket_url, 'get').content
+    auction_info = json.loads(auction_info)
+
+    buyers = []
+    for bid in auction_info["bids"]:
+        buyers.append(bid["buyer_id"])
+    seller = auction_info["seller_id"]
+
+    # now I must get the contact information of the buyers
+    # and seller
+    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + seller)
+    seller_info = json.loads(get_and_request(socket_url, 'get').content)
+    seller_email = seller_info["email"]
+
+    buyer_emails = []
+    for buyer in buyers:
+        socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + buyer)
+        buyer_info = json.loads(get_and_request(socket_url, 'get').content)
+        buyer_email = buyer_info["email"]
+        buyer_emails.append(buyer_email)
+
+    # next I need to get the item_id
+    item_id = auction_info["item_id"]
+
+    # send email to seller
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/seller_bid")
+    data = json.dumps({"recipient": seller_email, "item_id": item_id})
+    result = requests.post(url = socket_url, json = data)
+
+    # send emails to buyers
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/buyer_bid")
+    for buyer_email in buyer_emails:
+        data = json.dumps({"recipient": buyer_email, "item_id": item_id})
+        requests.post(url = socket_url, json = data)
+
+    # return new bid content
     return r.content
 
 @auctions_api.route("/<auction_id>/bids", methods = ['GET'])

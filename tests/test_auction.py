@@ -17,12 +17,13 @@ class TestAuction(TestCase):
         url = self.base_url + "auction"
         time = current_time()
         item_id = id_generator(size=10)
-        seller_id = 242312
+        seller_id = "into_leave_an"
         auction_info = {
             "start_time": time,
             "end_time": time + 1000000000,
             "item_id": item_id,
-            "seller_id": seller_id
+            "seller_id": seller_id,
+            "bids": []
         }
 
         output = requests.post(url=url, json=auction_info)
@@ -55,13 +56,13 @@ class TestAuction(TestCase):
         url = self.base_url + "auction_metrics"
         output = requests.post(url=url, json={'start': time, 'end': time + 1000000000})
         self.assertTrue(output.ok)
-
+        
         # create sucessful bids
-        buyer_id1 =  12321
-        buyer_id2 = 21454
+        buyer_id1 = "into_leave_an"
+        buyer_id2 = "at_and_have"
         buyer1_num_bids = 3
         buyer2_num_bids = 4
-
+        
         url = self.base_url + "bid"
 
         initial_price = 10.0
@@ -70,7 +71,7 @@ class TestAuction(TestCase):
             bid_info = {
                 "price": price,
                 "auction_id": id_,
-                "user_id": buyer_id1
+                "buyer_id": buyer_id1
             }
             price += 0.3
             output = requests.post(url=url, json=bid_info)
@@ -80,7 +81,7 @@ class TestAuction(TestCase):
             bid_info = {
                 "price": price,
                 "auction_id": id_,
-                "user_id": buyer_id2
+                "buyer_id": buyer_id2
             }
             price += 0.3
             output = requests.post(url=url, json=bid_info)
@@ -95,14 +96,14 @@ class TestAuction(TestCase):
         output = requests.post(url=url, json=bid_info)
         self.assertFalse(output.ok)
         self.assertEqual(output.status_code, 400)
-
+        
         # view all bids in that auction
         url = self.base_url + "/{}/bids".format(id_)
         output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(len(output_json), buyer1_num_bids + buyer2_num_bids)
         self.assertTrue(output.ok)
-
+        
         # view bids by users
         for b_id in [buyer_id1, buyer_id2]:
             url = self.base_url + "bids/{}".format(b_id)
