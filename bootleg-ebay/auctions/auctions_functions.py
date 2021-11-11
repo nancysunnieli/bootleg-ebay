@@ -195,6 +195,7 @@ def user_bids(buyer_id):
     This returns back a list of bids by user
     """
     all_auctions = AuctionDBManager.query_collection({})
+
     all_bids = []
     for current_auction in all_auctions:
         auction = AuctionDBManager.get_auction(current_auction["_id"])
@@ -254,5 +255,6 @@ if __name__ == "__main__":
     #print(remove_auction('dd965614-cb9'))
     #print(view_bids('dd965614-cb9'))
     #print(create_bid('2f459c3c-c35', 101.99, 'db6ef937-1e3'))
+    #print(user_bids("I_her_Presently"))
 
 

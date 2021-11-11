@@ -64,14 +64,13 @@ def remove_auction(auction_id):
 
 @app.route('/bids/<user_id>', methods=['GET'])
 def user_bids(user_id):
-    user_id = int(user_id)
     return auctions_functions.user_bids(user_id)
 
 @app.route('/bid', methods=['POST'])
 def create_bid():
     data = request.get_json()
     auction_id = data['auction_id']
-    return auctions_functions.create_bid(auction_id, data['price'], data['user_id'])
+    return auctions_functions.create_bid(auction_id, data['price'], data['buyer_id'])
 
 @app.route('/<auction_id>/bids', methods=['GET'])
 def view_bids(auction_id):
