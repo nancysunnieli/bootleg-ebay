@@ -38,7 +38,7 @@ def get_items_from_cart():
 
 @app.route('/empty_cart', methods = ['POST'])
 def empty_cart():
-    data = request.get_json()
+    data = json.loads(request.get_json())
     user_id = data["user_id"]
     return carts_functions.empty_cart(user_id)
 

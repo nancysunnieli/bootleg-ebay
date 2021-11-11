@@ -95,9 +95,9 @@ def checkout():
     data_content = request.get_json()
     get_items_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/get_items_from_cart")
-    items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
+    items = requests.post(url = get_items_url, json = data_content).content
 
-    
+    items = json.loads(items)
     # checks availability of all items
     items_availability_url = ("http://" + ITEMS_SERVICE_HOST +
                             ITEMS_PORT + "/lock")
@@ -109,19 +109,21 @@ def checkout():
             unavailable_items.append(item)
         else:
             available_items.append(item)
-    
+
     # get user_id from username
     username = data_content["user_id"]
     
     user_id_url = ("http://" + USERS_SERVICE_HOST +
                     USERS_PORT + "/user_by_name/" + username)
-    user_id = requests.get(url = user_id_url).content
+    user_id = json.loads(requests.get(url = user_id_url).content)
+    user_id = user_id["user_id"]
+
 
     # GET CREDIT CARD INFO
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
-                    + "/card_by_user/" + user_id)
+                    + "/card_by_user/" + str(user_id))
     r = requests.get(socket_url)
-    payment = r.content
+    payment = json.loads(r.content)
     if "error" in payment:
         return "User does not have payment information yet. Please enter your payment information before checking out."
     payment_id = payment["payment_id"]
@@ -138,7 +140,8 @@ def checkout():
     successfully_bought = []
     seen_auctions = []
     for item in available_items:
-        item_info = (requests.post(url = items_info_url, data = {"item_id": item})).content
+        item_info = requests.post(url = items_info_url, json = json.dumps({"item_id": item})).content
+        item_info = json.loads(item_info)
         # for price, I need to figure out whether its an auction or a buy now
         # transaction
 
@@ -146,6 +149,7 @@ def checkout():
         auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auctions_by_item/" + item)
         auctions = json.loads(requests.get(auction_url).content)
+        
         total_price = None
         for auction in auctions:
             if auction["auction_id"] not in seen_auctions:
@@ -162,17 +166,22 @@ def checkout():
                         seen_auctions.append(auction["auction_id"])
                         total_price = item_info["shipping"] + most_recent_price
                         break
+
         if not total_price:
-            total_price = item_info["price"] + item_info["shipping"]
+            total_price = float(item_info["price"]) + float(item_info["shipping"])
+
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}
-        r = requests.post(transaction_url, data = transaction)
-        successfully_bought.append(r.content)
+        transaction = json.dumps(transaction)
+
+        r = requests.post(transaction_url, json = transaction)
+
+        successfully_bought.append(json.loads(r.content))
 
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
-    r = requests.post(empty_cart_url, data = {"user_id": user_id})
+    r = requests.post(empty_cart_url, json = json.dumps({"user_id": username}))
 
     # return transaction information for successful transactions
     return json.dumps(successfully_bought)
