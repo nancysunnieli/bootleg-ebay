@@ -195,6 +195,10 @@ class Auction:
     def auction_info(self):
         return self._auction_info
 
+    @property
+    def max_bid_price(self):
+        return self._bids[-1].price
+
     def previous_bid(self):
         highest_price = -1
         latest_bid = -float('inf')

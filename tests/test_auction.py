@@ -130,26 +130,36 @@ class TestAuction(TestCase):
         initial_price = 10.0
         price = initial_price
         for _ in range(buyer1_num_bids):
+            price += 0.3
             bid_info = {
                 "price": price,
                 "auction_id": id_,
                 "buyer_id": buyer_id1
             }
-            price += 0.3
+            
             output = requests.post(url=url, json=bid_info)
             self.assertTrue(output.ok)
 
         for _ in range(buyer2_num_bids):
+            price += 0.3
             bid_info = {
                 "price": price,
                 "auction_id": id_,
                 "buyer_id": buyer_id2
             }
-            price += 0.3
+            
             output = requests.post(url=url, json=bid_info)
             self.assertTrue(output.ok)
 
+        # view max bid price
+        url = self.base_url + "auction/{}/max_bid".format(id_)
+        output = requests.get(url=url, json=None)
+        self.assertTrue(output.ok)
+        self.assertEqual(output.json()['max_bid'], price)
+
+
         # make unsuccessful bid (bid is lower than max bid)
+        url = self.base_url + "bid"
         bid_info = {
             "price": initial_price,
             "auction_id": id_,

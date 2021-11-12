@@ -89,6 +89,17 @@ def get_auction(auction_id):
 
     return r.content
 
+
+@auctions_api.route("/auction/<auction_id>/max_bid", methods = ['GET'])
+def get_max_bid(auction_id):
+    socket_url = (AUCTIONS_URL + "/auction/{}/max_bid".format(auction_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 @auctions_api.route("/auctions_by_item/<item_id>", methods = ['GET'])
 def get_auctions_by_item_id(item_id):
     socket_url = (AUCTIONS_URL + "/auctions_by_item/{}".format(item_id))
