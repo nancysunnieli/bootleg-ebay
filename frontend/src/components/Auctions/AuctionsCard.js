@@ -20,18 +20,8 @@ console.log(imageHeight);
 
 const Auction = ({ auction, item, isBuyNowDisabled }) => {
     const { auction_id, bids, end_time, item_id, seller_id, start_time } = auction;
-    const {
-        _id,
-        available,
-        category,
-        description,
-        isFlagged,
-        name,
-        photos,
-        price,
-        sellerID,
-        watchlist,
-    } = item;
+    const { _id, category, description, isFlagged, name, photos, price, sellerID, watchlist } =
+        item;
 
     const [timeNow, setTimeNow] = useState(new Date());
     const { user } = useSelector((state) => state.auth);
@@ -86,7 +76,7 @@ const Auction = ({ auction, item, isBuyNowDisabled }) => {
                 <Card.Footer>
                     <Row>
                         {category.map((c, i) => (
-                            <Col md="auto">
+                            <Col md="auto" key={i}>
                                 <Badge key={i} bg="primary">
                                     {c}
                                 </Badge>

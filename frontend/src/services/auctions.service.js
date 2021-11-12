@@ -28,13 +28,17 @@ const removeAuction = async (auction_id) => {
 };
 
 const getUserBids = async (user_id) => {
-    const resp = axios.get(API_URL + `/auctions/bids`);
+    const resp = axios.get(API_URL + `/auctions/bids/${user_id}`);
     return resp.data;
 };
 
 const AuctionsService = {
     getCurrentAuctions,
     getAuction,
+    getAuctionByItemID,
+    getAuctionMetrics,
+    removeAuction,
+    getUserBids,
 };
 
 export default AuctionsService;
