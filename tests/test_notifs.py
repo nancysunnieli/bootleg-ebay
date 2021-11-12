@@ -8,7 +8,7 @@ from config import *
 from utils import id_generator, current_time
 import json
 
-class TestAuction(TestCase):
+class TestNotifs(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, NOTIFS_NAME)
 
     def test_notifs(self):
