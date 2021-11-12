@@ -21,6 +21,9 @@ export const getCurrentAuctions = createAsyncThunk(
                     };
                 })
             );
+            await new Promise((resolve, reject) => {
+                setTimeout(resolve, 1000);
+            });
             return auctionItems;
         } catch (error) {
             const message = error.toString();

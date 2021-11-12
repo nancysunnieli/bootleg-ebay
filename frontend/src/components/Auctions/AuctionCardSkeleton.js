@@ -6,18 +6,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Row from "react-bootstrap/Row";
 import useInterval from "../../hooks/useInterval";
 import moment from "moment";
-import { useCallback, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addItemToCart } from "../../slices/cart";
-import Container from "react-bootstrap/Container";
-
-function convertRemToPixels(rem) {
-    return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-}
-
-const imageHeight = convertRemToPixels(15);
-console.log(imageHeight);
-
+import { useState } from "react";
 const Auction = ({ auction, item }) => {
     const { auction_id, bids, end_time, item_id, seller_id, start_time } = auction;
     const {
@@ -34,11 +23,6 @@ const Auction = ({ auction, item }) => {
     } = item;
 
     const [timeNow, setTimeNow] = useState(new Date());
-    const { user } = useSelector((state) => state.auth);
-    const dispatch = useDispatch();
-    const buyNow = useCallback(() => {
-        dispatch(addItemToCart({ item, user_id: user.user_id }));
-    }, [dispatch]);
 
     useInterval(() => {
         setTimeNow(new Date());
@@ -49,26 +33,16 @@ const Auction = ({ auction, item }) => {
     return (
         <Col>
             <Card>
-                <Card.Img
-                    variant="top"
-                    src={`https://picsum.photos/370?${_id}`}
-                    style={{ maxHeight: `15rem`, height: "auto", display: "block" }}
-                />
+                <Card.Img variant="top" src={`https://picsum.photos/378/160?${_id}`} />
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text>Auction ends in {timeRemaining}</Card.Text>
                     <Card.Text>{description}</Card.Text>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Button variant="warning" onClick={buyNow}>
-                            Buy Now ${price}
-                        </Button>
-                        <Button variant="info">Bid ({bids.length} bids)</Button>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        <Card.Text>${price}</Card.Text>
+                        <Card.Text>{bids.length} bids</Card.Text>
+                        <Button variant="success">Buy Now</Button>{" "}
+                        <Button variant="info">Bid</Button>
                     </div>
                 </Card.Body>
                 <Card.Footer>

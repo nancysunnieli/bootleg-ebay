@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCurrentAuctions } from "../../slices/auctions";
 import AuctionCard from "./AuctionCard";
 import Row from "react-bootstrap/Row";
+import ItemSkeleton from "../Items/ItemSkeleton";
 
 const Auctions = () => {
     const { auctions } = useSelector((state) => state.auctions);
@@ -16,9 +17,14 @@ const Auctions = () => {
         getAuctions();
     }, []);
 
-    const auctionCards = auctions.map(({ auction, item }, i) => (
+    let auctionCards = auctions.map(({ auction, item }, i) => (
         <AuctionCard key={i} auction={auction} item={item} />
     ));
+
+    if (auctionCards.length == 0) {
+        auctionCards = Array.from(Array(10)).fill(<ItemSkeleton />);
+    }
+
     return (
         <div>
             <h1>Auctions</h1>

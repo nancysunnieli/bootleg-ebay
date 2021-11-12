@@ -25,7 +25,6 @@ const NotFound = () => {
 const App = () => {
     const [showAdminBoard, setShowAdminBoard] = useState(false);
     const { user: currentUser, isLoggedIn } = useSelector((state) => state.auth);
-    console.log("user", currentUser);
     const dispatch = useDispatch();
     const logOut = useCallback(() => {
         dispatch(logout());
@@ -44,7 +43,6 @@ const App = () => {
     }, [currentUser, logOut]);
 
     useEffect(() => {
-        console.log("Login mount");
         _checkLocalLogin();
     }, [_checkLocalLogin]);
 
