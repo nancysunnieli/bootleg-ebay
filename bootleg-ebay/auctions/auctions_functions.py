@@ -196,6 +196,8 @@ def user_bids(buyer_id):
     """
     all_auctions = AuctionDBManager.query_collection({})
 
+    buyer_id = int(buyer_id)
+
     all_bids = []
     for current_auction in all_auctions:
         auction = AuctionDBManager.get_auction(current_auction["_id"])

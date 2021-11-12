@@ -6,6 +6,7 @@ import os
 from flask import Flask, Response, request
 from flask_expects_json import expects_json
 from flask_cors import CORS
+from celery import Celery
 
 from routes import *
 
@@ -21,6 +22,10 @@ socket_name = socket.gethostbyname(socket.gethostname())
 
 
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+broker_url = "amqp://rabbitmq-server"
+celery = Celery(app.name, broker=broker_url, include=['celery_tasks.auctions'])
+app.celery = celery
 
 
 @app.route('/')
