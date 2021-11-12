@@ -13,7 +13,7 @@ def base():
 @app.route('/create_cart', methods=['POST'])
 def create_cart():
     data = request.get_json()
-    user_id = data["user_id"]
+    user_id = int(data["user_id"])
     return carts_functions.create_cart(user_id)
 
 @app.route('/add_item_to_cart', methods=['POST'])
@@ -26,7 +26,7 @@ def add_item_to_cart():
 @app.route('/delete_item_from_cart', methods = ['POST'])
 def delete_item_from_cart():
     data = request.get_json()
-    user_id = data["user_id"]
+    user_id = int(data["user_id"])
     item_id = data["item_id"]
     return carts_functions.delete_item_from_cart(user_id, item_id)
 
@@ -38,7 +38,7 @@ def get_items_from_cart():
 
 @app.route('/empty_cart', methods = ['POST'])
 def empty_cart():
-    data = json.loads(request.get_json())
+    data = request.get_json()
     user_id = data["user_id"]
     return carts_functions.empty_cart(user_id)
 
