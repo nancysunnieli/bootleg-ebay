@@ -89,6 +89,17 @@ def get_auction(auction_id):
 
     return r.content
 
+
+@auctions_api.route("/auction/<auction_id>/max_bid", methods = ['GET'])
+def get_max_bid(auction_id):
+    socket_url = (AUCTIONS_URL + "/auction/{}/max_bid".format(auction_id))
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 @auctions_api.route("/auctions_by_item/<item_id>", methods = ['GET'])
 def get_auctions_by_item_id(item_id):
     socket_url = (AUCTIONS_URL + "/auctions_by_item/{}".format(item_id))
@@ -178,37 +189,33 @@ def create_bid():
         buyers.append(bid["buyer_id"])
     seller_id = auction_info["seller_id"]
 
-    # TODO(Nancy): fix this later
-    # print("SELLER ID", seller_id)
     # now I must get the contact information of the buyers
     # and seller
-    # socket_url = (USERS_URL + "/user/{}".format(seller_id))
-    # seller_info = json.loads(get_and_request(socket_url, 'get').content)
-    # # print("SELLER INFO", seller_info)
-    # seller_email = seller_info["email"]
+    socket_url = (USERS_URL + "/user/{}".format(seller_id))
+    seller_info = json.loads(get_and_request(socket_url, 'get').content)
+    seller_email = seller_info["email"]
 
-    # buyer_emails = []
-    # for buyer in buyers:
-    #     socket_url = (USERS_URL + "/user_by_name/" + buyer)
-    #     buyer_info = json.loads(get_and_request(socket_url, 'get').content)
-    #     buyer_email = buyer_info["email"]
-    #     buyer_emails.append(buyer_email)
+    buyer_emails = []
+    for buyer in buyers:
+        socket_url = (USERS_URL + "/user/{}".format(buyer))
+        buyer_info = json.loads(get_and_request(socket_url, 'get').content)
+        buyer_emails.append(buyer_info["email"])
 
-    # # next I need to get the item_id
-    # item_id = auction_info["item_id"]
+    # next I need to get the item_id
+    item_id = auction_info["item_id"]
 
-    # # send email to seller
-    # socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-    #                 NOTIFS_PORT + "/seller_bid")
-    # data = json.dumps({"recipient": seller_email, "item_id": item_id})
-    # result = requests.post(url = socket_url, json = data)
+    # send email to seller
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/seller_bid")
+    data = json.dumps({"recipient": seller_email, "item_id": item_id})
+    result = requests.post(url = socket_url, json = data)
 
-    # # send emails to buyers
-    # socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-    #                 NOTIFS_PORT + "/buyer_bid")
-    # for buyer_email in buyer_emails:
-    #     data = json.dumps({"recipient": buyer_email, "item_id": item_id})
-    #     requests.post(url = socket_url, json = data)
+    # send emails to buyers
+    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+                    NOTIFS_PORT + "/buyer_bid")
+    for buyer_email in buyer_emails:
+        data = json.dumps({"recipient": buyer_email, "item_id": item_id})
+        requests.post(url = socket_url, json = data)
 
     # return new bid content
     return r.content

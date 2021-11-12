@@ -15,7 +15,7 @@ def randint():
 def randcard_number(): 
     return random.randint(1111111111111111, 9999999999999999)
 
-class TestUser(TestCase):
+class TestPayment(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, PAYMENTS_NAME)
 
 

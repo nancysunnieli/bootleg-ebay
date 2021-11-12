@@ -41,6 +41,11 @@ def create_auction():
 def get_auction(auction_id):
     return auctions_functions.get_auction(auction_id)
 
+@app.route("/auction/<auction_id>/max_bid", methods = ['GET'])
+def get_max_bid(auction_id):
+    return auctions_functions.get_max_bid(auction_id)
+
+
 @app.route('/auctions_by_item/<item_id>', methods=['GET'])
 def get_auctions_by_item_id(item_id):
     return auctions_functions.get_auctions_by_item_id(item_id)

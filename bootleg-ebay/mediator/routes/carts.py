@@ -40,13 +40,15 @@ _user = {
 }
 
 
-@carts_api.route("/creation", methods = ['POST'])
+@carts_api.route("/cart", methods = ['POST'])
 @expects_json(_user)
 def create_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/create_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/addition", methods = ['POST'])
@@ -69,12 +71,11 @@ def delete_item_from_cart():
         return Response(response=r.text, status=r.status_code)
     return r.content
 
-@carts_api.route("/cart", methods = ['POST'])
-@expects_json(_user)
-def get_items_from_cart():
+@carts_api.route("/cart/<user_id>", methods = ['GET'])
+def get_items_from_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/get_items_from_cart")
-    data_content = request.get_json()
+    data_content = {"user_id": int(user_id)}
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
@@ -110,12 +111,7 @@ def checkout():
             available_items.append(item)
 
     # get user_id from username
-    username = data_content["user_id"]
-    
-    user_id_url = ("http://" + USERS_SERVICE_HOST +
-                    USERS_PORT + "/user_by_name/" + username)
-    user_id = json.loads(requests.get(url = user_id_url).content)
-    user_id = user_id["user_id"]
+    user_id = data_content["user_id"]
 
 
     # GET CREDIT CARD INFO
@@ -161,7 +157,7 @@ def checkout():
                             most_recent_bid_time = bid["bid_time"]
                             most_recent_buyer = bid["buyer_id"]
                             most_recent_price = bid["price"]
-                    if most_recent_buyer == username:
+                    if most_recent_buyer == user_id:
                         seen_auctions.append(auction["auction_id"])
                         total_price = item_info["shipping"] + most_recent_price
                         break
@@ -180,7 +176,7 @@ def checkout():
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
-    r = requests.post(empty_cart_url, json = json.dumps({"user_id": username}))
+    r = requests.post(empty_cart_url, json = json.dumps({"user_id": user_id}))
 
     # return transaction information for successful transactions
     return json.dumps(successfully_bought)

@@ -8,14 +8,14 @@ from config import *
 from utils import id_generator, current_time
 import json
 
-class TestAuction(TestCase):
+class TestCart(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, CARTS_NAME)
 
     def test_cart(self):
         
         # create cart successfully
-        url = self.base_url + "creation"
-        user = {"user_id" : "test"}
+        url = self.base_url + "cart"
+        user = {"user_id" : 40}
         output = requests.post(url = url, json = user)
         self.assertTrue(output.ok)
 
@@ -23,14 +23,14 @@ class TestAuction(TestCase):
 
         # add item it cart successfully
         url = self.base_url + "addition"
-        item = {'item_id': "618c54028f3def6e8f10add5",
-                'user_id': "herself_and_"}
+        item = {'item_id': "618ecbd2864f5897415ff300",
+                'user_id': 40}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
         # get cart
-        url = self.base_url + "cart"
-        output = requests.post(url=url, json=user)
+        url = self.base_url + "cart/%s" % str(40)
+        output = requests.get(url=url)
         self.assertTrue(output.ok)
 
 
@@ -40,7 +40,7 @@ class TestAuction(TestCase):
 
         # add item then remove it
         url = self.base_url + "addition"
-        item = {'user_id': 'test', 'item_id': "618c54028f3def6e8f10add5"}
+        item = {'user_id': 40, 'item_id': "618ecbd2864f5897415ff300"}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 

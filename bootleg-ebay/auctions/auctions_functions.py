@@ -77,8 +77,15 @@ def get_auction(auction_id):
 
     """
 
-    auctions = AuctionDBManager.get_auction(auction_id)
-    return auctions.to_json()
+    auction = AuctionDBManager.get_auction(auction_id)
+    return auction.to_json()
+
+def get_max_bid(auction_id):
+    auction = AuctionDBManager.get_auction(auction_id)
+    max_bid = {
+        'max_bid': auction.max_bid_price
+    }
+    return json.dumps(max_bid)
 
 def get_auctions_by_item_id(item_id):
     """Get all the auctions corresponding to an item.
