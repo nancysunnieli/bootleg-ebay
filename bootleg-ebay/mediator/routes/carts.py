@@ -58,14 +58,13 @@ def add_item_to_cart():
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@carts_api.route("/removal/<user_id>", methods = ['POST'])
+@carts_api.route("/removal", methods = ['POST'])
 @expects_json(_item)
-def delete_item_from_cart(user_id):
+def delete_item_from_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/delete_item_from_cart")
-    data_content = json.loads(request.get_json())
-    data_content["user_id"] = user_id
-    r = requests.post(url = socket_url, data = json.dumps(data_content))
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
     return r.content

@@ -14,15 +14,17 @@ const register = async (username, email, password) => {
 };
 
 const login = async (username, password) => {
-    console.log("username", username, password);
-    // const response = await axios.post(API_URL + "users/login", {
-    //     username,
-    //     password,
-    // });
-    // localStorage.setItem("user", JSON.stringify(response.data));
-    // return response.data;
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user;
+    // console.log("username", username, password);
+    const response = await axios.post(API_URL + "users/login", {
+        username,
+        password,
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1600));
+    localStorage.setItem("user", JSON.stringify(response.data));
+    console.log("login", response.data);
+    return response.data;
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // return user;
 };
 
 const logout = () => {

@@ -15,6 +15,7 @@ import Logout from "./components/Logout/Logout";
 import Profile from "./components/Profile/Profile";
 import Register from "./components/Register/Register";
 import PrivateRoute from "./components/Routing/PrivateRouter";
+import Splash from "./components/Splash/Splash";
 import { ROLE_ADMIN, ROLE_USER } from "./constants";
 import { checkLocalLogin, logout } from "./slices/auth";
 
@@ -23,7 +24,7 @@ const NotFound = () => {
 };
 const App = () => {
     const [showAdminBoard, setShowAdminBoard] = useState(false);
-    const { user: currentUser } = useSelector((state) => state.auth);
+    const { user: currentUser, isLoggedIn } = useSelector((state) => state.auth);
     console.log("user", currentUser);
     const dispatch = useDispatch();
     const logOut = useCallback(() => {
@@ -46,6 +47,10 @@ const App = () => {
         console.log("Login mount");
         _checkLocalLogin();
     }, [_checkLocalLogin]);
+
+    if (isLoggedIn == null) {
+        return <Splash />;
+    }
 
     return (
         <Router>

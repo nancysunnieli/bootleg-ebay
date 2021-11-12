@@ -17,6 +17,16 @@ export const getAllItems = createAsyncThunk("items/getAllItems", async (limit, t
     }
 });
 
+export const getCategories = createAsyncThunk("items/getCategories", async (_, thunkAPI) => {
+    try {
+        const data = await ItemsService.getCategories();
+        return data;
+    } catch (error) {
+        const message = error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
 const itemsSlice = createSlice({
     name: "items",
     initialState,
@@ -24,6 +34,7 @@ const itemsSlice = createSlice({
         [getAllItems.fulfilled]: (state, action) => {
             state.items = action.payload;
         },
+        [getAllItems.rejected]: (state, action) => {},
     },
 });
 

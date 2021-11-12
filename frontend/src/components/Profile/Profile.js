@@ -12,16 +12,16 @@ const Profile = () => {
     const setShowEditModal = (visibility) => dispatch(setEditModalVisible(visibility));
 
     const handleDelete = () => {
-        dispatch(deleteAccount(user.id));
+        dispatch(deleteAccount(user.user_id));
     };
 
     const handleSuspend = () => {
-        dispatch(suspendAccount({ id: user.id, suspended: user.suspended === 0 ? 1 : 0 }));
+        dispatch(suspendAccount({ id: user.user_id, suspended: user.suspended === 0 ? 1 : 0 }));
     };
 
     return (
         <div>
-            <Container>
+            <div>
                 <h1>Profile</h1>
                 <h3>Hello {user.username}!</h3>
                 <br />
@@ -42,7 +42,7 @@ const Profile = () => {
                     </Card.Body>
                 </Card>
                 <br />
-            </Container>
+            </div>
             <EditModalInfo show={editModalVisible} handleClose={() => setShowEditModal(false)} />
         </div>
     );

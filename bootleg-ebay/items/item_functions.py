@@ -108,7 +108,9 @@ class ItemsDBManager:
         result = items_collection.insert_one(item)
 
         if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
-            return "Item Successfully Inserted!"
+            item = list(items_collection.find({ "_id": item["_id"]}))
+            item[0]["_id"] = str(item[0]["_id"])
+            return item[0]
         else:
             return "Item was not successfully inserted. Please Try Again."
 

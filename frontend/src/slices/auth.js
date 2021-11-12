@@ -40,13 +40,10 @@ export const logout = createAsyncThunk("auth/logout", async () => {
 
 export const checkLocalLogin = createAsyncThunk("auth/checkLocalLogin", async (_, thunkAPI) => {
     const user = JSON.parse(localStorage.getItem("user"));
-    console.log("persist", user);
-    if (user != null) {
-        thunkAPI.dispatch(login({ username: user.username, password: user.password }));
-    }
+    thunkAPI.dispatch(login({ username: user?.username, password: user?.password }));
 });
 
-const initialState = { isLoggedIn: false, user: null };
+const initialState = { isLoggedIn: null, user: null };
 
 const authSlice = createSlice({
     name: "auth",
