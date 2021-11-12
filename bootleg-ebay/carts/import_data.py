@@ -19,7 +19,7 @@ def create_carts_collection(carts_data_file_path,
     for row in csvreader:
         cart = {}
         cart["_id"] = ObjectId(row[0])
-        cart["user_id"] = row[1]
+        cart["user_id"] = int(row[1])
         cart["items"] = []
 
         all_entries.append(cart)
