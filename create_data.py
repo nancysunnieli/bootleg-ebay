@@ -394,7 +394,7 @@ def photos():
         with open("sample1.png", "rb") as img_file:
             my_string = base64.b64encode(img_file.read())
         id = generate_random_id()
-        all_photos.append([id, my_string])
+        all_photos.append([id, my_string.decode('utf-8')])
         img_file.close()
     
     with open('photos.csv', 'w', newline = "") as f:
