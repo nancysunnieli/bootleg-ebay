@@ -14,7 +14,13 @@ const Items = () => {
     useEffect(() => {
         getItems();
     }, []);
-    const itemCards = items.map((item, i) => <Item key={i} item={item} />);
+
+    let itemCards = items.map((item, i) => <Item key={i} item={item} />);
+    // let itemCards = [];
+    if (itemCards.length == 0) {
+        itemCards = Array.from(Array(10)).fill(<Item />, 0, 10);
+    }
+    console.log(itemCards);
     return (
         <div>
             <h1>Items</h1>

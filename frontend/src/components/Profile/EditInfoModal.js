@@ -20,7 +20,7 @@ const EditModalInfo = ({ show, handleClose }) => {
 
     const handleSave = () => {
         console.log("saving");
-        dispatch(modifyProfile({ id: user.id, email, password }));
+        dispatch(modifyProfile({ id: user.user_id, email, password }));
     };
 
     return (
