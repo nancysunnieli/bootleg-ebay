@@ -9,15 +9,83 @@ from utils import id_generator, current_time
 
 class TestAuction(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, AUCTIONS_NAME)
+    items_url = "{}/{}/".format(MEDIATOR_LINK, ITEMS_NAME)
+    users_url = "{}/{}/".format(MEDIATOR_LINK, USERS_NAME)
+
+
+    def _create_user(self):
+        user_name = id_generator()
+        password = "123"
+
+        # create account successfully
+        url = self.users_url + "user"
+        user_info_params = {
+            "username": user_name,
+            "email": "jinli7255@gmail.com",
+            "password": password,
+            "is_admin": False,
+            "suspended": False
+        }
+
+        output = requests.post(url=url, json=user_info_params)
+        self.assertTrue(output.ok)
+        user_id = output.json()['user_id']
+
+        return user_id
+
+    def _create_item(self):
+        # create item successfully
+        url = self.items_url + "addition"
+        item_info = {
+            "name": "test",
+            "description": "test",
+            "category": ["Women's Clothing", "Shoes"],
+            "photos": "618c53ec8f3def6e8f10adb9",
+            "sellerID": "I_suspicion_",
+            "price": 29.75,
+            "quantity": 6,
+            "shipping": 5}
+        
+        output = requests.post(url=url, json=item_info)
+        self.assertTrue(output.ok)
+        item_id = output.json()['_id']
+
+        return item_id
+
+    def _delete_user(self, user_id):
+        url = self.users_url + 'user/{}'.format(user_id)
+        output = requests.delete(url=url, json={})
+        self.assertTrue(output.ok)
+
+    def _delete_users(self, user_ids):
+        for user_id in user_ids:
+            self._delete_user(user_id)
+
+    def _delete_item(self, item_id):
+        url = self.items_url + "removal"
+        item = {"item_id": item_id}
+        output = requests.post(url=url, json=item)
+        self.assertTrue(output.ok)
+
+    
 
     def test_auction(self):
         
+        # create seller
+        seller_id = self._create_user()
+
+        # create buyers
+        buyer_id1 = self._create_user()
+        buyer_id2 = self._create_user()
+
+
+        # create item id
+        item_id = self._create_item()
+
 
         # create auction successfully
         url = self.base_url + "auction"
         time = current_time()
-        item_id = "618c54028f3def6e8f10add5"
-        seller_id = "into_leave_an"
         auction_info = {
             "start_time": time,
             "end_time": time + 1000000000,
@@ -42,10 +110,6 @@ class TestAuction(TestCase):
         self.assertGreaterEqual(len(output_json), 1)
         self.assertTrue(output.ok)
         
-
-
-
-
         # view current auctions
         url = self.base_url + "current_auctions"
         output = requests.get(url=url, json=None)
@@ -58,8 +122,6 @@ class TestAuction(TestCase):
         self.assertTrue(output.ok)
         
         # create sucessful bids
-        buyer_id1 = "into_leave_an"
-        buyer_id2 = "at_and_have"
         buyer1_num_bids = 3
         buyer2_num_bids = 4
         
@@ -108,14 +170,17 @@ class TestAuction(TestCase):
         for b_id in [buyer_id1, buyer_id2]:
             url = self.base_url + "bids/{}".format(b_id)
             output = requests.get(url=url, json=None)
+            
             output_json = output.json()
             self.assertGreaterEqual(len(output_json), 1)
             self.assertTrue(output.ok)
-
-
-
 
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)
         output = requests.delete(url=url, json=None)
         self.assertTrue(output.ok)
+
+        # delete created objects
+        self._delete_users([buyer_id1, buyer_id2, seller_id])
+        self._delete_item(item_id)
+
