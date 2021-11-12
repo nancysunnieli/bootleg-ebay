@@ -18,7 +18,7 @@ _create = {
         'start_time': {'type': 'number'},
         'end_time': {'type': 'number'},
         'item_id': {'type': 'string'},
-        'seller_id': {'type': 'string'},
+        'seller_id': {'type': 'integer'},
         'bids': {'type': 'array'}
     },
     'required': ['start_time', 'end_time', 'item_id', 'seller_id']
@@ -41,7 +41,7 @@ _none_schema = {
 _bid = {
     'type': 'object',
     'properties': {
-        'buyer_id': {'type': 'string'},
+        'buyer_id': {'type': 'integer'},
         'auction_id': {'type': 'string'},
         'price': {'type': 'number'}
     },
@@ -166,7 +166,7 @@ def create_bid():
     # first I need to get the seller and buyers in the auction
     data_content = request.get_json()
     auction_id = data_content["auction_id"]
-    username = data_content["buyer_id"]
+    # username = data_content["buyer_id"]
 
 
     socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
@@ -176,36 +176,39 @@ def create_bid():
     buyers = []
     for bid in auction_info["bids"]:
         buyers.append(bid["buyer_id"])
-    seller = auction_info["seller_id"]
+    seller_id = auction_info["seller_id"]
 
+    # TODO(Nancy): fix this later
+    # print("SELLER ID", seller_id)
     # now I must get the contact information of the buyers
     # and seller
-    socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + seller)
-    seller_info = json.loads(get_and_request(socket_url, 'get').content)
-    seller_email = seller_info["email"]
+    # socket_url = (USERS_URL + "/user/{}".format(seller_id))
+    # seller_info = json.loads(get_and_request(socket_url, 'get').content)
+    # # print("SELLER INFO", seller_info)
+    # seller_email = seller_info["email"]
 
-    buyer_emails = []
-    for buyer in buyers:
-        socket_url = ("http://" + USERS_SERVICE_HOST + USERS_PORT + "/user_by_name/" + buyer)
-        buyer_info = json.loads(get_and_request(socket_url, 'get').content)
-        buyer_email = buyer_info["email"]
-        buyer_emails.append(buyer_email)
+    # buyer_emails = []
+    # for buyer in buyers:
+    #     socket_url = (USERS_URL + "/user_by_name/" + buyer)
+    #     buyer_info = json.loads(get_and_request(socket_url, 'get').content)
+    #     buyer_email = buyer_info["email"]
+    #     buyer_emails.append(buyer_email)
 
-    # next I need to get the item_id
-    item_id = auction_info["item_id"]
+    # # next I need to get the item_id
+    # item_id = auction_info["item_id"]
 
-    # send email to seller
-    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-                    NOTIFS_PORT + "/seller_bid")
-    data = json.dumps({"recipient": seller_email, "item_id": item_id})
-    result = requests.post(url = socket_url, json = data)
+    # # send email to seller
+    # socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+    #                 NOTIFS_PORT + "/seller_bid")
+    # data = json.dumps({"recipient": seller_email, "item_id": item_id})
+    # result = requests.post(url = socket_url, json = data)
 
-    # send emails to buyers
-    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-                    NOTIFS_PORT + "/buyer_bid")
-    for buyer_email in buyer_emails:
-        data = json.dumps({"recipient": buyer_email, "item_id": item_id})
-        requests.post(url = socket_url, json = data)
+    # # send emails to buyers
+    # socket_url = ("http://" + NOTIFS_SERVICE_HOST +
+    #                 NOTIFS_PORT + "/buyer_bid")
+    # for buyer_email in buyer_emails:
+    #     data = json.dumps({"recipient": buyer_email, "item_id": item_id})
+    #     requests.post(url = socket_url, json = data)
 
     # return new bid content
     return r.content

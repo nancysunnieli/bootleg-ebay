@@ -78,8 +78,8 @@ class Bid:
             bid (Bid)
         """
 
-        if '_id' in mongodb_data:
-            bid_id = str(mongodb_data['_id'])
+        if 'buyer_id' in mongodb_data:
+            bid_id = mongodb_data['buyer_id']
         else:
             bid_id = None
 
