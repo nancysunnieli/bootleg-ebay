@@ -80,7 +80,7 @@ const cartSlice = createSlice({
                     cartItem.status = "success";
                 }
             }
-            toast("it worked");
+            toast.success("Succesfully added item to cart");
         },
         [addItemToCart.rejected]: (state, action) => {
             for (let cartItem of state.cartItems) {
@@ -88,7 +88,7 @@ const cartSlice = createSlice({
                     cartItem.status = "error";
                 }
             }
-            toast("Wow");
+            toast.error("Error adding item to cart");
         },
         [deleteItemFromCart.pending]: (state, action) => {
             let itemIndex = state.cartItems.findIndex(

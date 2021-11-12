@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import NavBar from "react-bootstrap/NavBar";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
 import Auctions from "./components/Auctions/Auctions";
@@ -18,29 +15,18 @@ import PrivateRoute from "./components/Routing/PrivateRouter";
 import Splash from "./components/Splash/Splash";
 import { ROLE_ADMIN, ROLE_USER } from "./constants";
 import { checkLocalLogin, logout } from "./slices/auth";
+import NavBar from "./components/NavBar/NavBar.js";
+import Auction from "./components/Auctions/Auction";
+import NotFound from "./components/NotFound/NotFound";
 
-const NotFound = () => {
-    return <h1>Not found</h1>;
-};
 const App = () => {
     const [showAdminBoard, setShowAdminBoard] = useState(false);
     const { user: currentUser, isLoggedIn } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
-    const logOut = useCallback(() => {
-        dispatch(logout());
-    }, [dispatch]);
 
     const _checkLocalLogin = useCallback(() => {
         dispatch(checkLocalLogin());
     }, [dispatch]);
-
-    useEffect(() => {
-        if (currentUser) {
-            setShowAdminBoard(!!currentUser.is_admin);
-        } else {
-            setShowAdminBoard(false);
-        }
-    }, [currentUser, logOut]);
 
     useEffect(() => {
         _checkLocalLogin();
@@ -53,59 +39,7 @@ const App = () => {
     return (
         <Router>
             <div>
-                <NavBar bg="light" expand="lg">
-                    <Container>
-                        <NavBar.Brand as={Link} to={"/home"}>
-                            Bootleg Ebay
-                        </NavBar.Brand>
-                        <NavBar.Toggle aria-controls="basic-navbar-nav" />
-                        <NavBar.Collapse id="basic-navbar-nav">
-                            <Nav className="me-auto">
-                                {currentUser && [
-                                    <Nav.Link as={Link} to="/home" key={0}>
-                                        Home
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/profile" key={1}>
-                                        Profile
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/items" key={2}>
-                                        Items
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/auctions" key={3}>
-                                        Auctions
-                                    </Nav.Link>,
-                                ]}
-                                {currentUser ? (
-                                    <Nav.Link as={Link} to="/logout">
-                                        Logout
-                                    </Nav.Link>
-                                ) : (
-                                    [
-                                        <Nav.Link as={Link} to="/login" key={0}>
-                                            Login
-                                        </Nav.Link>,
-                                        <Nav.Link as={Link} to="/register" key={1}>
-                                            Register
-                                        </Nav.Link>,
-                                    ]
-                                )}
-                                {showAdminBoard && (
-                                    <Nav.Link as={Link} to="/admin">
-                                        Admin
-                                    </Nav.Link>
-                                )}
-                            </Nav>
-                            {currentUser && (
-                                <Nav>
-                                    <Nav.Link as={Link} to="/cart">
-                                        Cart
-                                    </Nav.Link>
-                                </Nav>
-                            )}
-                        </NavBar.Collapse>
-                    </Container>
-                </NavBar>
-
+                <NavBar />
                 <div className="container mt-3">
                     <Switch>
                         <Route exact path="/login" component={Login} />
@@ -131,6 +65,12 @@ const App = () => {
                             component={Auctions}
                             roles={[ROLE_USER]}
                         />
+                        <PrivateRoute
+                            path={`/auctions/:auction_id`}
+                            component={Auction}
+                            roles={[ROLE_USER]}
+                        />
+
                         <PrivateRoute exact path="/cart" component={Cart} roles={[ROLE_USER]} />
                         <PrivateRoute
                             exact
