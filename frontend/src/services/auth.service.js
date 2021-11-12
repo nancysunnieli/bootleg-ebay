@@ -19,7 +19,6 @@ const login = async (username, password) => {
         username,
         password,
     });
-    await new Promise((resolve) => setTimeout(resolve, 1600));
     localStorage.setItem("user", JSON.stringify(response.data));
     console.log("login", response.data);
     return response.data;

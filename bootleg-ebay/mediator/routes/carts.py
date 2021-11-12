@@ -26,7 +26,7 @@ _item = {
     'type': 'object',
     'properties': {
         'item_id': {'type': 'string'},
-        'user_id': {'type': 'string'}
+        'user_id': {'type': 'number'}
     },
     'required': ['item_id', 'user_id']
 }
@@ -34,7 +34,7 @@ _item = {
 _user = {
     'type': 'object',
     'properties': {
-        'user_id': {'type': 'string'}
+        'user_id': {'type': 'number'}
     },
     'required': ['user_id']
 }

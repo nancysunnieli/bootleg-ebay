@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from "../../slices/items";
 import Item from "./Item";
+import ItemSkeleton from "./ItemSkeleton";
 import Row from "react-bootstrap/Row";
 
 const Items = () => {
@@ -16,11 +17,9 @@ const Items = () => {
     }, []);
 
     let itemCards = items.map((item, i) => <Item key={i} item={item} />);
-    // let itemCards = [];
     if (itemCards.length == 0) {
-        itemCards = Array.from(Array(10)).fill(<Item />, 0, 10);
+        itemCards = Array.from(Array(10)).fill(<ItemSkeleton />);
     }
-    console.log(itemCards);
     return (
         <div>
             <h1>Items</h1>

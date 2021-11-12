@@ -22,6 +22,8 @@ export const login = createAsyncThunk("auth/login", async ({ username, password 
     console.log("login called");
     try {
         const data = await AuthService.login(username, password);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         return { user: data };
     } catch (error) {
         const message =
@@ -69,7 +71,7 @@ const authSlice = createSlice({
             state.isAdmin = action.payload.is_admin;
         },
         [login.rejected]: (state, action) => {
-            window.alert("Oops login failed");
+            console.log("login failed");
             state.isLoggedIn = false;
             state.user = null;
         },
