@@ -77,7 +77,16 @@ def get_items_from_cart(user_id):
                     CARTS_PORT + "/get_items_from_cart")
     data_content = {"user_id": int(user_id)}
     r = requests.post(url = socket_url, json = data_content)
-    return r.content
+    # getting actual items from item_ids
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                     ITEMS_PORT + "/get_item")
+    all_items = []
+    for item_id in json.loads(r.content):
+        data_content = {"item_id": item_id}
+        r = requests.post(url = socket_url, json = json.dumps(data_content))
+        all_items.append(json.loads(r.content))
+
+    return json.dumps(all_items)
 
 @carts_api.route("/empty", methods = ['POST'])
 @expects_json(_user)
