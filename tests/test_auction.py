@@ -28,6 +28,7 @@ class TestAuction(TestCase):
         }
 
         output = requests.post(url=url, json=user_info_params)
+        import pdb; pdb.set_trace()
         self.assertTrue(output.ok)
         user_id = output.json()['user_id']
 
@@ -41,7 +42,7 @@ class TestAuction(TestCase):
             "description": "test",
             "category": ["Women's Clothing", "Shoes"],
             "photos": "618c53ec8f3def6e8f10adb9",
-            "sellerID": "I_suspicion_",
+            "sellerID": 10,
             "price": 29.75,
             "quantity": 6,
             "shipping": 5}

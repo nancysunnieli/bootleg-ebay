@@ -22,7 +22,7 @@ _required_attributes = {
         'description' : {'type' : 'string'},
         'category': {'type': 'array'},
         'photos': {'type': 'string'},
-        'sellerID': {'type': 'string'},
+        'sellerID': {'type': 'number'},
         'price': {'type': 'number'},
         'quantity': {'type': 'number'},
         'shipping': {'type': 'number'}
@@ -38,7 +38,7 @@ _unrequired_attributes = {
         'description' : {'type' : 'string'},
         'category': {'type': 'array'},
         'photos': {'type': 'string'},
-        'sellerID': {'type': 'string'},
+        'sellerID': {'type': 'number'},
         'price': {'type': 'number'},
         'quantity': {'type': 'number'},
         'shipping': {'type': 'number'},
@@ -76,7 +76,7 @@ _watchlist = {
     'type': 'object',
     'properties': {
         'item_id': {'type': 'string'},
-        'user_id': {'type': 'string'},
+        'user_id': {'type': 'number'},
     },
     'required': ['user_id', 'item_id']
 }
