@@ -28,7 +28,6 @@ class TestAuction(TestCase):
         }
 
         output = requests.post(url=url, json=user_info_params)
-        import pdb; pdb.set_trace()
         self.assertTrue(output.ok)
         user_id = output.json()['user_id']
 
