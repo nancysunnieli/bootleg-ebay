@@ -122,7 +122,7 @@ def create_account():
     
     # create cart
     socket_url = ("http://" + CARTS_SERVICE_HOST + CARTS_PORT + "/create_cart")
-    r = requests.post(url = socket_url, json ={"user_id": new_user_dict["username"]})
+    r = requests.post(url = socket_url, json ={"user_id": new_user_dict["user_id"]})
     # if not r.ok:
     #     return Response(response=r.text, status=r.status_code)
     
