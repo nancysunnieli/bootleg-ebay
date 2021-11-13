@@ -8,14 +8,6 @@ import uuid
 from pymongo import MongoClient
 import Cart
 
-class APIError(Exception):
-    """All custom API Exceptions"""
-    pass 
-
-class BadInputError(APIError):
-    """Custom bad input error class."""
-    code = 400
-    description = "Bad input Error"
 
 class CartsDBManager:
     @classmethod
@@ -45,7 +37,7 @@ class CartsDBManager:
                 cart["_id"] = str(cart["_id"])
                 return cart
         else:
-             raise BadInputError("Cart was not successfully Created. Please Try Again.")
+             return "Cart was not successfully Created. Please Try Again."
 
     @classmethod
     def add_item_to_cart(cls, user_id, item_id):
@@ -63,9 +55,9 @@ class CartsDBManager:
         if result.modified_count > 0:
             return "Successfully added item to Shopping Cart."
         elif item_id in set(list(carts_collection.find(query))[0]["items"]):
-            raise BadInputError("Item was already in Shopping Cart.")
+            return "Item was already in Shopping Cart."
         else:
-            raise BadInputError("Addition Failed. Please try again.")
+            return "Addition Failed. Please try again."
 
     @classmethod
     def delete_item_from_cart(cls, user_id, item_id):
@@ -83,9 +75,9 @@ class CartsDBManager:
         if result.modified_count > 0:
             return "Successfully removed item to Shopping Cart."
         elif item_id not in set(list(carts_collection.find(query))[0]["items"]):
-            raise BadInputError("Item was orginally not in Shopping Cart.")
+            return "Item was orginally not in Shopping Cart."
         else:
-            raise BadInputError("Removal Failed. Please try again.")
+            return "Removal Failed. Please try again."
 
     @classmethod
     def get_items_from_cart(cls, user_id):
@@ -139,7 +131,7 @@ def add_item_to_cart(user_id, item_id):
                 return CartsDBManager.add_item_to_cart(user_id, item)
     # I call this either way because it will give me an error message if
     # it did not work
-    return r
+    return CartsDBManager.add_item_to_cart(user_id, item_id)
 
 def delete_item_from_cart(user_id, item_id):
     """
@@ -155,7 +147,7 @@ def delete_item_from_cart(user_id, item_id):
                 return CartsDBManager.delete_item_from_cart(int(user_id), items[i])
     # I call this either way because it will give me an error message if
     # it did not work
-    return r
+    return CartsDBManager.delete_item_from_cart(int(user_id), item_id)
 
 def get_items(user_id):
     """
