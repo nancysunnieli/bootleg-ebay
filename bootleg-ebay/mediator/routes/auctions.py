@@ -89,12 +89,36 @@ def create_auction():
 @auctions_api.route("/auction/<auction_id>", methods = ['GET'])
 def get_auction(auction_id):
     socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
-    r = get_and_request(socket_url, 'get')
+    auction_r = get_and_request(socket_url, 'get')
     
+    if not auction_r.ok:
+        return Response(response=auction_r.text, status=auction_r.status_code)
+
+    auction_info = auction_r.json()
+
+    # get the username of the seller
+    url = USERS_URL + "/user/{}".format(auction_info['seller_id'])
+    r = requests.get(url=url, json=None)
+
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
-    return r.content
+    auction_info['seller_username'] = r.json()['username']
+
+    # get username of each bidder
+    for bid in auction_info['bids']:
+        url = USERS_URL + "/user/{}".format(bid['buyer_id'])
+        r = requests.get(url=url, json=None)
+
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+        r_json = r.json()
+
+        bid['buyer_username'] = r_json['username']
+
+    return json.dumps(auction_info).encode(auction_r.encoding)
+    # get the bidder username for each bid
+    # return r.content
 
 
 @auctions_api.route("/auction/<auction_id>/max_bid", methods = ['GET'])

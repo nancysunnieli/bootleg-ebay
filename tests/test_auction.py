@@ -84,7 +84,7 @@ class TestAuction(TestCase):
         item_id = self._create_item()
 
         # duration of auction in terms of seconds
-        auction_duration = 3
+        auction_duration = 2
 
         # create auction successfully
         url = self.base_url + "auction"
