@@ -68,7 +68,14 @@ def create_auction():
     socket_url = (AUCTIONS_URL + "/auction")
     r = get_and_request(socket_url, 'post')
     
-    result = current_app.celery.send_task('celery_tasks.add_together',args=[121232,61232])
+    r_json = r.json()
+    # result = current_app.celery.send_task('celery_tasks.add_together',args=[121232,61232])
+
+    countdown = r_json['end_time'] - r_json['start_time']
+    result = current_app.celery.send_task(
+        'celery_tasks.end_auction_actions',args=[r_json['auction_id'],],
+        countdown=countdown)
+
     # add_result = result.get()
     # print('Processing is {}'.format( add_result ))
     # print('XXXXXXX')

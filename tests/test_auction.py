@@ -3,6 +3,7 @@
 import unittest
 from unittest import TestCase
 import requests
+import time
 
 from config import *
 from utils import id_generator, current_time
@@ -82,13 +83,15 @@ class TestAuction(TestCase):
         # create item id
         item_id = self._create_item()
 
+        # duration of auction in terms of seconds
+        auction_duration = 3
 
         # create auction successfully
         url = self.base_url + "auction"
-        time = current_time()
+        start_time = current_time()
         auction_info = {
-            "start_time": time,
-            "end_time": time + 1000000000,
+            "start_time": start_time,
+            "end_time": start_time + auction_duration,
             "item_id": item_id,
             "seller_id": seller_id,
             "bids": []
@@ -118,7 +121,7 @@ class TestAuction(TestCase):
 
         # view auction metrics
         url = self.base_url + "auction_metrics"
-        output = requests.post(url=url, json={'start': time, 'end': time + 1000000000})
+        output = requests.post(url=url, json={'start': start_time, 'end': start_time + 1000000000})
         self.assertTrue(output.ok)
         
         # create sucessful bids
@@ -184,6 +187,9 @@ class TestAuction(TestCase):
             output_json = output.json()
             self.assertGreaterEqual(len(output_json), 1)
             self.assertTrue(output.ok)
+
+        time.sleep(auction_duration)
+
 
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)
