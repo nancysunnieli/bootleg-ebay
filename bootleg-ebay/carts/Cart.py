@@ -1,12 +1,3 @@
-class APIError(Exception):
-    """All custom API Exceptions"""
-    pass 
-
-class BadInputError(APIError):
-    """Custom bad input error class."""
-    code = 400
-    description = "Bad input Error"
-
 class Cart(object):
     """
     Class for a shopping cart.
@@ -42,11 +33,11 @@ class Cart(object):
             self._items.append(new_item)
             return "ITEM SUCCESSFULLY ADDED"
         else:
-            raise BadInputError("ITEM WAS ALREADY IN CART.")
+            return "ITEM WAS ALREADY IN CART."
     
     def remove_item(self, item):
         if item not in self.items:
-            raise BadInputError("ITEM WAS NOT ALREADY IN CART.")
+            raise "ITEM WAS NOT ALREADY IN CART."
         else:
             self._items.remove(item)
             return "ITEM SUCCESSFULLY REMOVED."
