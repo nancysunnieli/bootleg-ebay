@@ -25,6 +25,7 @@ def send_email(configuration):
     server, adminEmail = _create_connection()
     message = f"Subject: {configuration['subject']}\n\n {configuration['body']}"
     server.sendmail(adminEmail, configuration["recipient"], message)
+    server.quit()
     return "OK"
 
 
