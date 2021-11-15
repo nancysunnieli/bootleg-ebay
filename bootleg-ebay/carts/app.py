@@ -44,4 +44,4 @@ def empty_cart():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 3211, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 3211, host = socket.gethostbyname(socket.gethostname()), threaded=True)
