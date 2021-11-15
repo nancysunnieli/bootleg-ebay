@@ -181,10 +181,10 @@ def delete_payment_card(payment_id: PaymentID) -> None:
 
 def create_transaction(transaction_info):
     rows = [transaction_info[c] for c in TransactionDBManager.table_cols]
+    
     transaction_id = TransactionDBManager.insert(rows)
 
     transaction = TransactionDBManager.get_transaction(transaction_id)
-
     return transaction.to_json()
 
 def get_transaction(transaction_id):
