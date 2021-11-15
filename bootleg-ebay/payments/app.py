@@ -58,6 +58,10 @@ def create_transaction():
 def get_transaction(transaction_id):
     return payments_functions.get_transaction(transaction_id)
 
+@app.route('/transactions_by_user_id/<user_id>', methods=['GET'])
+def get_transactions_by_user_id(user_id):
+    return payments_functions.get_transactions_by_user_id(user_id)
+
 @app.route('/transaction/<transaction_id>', methods=['DELETE'])
 def delete_transaction(transaction_id):
     return payments_functions.delete_transaction(transaction_id)

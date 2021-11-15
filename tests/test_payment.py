@@ -69,8 +69,8 @@ class TestPayment(TestCase):
 
     def test_transaction(self):
 
-        user_id = 22
-        payment_id = 213
+        user_id = randint()
+        payment_id = randint()
         item_id = "sdsadsa"
         money = 10.5
         quantity = 2
@@ -87,11 +87,15 @@ class TestPayment(TestCase):
 
         output = requests.post(url=url, json=transaction_info)
         self.assertTrue(output.ok)
-        id_ = output.json()['transaction_id']
+        t_id1 = output.json()['transaction_id']
 
+        # post the same transaction again
+        output = requests.post(url=url, json=transaction_info)
+        self.assertTrue(output.ok)
+        t_id2 = output.json()['transaction_id']
 
         # view successfully
-        url = self.base_url + "transaction/{}".format(id_)
+        url = self.base_url + "transaction/{}".format(t_id1)
         output = requests.get(url=url, json=None)
         output_json = output.json()
         self.assertEqual(output_json["user_id"], user_id)
@@ -101,9 +105,17 @@ class TestPayment(TestCase):
         self.assertEqual(output_json["quantity"], quantity)
         self.assertTrue(output.ok)
 
+        # view transactions by users
+        url = self.base_url + "transactions_by_user_id/{}".format(user_id)
+        output = requests.get(url=url, json=None)
+        output_json = output.json()
+        assert len(output_json) >= 2
+
         # delete successfully
-        output = requests.delete(url=url, json=None)
-        self.assertTrue(output.ok)
+        for t in [t_id1, t_id2]:
+            url = self.base_url + "transaction/{}".format(t)
+            output = requests.delete(url=url, json=None)
+            self.assertTrue(output.ok)
 
 
 

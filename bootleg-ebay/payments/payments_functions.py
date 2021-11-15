@@ -104,6 +104,21 @@ class TransactionDBManager(PaymentsDBManager):
         transaction = cls._get_single_by_query(cmd, val)
         return transaction
 
+    @classmethod
+    def get_transactions_by_user_id(cls, user_id: UserID) -> Sequence[Transaction]:
+        cmd = "SELECT * FROM {} WHERE {} = %s".format(cls.table_name, 'user_id')
+        val = (user_id,)
+
+        with cls._create_connection() as c:
+            with c.cursor(dictionary=True) as cursor:
+                cursor.execute(cmd, val)
+
+                info = cursor.fetchall()
+
+        transactions = [cls.class_.from_dict(i) for i in info]
+
+        return transactions
+
 class PaymentCardsDBManager(PaymentsDBManager):
     table_name = "payments"
     table_cols = ["user_id", "card_number", "security_code", "expiration_date"]
@@ -194,6 +209,12 @@ def get_transaction(transaction_id):
         raise BadInputError('There is no transaction information for transaction id: {}'.format(transaction_id))
 
     return transaction.to_json()
+
+def get_transactions_by_user_id(user_id):
+    transactions = TransactionDBManager.get_transactions_by_user_id(user_id)
+    transactions_dict = [t.to_dict() for t in transactions]
+    return json.dumps(transactions_dict)
+
 
 def delete_transaction(transaction_id):
     transaction = TransactionDBManager.get_transaction(transaction_id)
