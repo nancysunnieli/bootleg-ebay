@@ -172,6 +172,12 @@ def checkout():
 
         if not total_price:
             total_price = float(item_info["price"]) + float(item_info["shipping"])
+            # also have to delete current auctions
+            for auction in auctions:
+                if auction["end_time"] > current_time and auction["start_time"] < current_time:
+                    auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                            AUCTIONS_PORT + "/auction/" + auction["auction_id"])
+                    requests.delete(url = auction_url)
 
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}
