@@ -16,7 +16,7 @@ class TestNotifs(TestCase):
         # send watchlist notifcations
         url = self.base_url + "watchlist"
         schema = {
-             "item_id": "618c54038f3def6e8f10add6",
+             "auction_id": "618c54038f3def6e8f10add6",
              "recipient": "nancy_sunnie_li@yahoo.com"
         }
         output = requests.post(url=url, json=schema)
@@ -35,7 +35,7 @@ class TestNotifs(TestCase):
         # send notif for time
         url = self.base_url + "time"
         schema = {
-             "item_id": "618c54038f3def6e8f10add6",
+             "auction_id": "618c54038f3def6e8f10add6",
              "recipient": "nancy_sunnie_li@yahoo.com",
              "time_left": "one day"
         }

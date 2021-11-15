@@ -26,23 +26,23 @@ EmailPostSchema = {
     'required': ['recipient', 'subject', 'body']
 }
 
-RecipientItem= {
+RecipientAuction= {
     'type': 'object',
     'properties': {
         'recipient' : {'type': 'string'},
-        'item_id' : {'type' : 'string'},
+        'auction_id' : {'type' : 'string'},
     },
-    'required': ['recipient', 'item_id']
+    'required': ['recipient', 'auction_id']
 }
 
 Time= {
     'type': 'object',
     'properties': {
         'recipient' : {'type': 'string'},
-        'item_id' : {'type' : 'string'},
+        'auction_id' : {'type' : 'string'},
         'time_left' : {'type' : 'string'},
     },
-    'required': ['recipient', 'item_id', 'time_left']
+    'required': ['recipient', 'auction_id', 'time_left']
 }
 
 @notifs_api.route('/', methods=['GET'])
@@ -67,7 +67,7 @@ def email():
     return r.content  
 
 @notifs_api.route('/watchlist', methods = ['POST'])
-@expects_json(RecipientItem)
+@expects_json(RecipientAuction)
 def watchlist():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/watchlist")
@@ -78,7 +78,7 @@ def watchlist():
     return r.content    
 
 @notifs_api.route('/seller_bid', methods = ['POST'])
-@expects_json(RecipientItem)
+@expects_json(RecipientAuction)
 def alert_seller():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/seller_bid")
@@ -89,7 +89,7 @@ def alert_seller():
     return r.content
 
 @notifs_api.route('/buyer_bid', methods = ['POST'])
-@expects_json(RecipientItem)
+@expects_json(RecipientAuction)
 def alert_buyer():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/buyer_bid")
