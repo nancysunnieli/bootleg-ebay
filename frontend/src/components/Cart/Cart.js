@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllItems } from "../../slices/items";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { addItemToCart, deleteItemFromCart, getItemsFromCart } from "../../slices/cart";
+import { addItemToCart, checkOut, deleteItemFromCart, getItemsFromCart } from "../../slices/cart";
 import CartItem from "./CartItem";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { createTransaction } from "../../slices/payments";
 const Cart = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const dispatch = useDispatch();
@@ -37,6 +38,10 @@ const Cart = () => {
     ));
 
     const totalPrice = cartItems.reduce((acc, cur) => acc + parseFloat(cur.item.price), 0);
+
+    const handlePay = useCallback(() => {
+        dispatch(checkOut({ user_id: user.user_id }));
+    }, [dispatch]);
     return (
         <div>
             <h1>Cart</h1>
@@ -49,7 +54,9 @@ const Cart = () => {
                             <Card.Title>Items: {cartItems.length}</Card.Title>
                             <Card.Text>Total: ${totalPrice}</Card.Text>
                             <div className="d-grid">
-                                <Button size="lg">Pay</Button>
+                                <Button size="lg" disabled={totalPrice === 0} onClick={handlePay}>
+                                    Pay
+                                </Button>
                             </div>
                         </Card.Body>
                     </Card>

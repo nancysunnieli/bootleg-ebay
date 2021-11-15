@@ -1,0 +1,9 @@
+.timesIcon {
+    position: absolute;
+    right: 1rem;
+    color: #d53443;
+}
+
+.timesIcon:hover {
+    cursor: pointer;
+}

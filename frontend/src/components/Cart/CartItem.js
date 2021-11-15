@@ -5,8 +5,7 @@ import Button from "react-bootstrap/Button";
 import { FaTimes } from "react-icons/fa";
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteItemFromCart } from "../../slices/cart";
-
+import "./cart.css";
 export default function CartItem({ item, handleDeleteItem }) {
     const {
         _id,
@@ -27,10 +26,7 @@ export default function CartItem({ item, handleDeleteItem }) {
         <Card style={{ minWidth: "650px" }}>
             <Card.Header as="h5">
                 {name}
-                <span
-                    style={{ position: "absolute", right: "1rem", color: "#d53443" }}
-                    onClick={() => handleDeleteItem(item.item)}
-                >
+                <span className="timesIcon" onClick={() => handleDeleteItem(item.item)}>
                     <FaTimes />
                 </span>
             </Card.Header>
