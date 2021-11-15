@@ -113,7 +113,8 @@ def checkout():
     available_items = []
     unavailable_items = []
     for item in items:
-        availability = (requests.post(url = items_availability_url, data = {"item_id" : item})).content
+        item_dict = {"item_id" : item}
+        availability = (requests.post(url = items_availability_url, data = item_dict)).content
         if availability == "Was unable to adjust availability. Item is no longer available.":
             unavailable_items.append(item)
         else:
@@ -124,6 +125,7 @@ def checkout():
 
 
     # GET CREDIT CARD INFO
+
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
                     + "/card_by_user/" + str(user_id))
     r = requests.get(socket_url)
@@ -185,6 +187,9 @@ def checkout():
         r = requests.post(transaction_url, json = transaction)
 
         successfully_bought.append(json.loads(r.content))
+
+
+
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
