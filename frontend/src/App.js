@@ -1,28 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
+import Auction from "./components/Auctions/Auction";
 import Auctions from "./components/Auctions/Auctions";
 import Cart from "./components/Cart/Cart";
 import Home from "./components/Home/Home";
 import Items from "./components/Items/Items";
 import Login from "./components/Login/Login";
 import Logout from "./components/Logout/Logout";
+import NavBar from "./components/NavBar/NavBar.js";
+import NotFound from "./components/NotFound/NotFound";
 import Profile from "./components/Profile/Profile";
 import Register from "./components/Register/Register";
 import PrivateRoute from "./components/Routing/PrivateRouter";
 import Splash from "./components/Splash/Splash";
 import { ROLE_ADMIN, ROLE_USER } from "./constants";
-import { checkLocalLogin, logout } from "./slices/auth";
-import NavBar from "./components/NavBar/NavBar.js";
-import Auction from "./components/Auctions/Auction";
-import NotFound from "./components/NotFound/NotFound";
-import { getItemsFromCart } from "./slices/cart";
+import { checkLocalLogin } from "./slices/auth";
 
 const App = () => {
-    const [showAdminBoard, setShowAdminBoard] = useState(false);
-    const { user: currentUser, isLoggedIn } = useSelector((state) => state.auth);
+    const { isLoggedIn } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     const _checkLocalLogin = useCallback(() => {

@@ -28,20 +28,20 @@ export default function Auction() {
 
     const _getAuction = useCallback(() => {
         dispatch(getAuction({ auction_id }));
-    }, [dispatch]);
+    }, [dispatch, auction_id]);
 
     const _getAuctionBids = useCallback(() => {
         dispatch(getAuctionBids({ auction_id }));
-    }, [dispatch]);
+    }, [dispatch, auction_id]);
 
     const placeBid = useCallback(() => {
         console.log("placing bid");
         dispatch(createBid({ buyer_id: user.user_id, auction_id, price: bidAmount }));
-    }, [dispatch, bidAmount]);
+    }, [dispatch, bidAmount, user, auction_id]);
 
     const buyNow = useCallback(() => {
         dispatch(addItemToCart({ item: auction.item, user_id: user.user_id }));
-    });
+    }, [dispatch, auction, user]);
 
     useInterval(() => {
         setTimeNow(new Date());
