@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import datetime
 
 from flask_expects_json import expects_json
 from flask import Response, request, Blueprint, current_app
@@ -71,10 +72,10 @@ def create_auction():
     r_json = r.json()
     # result = current_app.celery.send_task('celery_tasks.add_together',args=[121232,61232])
 
-    countdown = r_json['end_time'] - r_json['start_time']
+    # countdown = r_json['end_time'] - r_json['start_time']
     result = current_app.celery.send_task(
         'celery_tasks.end_auction_actions',args=[r_json['auction_id'],],
-        countdown=countdown)
+        eta=datetime.datetime.fromtimestamp(r_json['end_time']))
 
     # add_result = result.get()
     # print('Processing is {}'.format( add_result ))
