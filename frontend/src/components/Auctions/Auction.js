@@ -117,6 +117,7 @@ export default function Auction() {
                             ))}
                         </Row>
                         <br />
+                        {/* TODO: Add Auction starts in.. */}
                         <h5>
                             Auction Ends In: <span style={{ color: "red" }}>{timeRemaining}</span>
                         </h5>

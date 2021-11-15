@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import AuctionsService from "../services/auctions.service";
 
 import ItemsService from "../services/items.service";
 
@@ -16,7 +17,8 @@ export const getAllItems = createAsyncThunk("items/getAllItems", async (limit, t
 export const getItem = createAsyncThunk("items/getItem", async ({ item_id }, thunkAPI) => {
     try {
         const data = await ItemsService.getItem(item_id);
-        return data;
+        const itemAuction = await AuctionsService.getAuctionByItemID(item_id);
+        return { item: data, auction: itemAuction };
     } catch (error) {
         const message = error.toString();
         return thunkAPI.rejectWithValue(message);
@@ -184,6 +186,11 @@ const initialState = {
 const itemsSlice = createSlice({
     name: "items",
     initialState,
+    reducers: {
+        clearItem: (state, action) => {
+            state.item = null;
+        },
+    },
     extraReducers: {
         [getAllItems.fulfilled]: (state, action) => {
             state.items = action.payload;
@@ -251,7 +258,7 @@ const itemsSlice = createSlice({
             toast.error("Error on reporting itme Item " + action.payload);
         },
         [reportItem.pending]: (state, action) => {
-            toast("Reporting item..." + action.payload);
+            toast("Reporting item...");
         },
         [modifyItem.pending]: (state, action) => {
             toast("Updating item...");
@@ -302,6 +309,8 @@ const itemsSlice = createSlice({
         },
     },
 });
+
+export const { clearItem } = itemsSlice.actions;
 
 const { reducer } = itemsSlice;
 export default reducer;
