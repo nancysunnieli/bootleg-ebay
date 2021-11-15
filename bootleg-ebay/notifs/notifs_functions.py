@@ -29,42 +29,42 @@ def send_email(configuration):
     return "OK"
 
 
-def watchlist_notification(recipient, item_id):
+def watchlist_notification(recipient, auction_id):
     """
     This sends an email to the specified recipient that
     the item they want is now available.
     """
-    body = "An item on your watchlist is now available! View it here at: http://localhost:3000/items/%s" % item_id
+    body = "An item on your watchlist is now available! View it here at: http://localhost:3000/auctions/auction/%s" % auction_id
     subject = "Watchlist item available!"
     configuration = {"body": body, "subject": subject, "recipient": recipient}
     return send_email(configuration)
 
-def alert_seller_bid(recipient, item_id):
+def alert_seller_bid(recipient, auction_id):
     """
     This sends an email to the seller when their item has been bid on.
     """
-    body = "Congratulations. Your item has been bid on. View it here at: http://localhost:3000/items/%s" % item_id
+    body = "Congratulations. Your item has been bid on. View it here at: http://localhost:3000/auctions/auction/%s" % auction_id
     subject = "Your item has been bid on!"
     configuration = {"body": body, "subject": subject, "recipient": recipient}
     return send_email(configuration)
 
-def alert_buyer_bid(recipient, item_id):
+def alert_buyer_bid(recipient, auction_id):
     """
     This sends an email to the buyer when an item they previously bid on
     has been outbid.
     """
-    body = "Your bid has been outbid! Place a higher bid here at: http:localhost:3000/items/%s" % item_id
+    body = "Your bid has been outbid! Place a higher bid here at: http:localhost:3000/auctions/auction/%s" % auction_id
     subject = "You have been outbid."
     configuration = {"body": body, "subject": subject, "recipient": recipient}
     return send_email(configuration)
 
-def alert_before(recipient, item_id, time_left):
+def alert_before(recipient, auction_id, time_left):
     """
     Alerts seller or buyer of the time left in an auction
 
     time_left will take the values 'One Day', 'One Hour'
     """
-    body = "There is only %s left in your auction. View it here: http:localhost:3000/items/%s" % (time_left, item_id)
+    body = "There is only %s left in your auction. View it here: http:localhost:3000/auctions/auction/%s" % (time_left, auction_id)
     subject = time_left + " left in auction."
     configuration = {"body": body, "subject": subject, "recipient": recipient}
     return send_email(configuration)

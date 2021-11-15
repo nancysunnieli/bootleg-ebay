@@ -20,31 +20,31 @@ def SendEmail():
 @app.route('/watchlist', methods = ['POST'])
 def watchlist():
     data = request.get_json()
-    item_id = data["item_id"]
+    auction_id = data["auction_id"]
     recipient = data["recipient"]
-    return notifs_functions.watchlist_notification(recipient, item_id)
+    return notifs_functions.watchlist_notification(recipient, auction_id)
 
 @app.route('/seller_bid', methods = ['POST'])
 def alert_seller():
     data = request.get_json()
-    item_id = data["item_id"]
+    auction_id = data["auction_id"]
     recipient = data["recipient"]
-    return notifs_functions.alert_seller_bid(recipient, item_id)
+    return notifs_functions.alert_seller_bid(recipient, auction_id)
 
 @app.route('/buyer_bid', methods = ['POST'])
 def alert_buyer():
     data = request.get_json()
-    item_id = data["item_id"]
+    auction_id = data["auction_id"]
     recipient = data["recipient"]
-    return notifs_functions.alert_buyer_bid(recipient, item_id)
+    return notifs_functions.alert_buyer_bid(recipient, auction_id)
 
 @app.route('/time', methods = ['POST'])
 def time_left():
     data = request.get_json()
-    item_id = data["item_id"]
+    auction_id = data["auction_id"]
     recipient = data["recipient"]
     time_left = data["time_left"]
-    return notifs_functions.alert_before(recipient, item_id, time_left)
+    return notifs_functions.alert_before(recipient, auction_id, time_left)
 
 @app.route('/inbox', methods = ['GET'])
 def fetch_messages():
