@@ -108,9 +108,16 @@ const cartSlice = createSlice({
         [emptyCart.pending]: (state, action) => {},
         [emptyCart.fulfilled]: (state, action) => {},
         [emptyCart.rejected]: (state, action) => {},
-        [checkOut.pending]: (state, action) => {},
-        [checkOut.fulfilled]: (state, action) => {},
-        [checkOut.rejected]: (state, action) => {},
+        [checkOut.pending]: (state, action) => {
+            toast("Checking out...");
+        },
+        [checkOut.fulfilled]: (state, action) => {
+            toast.success("Succesfully checked out!");
+            state.cartItems = [];
+        },
+        [checkOut.rejected]: (state, action) => {
+            toast.error("Oops, an error occurred while checking out " + action.payload);
+        },
     },
 });
 export const {} = cartSlice.actions;

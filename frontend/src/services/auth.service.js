@@ -1,12 +1,12 @@
 import axios from "axios";
 import { API_URL } from "../config";
 
-const register = async (username, email, password) => {
+const register = async (username, email, password, isAdmin) => {
     const response = await axios.post(API_URL + "users/user", {
         username,
         email,
         password,
-        is_admin: false,
+        is_admin: isAdmin,
         suspended: false,
     });
     localStorage.setItem("user", JSON.stringify(response.data));

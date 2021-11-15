@@ -10,7 +10,7 @@ import { ROLE_ADMIN } from "../../constants";
 
 const PrivateRoute = ({ component: Component, roles, ...routeprops }) => {
     const { isLoggedIn, isAdmin } = useSelector((state) => state.auth);
-
+    console.log("IsAdmin", isAdmin);
     return (
         <Route
             {...routeprops}

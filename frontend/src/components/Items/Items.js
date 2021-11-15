@@ -18,7 +18,9 @@ const Items = () => {
 
     let itemCards = items.map((item, i) => <Item key={i} item={item} />);
     if (itemCards.length == 0) {
-        itemCards = Array.from(Array(10)).fill(<ItemSkeleton />);
+        itemCards = Array.from(Array(10))
+            .fill(0)
+            .map((_, i) => <ItemSkeleton key={i} />);
     }
     return (
         <div>

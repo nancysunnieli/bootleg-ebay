@@ -46,7 +46,7 @@ const Auction = ({ auction, item, isBuyNowDisabled }) => {
             <Card>
                 <Card.Img
                     variant="top"
-                    src={`https://picsum.photos/370?${_id}`}
+                    src={`https://picsum.photos/500?${_id}`}
                     style={{ maxHeight: `15rem`, height: "auto", display: "block" }}
                 />
                 <Card.Body>

@@ -22,14 +22,14 @@ const Item = ({ item }) => {
     return (
         <Col>
             <Card>
-                <Card.Img variant="top" src={`data:image/png;base64, ${photos}`} />
+                <Card.Img
+                    variant="top"
+                    // src={`data:image/png;base64, ${photos}`}
+                    src={`https://picsum.photos/500?${_id}`}
+                />
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>
                     <Card.Text>{description}</Card.Text>
-                    <div style={{ display: "flex" }}>
-                        <Card.Text style={{ display: "inline", flex: 1 }}>${price}</Card.Text>
-                        {/* <Button>Buy Now</Button> */}
-                    </div>
                 </Card.Body>
                 <Card.Footer>
                     <Row>

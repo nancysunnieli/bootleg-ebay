@@ -36,7 +36,9 @@ const Auctions = () => {
     });
 
     if (auctionCards.length == 0) {
-        auctionCards = Array.from(Array(10)).fill(<ItemSkeleton />);
+        auctionCards = Array.from(Array(10))
+            .fill(0)
+            .map((_, i) => <ItemSkeleton key={i} />);
     }
     console.log("path", `${path}/:auction_id`);
 
@@ -49,6 +51,7 @@ const Auctions = () => {
                     {auctionCards}
                 </Row>
 
+                <br />
                 <h3>Upcoming Auctions</h3>
             </div>
         </div>

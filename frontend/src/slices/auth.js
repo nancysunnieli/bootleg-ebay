@@ -5,10 +5,10 @@ import { getItemsFromCart } from "./cart";
 
 export const register = createAsyncThunk(
     "auth/register",
-    async ({ username, email, password }, thunkAPI) => {
+    async ({ username, email, password, isAdmin }, thunkAPI) => {
         try {
             console.log("register thunk");
-            const data = await AuthService.register(username, email, password);
+            const data = await AuthService.register(username, email, password, isAdmin);
             //   thunkAPI.dispatch(setMessage(response.data.message));
             return { user: data };
         } catch (error) {
@@ -46,7 +46,7 @@ export const checkLocalLogin = createAsyncThunk("auth/checkLocalLogin", async (_
     thunkAPI.dispatch(login({ username: user?.username, password: user?.password }));
 });
 
-const initialState = { isLoggedIn: null, user: null };
+const initialState = { isLoggedIn: null, user: null, isAdmin: false };
 
 const authSlice = createSlice({
     name: "auth",
@@ -61,7 +61,7 @@ const authSlice = createSlice({
             console.log("action", action.payload);
             state.isLoggedIn = true;
             state.user = action.payload.user;
-            state.isAdmin = action.payload.is_admin;
+            state.isAdmin = action.payload.user.is_admin;
         },
         [register.rejected]: (state, action) => {
             state.isLoggedIn = false;
@@ -69,7 +69,7 @@ const authSlice = createSlice({
         [login.fulfilled]: (state, action) => {
             state.isLoggedIn = true;
             state.user = action.payload.user;
-            state.isAdmin = action.payload.is_admin;
+            state.isAdmin = action.payload.user.is_admin;
         },
         [login.rejected]: (state, action) => {
             console.log("login failed");
