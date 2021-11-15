@@ -250,6 +250,16 @@ class Auction:
         else:
             return list(filter(lambda x: x.buyer_id == buyer_id, self.bids))
 
+    def sort_bids_by_time(self, order):
+
+        if order == 'desc':
+            reverse = True
+        elif order == 'asc':
+            reverse = False
+        else:
+            raise ValueError('The order can either be `desc` or `asc`')
+
+        self._bids = sorted(self.bids, key=lambda x: x.bid_time, reverse=reverse)
             
 
     

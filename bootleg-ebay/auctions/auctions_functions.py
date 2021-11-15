@@ -78,6 +78,7 @@ def get_auction(auction_id):
     """
 
     auction = AuctionDBManager.get_auction(auction_id)
+    auction.sort_bids_by_time(order='desc')
     return auction.to_json()
 
 def get_max_bid(auction_id):
@@ -97,8 +98,12 @@ def get_auctions_by_item_id(item_id):
     if len(auctions_mongo) == 0:
         raise BadInputError('We could not find any auctions with item_id {}'.format(item_id))
 
-    auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
-    auctions_json = json.dumps([a.to_dict() for a in auctions])
+    auctions = []
+    for a in auctions_mongo:
+        auction = Auction.from_mongodb_fmt(a)
+        auction.sort_bids_by_time(order='desc')
+        auctions.append(auction.to_dict())
+    auctions_json = json.dumps(auctions)
     return auctions_json  
 
 
@@ -179,8 +184,12 @@ def view_current_auctions() -> Sequence:
             "end_time": {"$gte": time}}
 
     auctions_mongo = AuctionDBManager.query_collection(query)
-    auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
-    auctions_json = json.dumps([a.to_dict() for a in auctions])
+    auctions = []
+    for a in auctions_mongo:
+        auction = Auction.from_mongodb_fmt(a)
+        auction.sort_bids_by_time(order='desc')
+        auctions.append(auction.to_dict())
+    auctions_json = json.dumps(auctions)
     return auctions_json
 
 def remove_auction(auction_id) -> None:
@@ -233,6 +242,7 @@ def view_bids(auction_id):
     This allows us to view all the bids for a single auction
     """
     auction = AuctionDBManager.get_auction(auction_id)
+    auction.sort_bids_by_time(order='desc')
 
     bids = auction.view_bids(buyer_id=None)
     bids = [b.to_dict() for b in bids]
