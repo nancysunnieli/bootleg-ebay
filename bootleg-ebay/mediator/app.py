@@ -37,4 +37,4 @@ def base():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8011, host = socket_name)
+    app.run(debug = True, port = 8011, host = socket_name, threaded=True)

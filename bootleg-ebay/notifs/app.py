@@ -54,4 +54,4 @@ def fetch_messages():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8012, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 8012, host = socket.gethostbyname(socket.gethostname()), threaded=True)

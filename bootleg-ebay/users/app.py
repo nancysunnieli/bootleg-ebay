@@ -92,4 +92,4 @@ def delete_account(user_id):
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 1001, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 1001, host = socket.gethostbyname(socket.gethostname()), threaded=True)
