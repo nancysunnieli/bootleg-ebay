@@ -33,6 +33,7 @@ const getUserBids = async (user_id) => {
 };
 
 const createBid = async (buyer_id, auction_id, price) => {
+    console.log("Create", buyer_id, auction_id, price);
     const resp = await axios.post(API_URL + `auctions/bid`, { buyer_id, auction_id, price });
     return resp.data;
 };

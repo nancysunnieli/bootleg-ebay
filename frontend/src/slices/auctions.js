@@ -120,7 +120,7 @@ export const createBid = createAsyncThunk(
     "auctions/createBid",
     async ({ buyer_id, auction_id, price }, thunkAPI) => {
         try {
-            console.log("Creating bid", buyer_id, auction_id, price);
+            console.log("Creating bid", buyer_id, auction_id, price, parseFloat(price));
             const data = await AuctionsService.createBid(buyer_id, auction_id, parseFloat(price));
             console.log("Created bid", data);
             return data;

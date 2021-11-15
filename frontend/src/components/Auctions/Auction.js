@@ -15,7 +15,7 @@ import moment from "moment";
 import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 import { addItemToCart } from "../../slices/cart";
-
+import ProgressBar from "react-bootstrap/ProgressBar";
 export default function Auction() {
     const { auction_id } = useParams();
     const dispatch = useDispatch();
@@ -24,6 +24,7 @@ export default function Auction() {
     const { user } = useSelector((state) => state.auth);
     const [timeNow, setTimeNow] = useState(new Date());
     const [bidAmount, setBidAmount] = useState("");
+    const [progress, setProgressBar] = useState(0);
 
     const _getAuction = useCallback(() => {
         dispatch(getAuction({ auction_id }));
@@ -36,7 +37,7 @@ export default function Auction() {
     const placeBid = useCallback(() => {
         console.log("placing bid");
         dispatch(createBid({ buyer_id: user.user_id, auction_id, price: bidAmount }));
-    }, [dispatch]);
+    }, [dispatch, bidAmount]);
 
     const buyNow = useCallback(() => {
         dispatch(addItemToCart({ item: auction.item, user_id: user.user_id }));
@@ -44,6 +45,7 @@ export default function Auction() {
 
     useInterval(() => {
         setTimeNow(new Date());
+        setProgressBar((progress + 10) % 100);
     }, 1000);
 
     useEffect(() => {
@@ -89,7 +91,7 @@ export default function Auction() {
 
     return (
         <div>
-            <Container style={{ width: "80%" }}>
+            <Container style={{ width: "80%", marginBottom: "2rem" }}>
                 <Row>
                     <Col>
                         <Image
@@ -140,7 +142,9 @@ export default function Auction() {
                                     <Form.Control
                                         placeholder="Enter new bid"
                                         value={bidAmount}
-                                        onChange={({ target: { value } }) => setBidAmount(value)}
+                                        onChange={(event) => {
+                                            setBidAmount(event.target.value);
+                                        }}
                                     />
                                 </Form>
                             </Col>
@@ -169,6 +173,10 @@ export default function Auction() {
                         <tbody>{tbody}</tbody>
                     </Table>
                 </Row>
+                <Row>
+                    <p>Updates in..</p>
+                </Row>
+                <ProgressBar animated now={progress} />
             </Container>
         </div>
     );
