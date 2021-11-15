@@ -113,11 +113,6 @@ class TestAuction(TestCase):
         self.assertGreaterEqual(len(output_json), 1)
         self.assertTrue(output.ok)
         
-        # view current auctions
-        url = self.base_url + "current_auctions"
-        output = requests.get(url=url, json=None)
-        self.assertTrue(output.ok)
-
 
         # view auction metrics
         url = self.base_url + "auction_metrics"
@@ -188,7 +183,22 @@ class TestAuction(TestCase):
             self.assertGreaterEqual(len(output_json), 1)
             self.assertTrue(output.ok)
 
+        # view upcoming auctions
+        url = self.base_url + "upcoming_auctions"
+        output = requests.get(url=url, json=None)
+        self.assertTrue(output.ok)
+
+        # view current auctions
+        url = self.base_url + "current_auctions"
+        output = requests.get(url=url, json=None)
+        self.assertTrue(output.ok)
+
         time.sleep(auction_duration)
+
+        # view finished auctions
+        url = self.base_url + "finished_auctions"
+        output = requests.get(url=url, json=None)
+        self.assertTrue(output.ok)
 
 
         # delete auction successfully

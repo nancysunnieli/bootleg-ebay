@@ -172,16 +172,9 @@ def get_auction_metrics(start, end):
 
 
 
-
-
-def view_current_auctions() -> Sequence:
+def _get_auctions_by_query(query):
     """
-    Get the auctions that are currently running.
     """
-
-    time = current_time()
-    query = {"start_time": {"$lte": time}, 
-            "end_time": {"$gte": time}}
 
     auctions_mongo = AuctionDBManager.query_collection(query)
     auctions = []
@@ -191,6 +184,35 @@ def view_current_auctions() -> Sequence:
         auctions.append(auction.to_dict())
     auctions_json = json.dumps(auctions)
     return auctions_json
+
+def view_finished_auctions():
+    """View auctions that have finished
+    """
+
+    time = current_time()
+    query = {"end_time": {"$lte": time}}
+
+    return _get_auctions_by_query(query)
+
+def view_upcoming_auctions():
+    """View the auctions that are going to start but haven't started yet
+    """
+
+    time = current_time()
+    query = {"start_time": {"$gte": time}}
+
+    return _get_auctions_by_query(query)
+
+def view_current_auctions():
+    """
+    Get the auctions that are currently running.
+    """
+
+    time = current_time()
+    query = {"start_time": {"$lte": time}, 
+            "end_time": {"$gte": time}}
+
+    return _get_auctions_by_query(query)
 
 def remove_auction(auction_id) -> None:
     """

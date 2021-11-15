@@ -156,6 +156,28 @@ def get_auction_metrics():
     return r.content
 
 
+@auctions_api.route("/finished_auctions", methods = ['GET'])
+def view_finished_auctions():
+    socket_url = (AUCTIONS_URL + "/finished_auctions")
+
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
+@auctions_api.route("/upcoming_auctions", methods = ['GET'])
+def view_upcoming_auctions():
+    socket_url = (AUCTIONS_URL + "/upcoming_auctions")
+
+    r = get_and_request(socket_url, 'get')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 @auctions_api.route("/current_auctions", methods = ['GET'])
 def view_current_auctions():
     socket_url = (AUCTIONS_URL + "/current_auctions")

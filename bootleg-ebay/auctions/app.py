@@ -58,6 +58,14 @@ def get_auction_metrics():
     return auctions_functions.get_auction_metrics(start, end)
 
 
+@app.route('/finished_auctions', methods=['GET'])
+def view_finished_auctions():
+    return auctions_functions.view_finished_auctions()
+
+@app.route('/upcoming_auctions', methods=['GET'])
+def view_upcoming_auctions():
+    return auctions_functions.view_upcoming_auctions()
+
 @app.route('/current_auctions', methods=['GET'])
 def view_current_auctions():
     return auctions_functions.view_current_auctions()
