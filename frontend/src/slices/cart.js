@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import CartService from "../services/cart.service";
 import { toast } from "react-toastify";
-
+import { current } from "immer";
 const initialState = {
     cartItems: [],
     isLoading: true,
@@ -24,7 +24,8 @@ export const deleteItemFromCart = createAsyncThunk(
     "cart/deleteItemFromCart",
     async ({ item, user_id }, thunkAPI) => {
         try {
-            const data = await CartService.deleteItemFromCart(item.item_id, user_id);
+            console.log(item._id, user_id);
+            const data = await CartService.deleteItemFromCart(user_id, item._id);
             return data;
         } catch (error) {
             const message = error.toString();
@@ -92,10 +93,10 @@ const cartSlice = createSlice({
             toast.error("Error adding item to cart");
         },
         [deleteItemFromCart.pending]: (state, action) => {
-            let itemIndex = state.cartItems.findIndex(
-                (item) => item._id == action.meta.arg.item.item_id
-            );
-            state.cartItems = state.cartItems.splice(itemIndex, 1);
+            // console.log("Current item", current(state.cartItems));
+            state.cartItems = state.cartItems.filter((item) => {
+                return item.item._id !== action.meta.arg.item._id;
+            });
         },
         [deleteItemFromCart.fulfilled]: (state, action) => {},
         [deleteItemFromCart.rejected]: (state, action) => {},
