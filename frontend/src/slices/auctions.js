@@ -33,13 +33,26 @@ export const getAuction = createAsyncThunk(
     "auctions/getAuction",
     async ({ auction_id }, thunkAPI) => {
         try {
-            console.log("Auction");
             const auction = await AuctionsService.getAuction(auction_id);
             const item = await ItemsService.getItem(auction.item_id);
+            console.log("Auction", auction_id, auction, item);
             return {
                 auction,
                 item,
             };
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const getAuctionBids = createAsyncThunk(
+    "auctions/getAuctionBids",
+    async ({ auction_id }, thunkAPI) => {
+        try {
+            const auction = await AuctionsService.getAuction(auction_id);
+            return auction.bids;
         } catch (error) {
             const message = error.toString();
             return thunkAPI.rejectWithValue(message);
@@ -103,9 +116,26 @@ export const getUserBids = createAsyncThunk(
     }
 );
 
+export const createBid = createAsyncThunk(
+    "auctions/createBid",
+    async ({ buyer_id, auction_id, price }, thunkAPI) => {
+        try {
+            console.log("Creating bid", buyer_id, auction_id, price);
+            const data = await AuctionsService.createBid(buyer_id, auction_id, parseFloat(price));
+            console.log("Created bid", data);
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            console.log("Error found", error);
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 const initialState = {
     auctions: [],
     auction: null,
+    isBidding: false,
     getAuctionLoading: true,
 };
 
@@ -132,6 +162,25 @@ const auctionsSlice = createSlice({
         [getAuction.rejected]: (state, action) => {
             state.getAuctionLoading = false;
             toast.error(`Unable to fetch auction ${action.payload}`);
+        },
+        [getAuctionBids.fulfilled]: (state, action) => {
+            state.auction.auction.bids = action.payload;
+            const newAuction = { ...state.auction };
+            newAuction.auction.bids = action.payload;
+            state.auction = newAuction;
+        },
+        [createBid.pending]: (state, action) => {
+            state.isBidding = true;
+        },
+        [createBid.fulfilled]: (state, action) => {
+            state.isBidding = false;
+            console.log("action", action);
+            toast.success("Succesfully created bid");
+        },
+        [createBid.rejected]: (state, action) => {
+            state.isBdding = false;
+            console.log("Create bid failed", action);
+            toast.error(`Failed to create bid ${action.payload}`);
         },
     },
 });

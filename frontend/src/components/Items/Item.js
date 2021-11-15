@@ -28,7 +28,7 @@ const Item = ({ item }) => {
                     <Card.Text>{description}</Card.Text>
                     <div style={{ display: "flex" }}>
                         <Card.Text style={{ display: "inline", flex: 1 }}>${price}</Card.Text>
-                        <Button>Buy Now</Button>
+                        {/* <Button>Buy Now</Button> */}
                     </div>
                 </Card.Body>
                 <Card.Footer>

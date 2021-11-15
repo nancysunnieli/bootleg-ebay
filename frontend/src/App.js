@@ -18,6 +18,7 @@ import { checkLocalLogin, logout } from "./slices/auth";
 import NavBar from "./components/NavBar/NavBar.js";
 import Auction from "./components/Auctions/Auction";
 import NotFound from "./components/NotFound/NotFound";
+import { getItemsFromCart } from "./slices/cart";
 
 const App = () => {
     const [showAdminBoard, setShowAdminBoard] = useState(false);

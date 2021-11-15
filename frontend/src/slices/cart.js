@@ -11,7 +11,7 @@ export const addItemToCart = createAsyncThunk(
     "cart/addItemToCart",
     async ({ item, user_id }, thunkAPI) => {
         try {
-            const data = await CartService.addItemToCart(item.item_id, user_id);
+            const data = await CartService.addItemToCart(user_id, item._id);
             return data;
         } catch (error) {
             const message = error.toString();
@@ -38,6 +38,7 @@ export const getItemsFromCart = createAsyncThunk(
     async ({ user_id }, thunkAPI) => {
         try {
             const data = await CartService.getItemsFromCart(user_id);
+            console.log("GetItemsFromCart", data);
             return data;
         } catch (error) {
             const message = error.toString();

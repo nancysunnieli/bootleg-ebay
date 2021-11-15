@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 import UserService from "../services/user.service";
 import { setUser } from "./auth";
 
@@ -65,12 +66,12 @@ const profileSlice = createSlice({
             state.isSaving = false;
         },
         [modifyProfile.rejected]: (state, action) => {
-            window.alert("oops");
+            toast.error(`Oops, something went wrong ${action.payload}`);
         },
         [deleteAccount.pending]: (state, action) => {},
         [deleteAccount.fulfilled]: (state, action) => {},
         [deleteAccount.rejected]: (state, action) => {
-            window.alert("oops");
+            toast.error(`Oops, something went wrong ${action.payload}`);
         },
     },
 });

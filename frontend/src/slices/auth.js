@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import AuthService from "../services/auth.service";
+import { getItemsFromCart } from "./cart";
 
 export const register = createAsyncThunk(
     "auth/register",
@@ -23,7 +24,7 @@ export const login = createAsyncThunk("auth/login", async ({ username, password 
     try {
         const data = await AuthService.login(username, password);
         await new Promise((resolve) => setTimeout(resolve, 1000));
-
+        thunkAPI.dispatch(getItemsFromCart({ user_id: data.user_id }));
         return { user: data };
     } catch (error) {
         const message =
