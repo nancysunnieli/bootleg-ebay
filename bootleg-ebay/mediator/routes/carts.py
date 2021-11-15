@@ -134,7 +134,6 @@ def checkout():
         return "User does not have payment information yet. Please enter your payment information before checking out."
     payment_id = payment["payment_id"]
 
-
     # CREATE TRANSACTION INFO
     items_info_url = ("http://" + ITEMS_SERVICE_HOST +
                             ITEMS_PORT + "/get_item")
@@ -188,6 +187,7 @@ def checkout():
         r = requests.post(transaction_url, json = transaction)
 
         successfully_bought.append(json.loads(r.content))
+
 
 
     # DELETE ALL ITEMS FROM CART
