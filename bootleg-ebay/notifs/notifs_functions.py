@@ -6,16 +6,23 @@ import json
 
 port = 465  # For SSL
 
-# Create a secure SSL context
-context = ssl.create_default_context()
-server = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
-adminEmail = "bootlegebay@gmail.com"
-server.login(adminEmail, "bootleg1234!") # Plaintext :)
+
+
+
+def _create_connection():
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+    server = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
+    adminEmail = "bootlegebay@gmail.com"
+    server.login(adminEmail, "bootleg1234!") # Plaintext :)
+
+    return server, adminEmail
 
 def send_email(configuration):
     """
     Configuration has attributes subject, body, and recipient.
     """
+    server, adminEmail = _create_connection()
     message = f"Subject: {configuration['subject']}\n\n {configuration['body']}"
     server.sendmail(adminEmail, configuration["recipient"], message)
     return "OK"
