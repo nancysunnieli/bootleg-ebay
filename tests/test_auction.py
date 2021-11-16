@@ -7,6 +7,11 @@ import time
 
 from config import *
 from utils import id_generator, current_time
+import logging
+import sys
+logging.basicConfig( stream=sys.stderr )
+logging.getLogger( "AuctionTest.debug" ).setLevel( logging.DEBUG )
+log = logging.getLogger( "AuctionTest.debug" )
 
 class TestAuction(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, AUCTIONS_NAME)
@@ -178,7 +183,8 @@ class TestAuction(TestCase):
         for b_id in [buyer_id1, buyer_id2]:
             url = self.base_url + "bids/{}".format(b_id)
             output = requests.get(url=url, json=None)
-            
+            log.debug( "wtf %r %r", b_id, output )
+    
             output_json = output.json()
             self.assertGreaterEqual(len(output_json), 1)
             self.assertTrue(output.ok)
