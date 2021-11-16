@@ -211,8 +211,9 @@ def auctions():
         isBuyNowEnabled = generate_random_bool()
         price = round(random.uniform(10.00, 99.99), 2)
         shipping = random.choice([5, 10, 15])
+        starting_price = random.choice(list(range(1, int(price))))
         auctions.append([id, auctionstarttime, auctionendtime, itemid, 
-                        isBuyNowEnabled, sellerid, price, shipping])
+                        isBuyNowEnabled, sellerid, price, shipping, starting_price])
     with open('auctions.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
         writer.writerows(auctions)
@@ -465,18 +466,18 @@ def generate_all_data():
     """
     This generates the random data
     """
-    photos()
-    users()
-    items()
-    categories()
+    #photos()
+    #users()
+    #items()
+    #categories()
     auctions()
-    flagged_items()
+    #flagged_items()
     bids()
-    advertisers()
-    advertisements()
-    notifications()
-    cards()
-    carts()
+    #advertisers()
+    #advertisements()
+    #notifications()
+    #cards()
+    #carts()
 
 if __name__ == '__main__':
     generate_all_data()
