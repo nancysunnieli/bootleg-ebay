@@ -62,7 +62,7 @@ def alert_before(recipient, auction_id, time_left):
     """
     Alerts seller or buyer of the time left in an auction
 
-    time_left will take the values 'One Day', 'One Hour'
+    time_left will take the values 'One Day', 'One Hour', 'One Minute', 'One Second'
     """
     body = "There is only %s left in your auction. View it here: http:localhost:3000/auctions/auction/%s" % (time_left, auction_id)
     subject = time_left + " left in auction."
