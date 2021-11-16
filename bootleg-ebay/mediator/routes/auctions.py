@@ -70,16 +70,32 @@ def create_auction():
     r = get_and_request(socket_url, 'post')
     
     r_json = r.json()
-    # result = current_app.celery.send_task('celery_tasks.add_together',args=[121232,61232])
 
-    # countdown = r_json['end_time'] - r_json['start_time']
+    start_time = datetime.datetime.fromtimestamp(r_json['start_time'])
+    end_time = datetime.datetime.fromtimestamp(r_json['end_time'])
+
     result = current_app.celery.send_task(
         'celery_tasks.end_auction_actions',args=[r_json['auction_id'],],
-        eta=datetime.datetime.fromtimestamp(r_json['end_time']))
+        eta=end_time)
 
-    # add_result = result.get()
-    # print('Processing is {}'.format( add_result ))
-    # print('XXXXXXX')
+
+    # alert buyers and sellers before auction ends
+    times = [
+        datetime.timedelta(days=1), 
+        datetime.timedelta(hours=1), 
+        datetime.timedelta(minutes=1),
+        datetime.timedelta(seconds=1)]
+    time_strs = ['One Day', 'One Hour', 'One Minute', 'One Second']
+
+    for i, time_ in enumerate(times):
+        # print("PRE_ALERT")
+        eta = end_time - time_
+        if eta < start_time:
+            continue
+        # print("ALERTING", time_strs[i])
+        result = current_app.celery.send_task(
+            'celery_tasks.alert_auction',args=[r_json['auction_id'], time_strs[i]],
+            eta=eta)
 
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
@@ -241,6 +257,8 @@ def create_bid():
     buyers = []
     for bid in auction_info["bids"]:
         buyers.append(bid["buyer_id"])
+
+    buyers = list(set(buyers))
     seller_id = auction_info["seller_id"]
 
     # now I must get the contact information of the buyers
@@ -256,19 +274,17 @@ def create_bid():
         buyer_emails.append(buyer_info["email"])
 
     # next I need to get the item_id
-    item_id = auction_info["item_id"]
+    auction_id = auction_info["auction_id"]
 
     # send email to seller
-    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-                    NOTIFS_PORT + "/seller_bid")
-    data = json.dumps({"recipient": seller_email, "item_id": item_id})
+    socket_url = (NOTIFS_URL + "/seller_bid")
+    data = {"recipient": seller_email, "auction_id": auction_id}
     result = requests.post(url = socket_url, json = data)
 
     # send emails to buyers
-    socket_url = ("http://" + NOTIFS_SERVICE_HOST +
-                    NOTIFS_PORT + "/buyer_bid")
+    socket_url = (NOTIFS_URL + "/buyer_bid")
     for buyer_email in buyer_emails:
-        data = json.dumps({"recipient": buyer_email, "item_id": item_id})
+        data = {"recipient": buyer_email, "auction_id": auction_id}
         requests.post(url = socket_url, json = data)
 
     # return new bid content
