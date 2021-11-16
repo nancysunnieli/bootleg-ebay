@@ -107,8 +107,8 @@ def items():
         description = get_random_words(30, " ")
         categories = get_random_categories(3)
         photos = random.choice(all_photos)
-        seller_id = random.choice(all_users)
-        price = round(random.uniform(10.00, 99.99), 2)
+        seller_id = random.choice(list(range(0, 31)))
+        
         isFlagged = False
         watch_list = []
         while len(watch_list) != 3:
@@ -116,9 +116,8 @@ def items():
             if new not in watch_list:
                 watch_list.append(new)
         quantity = random.choice(range(1, 11))
-        shipping = random.choice([5, 10, 15])
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged, watch_list, quantity, shipping])
+                            seller_id, isFlagged, watch_list, quantity])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -210,8 +209,10 @@ def auctions():
                 seen_items.add(itemid)
                 break
         isBuyNowEnabled = generate_random_bool()
+        price = round(random.uniform(10.00, 99.99), 2)
+        shipping = random.choice([5, 10, 15])
         auctions.append([id, auctionstarttime, auctionendtime, itemid, 
-                        isBuyNowEnabled, sellerid])
+                        isBuyNowEnabled, sellerid, price, shipping])
     with open('auctions.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
         writer.writerows(auctions)
@@ -298,7 +299,7 @@ def bids():
             existing_bids[itemid] = {}
         existing_bids[itemid]["Time"] = timestamp
         existing_bids[itemid]["Amount"] = amount
-        userid = random.choice(all_users)
+        userid = random.choice(list(range(0, 31)))
         all_bids.append([bid_id, auctionID, timestamp, amount, userid])
     
     with open('bids.csv', 'w', newline = "") as f:
@@ -374,7 +375,7 @@ def notifications():
         timestamp = generate_random_date(datetime.datetime(2021, 10, 23, 0, 0), 
                                     datetime.datetime(2021, 12, 31, 0, 0))
         content = get_random_words(30, " ")
-        recipient = random.choice(all_users)
+        recipient = random.choice(list(range(0, 31)))
         all_notifications.append([id, timestamp, content, recipient])
     
 
@@ -447,9 +448,9 @@ def carts():
         all_users.append(row[0])
     
     all_carts = []
-    for i in range(0, len(all_users)):
+    for i in range(0, len(all_users) + 1):
         id = generate_random_id()
-        all_carts.append([id, all_users[i], []])
+        all_carts.append([id, i, []])
     
     with open('carts.csv', 'w', newline = "") as f:
         writer = csv.writer(f)

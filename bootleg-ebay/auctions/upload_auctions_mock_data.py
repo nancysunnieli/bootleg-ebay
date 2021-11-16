@@ -43,6 +43,8 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
         auction["item_id"] = row[3]
         #auction["buy_now"] = row[4]
         auction["seller_id"] = int(row[5])
+        auction["price"] = float(row[6])
+        auction["shipping"] = int(row[7])
         auction["bids"] = []
         for bid in all_bids:
             if "AuctionID" in bid:

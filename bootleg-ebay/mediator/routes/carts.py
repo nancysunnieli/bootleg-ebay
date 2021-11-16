@@ -169,17 +169,18 @@ def checkout():
                             most_recent_price = bid["price"]
                     if most_recent_buyer == user_id:
                         seen_auctions.append(auction["auction_id"])
-                        total_price = item_info["shipping"] + most_recent_price
+                        total_price = auction["shipping"] + most_recent_price
                         break
 
         if not total_price:
-            total_price = float(item_info["price"]) + float(item_info["shipping"])
             # also have to delete current auctions
             for auction in auctions:
                 if auction["end_time"] > current_time and auction["start_time"] < current_time:
+                    total_price = float(auction["price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
                     requests.delete(url = auction_url)
+                    break
 
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}

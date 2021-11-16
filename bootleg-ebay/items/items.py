@@ -19,18 +19,16 @@ class Item(object):
     """
 
     def __init__(self, name = None, description = None, category = None, 
-                photos = None, sellerID = None, price = None, isFlagged = None, 
-                FlaggedReason = None, watchlist = None, quantity = None, shipping = None, id = None):
+                photos = None, sellerID = None, isFlagged = None, 
+                FlaggedReason = None, watchlist = None, quantity = None, id = None):
         self._quantity = quantity
         self._name = name
         self._description = description
         self._category = category
         self._photos = photos
         self._sellerID = sellerID
-        self._price = price
         self._isFlagged = isFlagged
         self._id = id
-        self._shipping = shipping
         if FlaggedReason == None:
             self._FlaggedReason = []
         else:
@@ -66,9 +64,6 @@ class Item(object):
     def sellerID(self):
         return self._sellerID
     
-    @property
-    def price(self):
-        return self._price
     
     @property
     def isFlagged(self):
@@ -86,9 +81,6 @@ class Item(object):
     def quantity(self):
         return self._quantity
 
-    @property
-    def shipping(self):
-        return self._shipping
     
     def from_mongo(self, item, flagged_info, photo):
         if item == []:
@@ -98,14 +90,12 @@ class Item(object):
         self._category = item["category"]
         self._photos = photo
         self._sellerID = item["sellerID"]
-        self._price = item["price"]
         self._isFlagged = item["isFlagged"]
         if tuple(item["watchlist"]) == tuple(["True"]):
             self._watchlist = []
         else:
             self._watchlist = item["watchlist"]
         self._quantity = item["quantity"]
-        self._shipping = item["shipping"]
         self._FlaggedReason = []
         if self._isFlagged:
             for info in flagged_info:
@@ -115,18 +105,16 @@ class Item(object):
     def to_mongo(self):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
-                "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
-                "watchlist": self.watchlist, "quantity": self.quantity, "shipping": self.shipping, "_id": self._id}
+                "sellerID": self.sellerID, "isFlagged": self.isFlagged,
+                "watchlist": self.watchlist, "quantity": self.quantity, "_id": self._id}
 
     def modify_item(self,
                     new_name = None,
                     new_description = None,
                     new_photos = None,
-                    new_price = None,
                     new_categories = None,
                     new_watchlist = None,
-                    quantity = None,
-                    shipping = None):
+                    quantity = None):
         """
         This modifies the specified attributes.
         The attributes that can be modified by this
@@ -139,16 +127,12 @@ class Item(object):
             self._description = new_description
         if new_photos:
             self._photos = new_photos
-        if new_price:
-            self._price = new_price
         if new_categories:
             self._category = new_categories
         if new_watchlist:
             self._watchlist = new_watchlist
         if quantity:
             self._quantity = quantity
-        if shipping:
-            self._shipping = shipping
     
     def edit_categories(self, new_categories):
         self._category = new_categories
@@ -192,18 +176,5 @@ class Item(object):
             if category not in self.category:
                 return False
             return True
-
-
-def create_item(name, description, category, photos, 
-                sellerID, price, isFlagged, FlaggedReasons, 
-                Watchlist, Quantity,
-                Id):
-    """
-    This creates a new item of the item class and
-    returns it
-    """
-    new_item = Item(name, description, category, photos, sellerID, 
-                    price, isFlagged, FlaggedReasons, Watchlist, Quantity, Id)
-    return new_item
 
 

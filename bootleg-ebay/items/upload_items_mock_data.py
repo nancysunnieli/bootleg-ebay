@@ -75,19 +75,17 @@ def create_items_database(data_file_path, collection = items_collection):
     for row in csvreader:
         item = {"_id": None, "name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
-                "price": None, "isFlagged": None}
+                "isFlagged": None}
         item["_id"] = ObjectId(row[0])
         item["name"] = row[1]
         item["description"] = row[2]
         item["category"] = reformat_list_csv(row[3])
         item["photos"] = row[4]
         item["sellerID"] = int(row[5])
-        item["price"] = row[6]
-        item["isFlagged"] = row[7]
-        watchlist = reformat_list_csv(row[8])
+        item["isFlagged"] = row[6]
+        watchlist = reformat_list_csv(row[7])
         item["watchlist"] = watchlist
-        item["quantity"] = int(row[9])
-        item["shipping"] = int(row[10])
+        item["quantity"] = int(row[8])
 
         all_items.append(item)
     file.close()

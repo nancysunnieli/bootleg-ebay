@@ -23,11 +23,9 @@ _required_attributes = {
         'category': {'type': 'array'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'number'},
-        'price': {'type': 'number'},
-        'quantity': {'type': 'number'},
-        'shipping': {'type': 'number'}
+        'quantity': {'type': 'number'}
     },
-    'required': ['name', 'description', 'category', 'photos', 'sellerID', 'price', 'shipping']
+    'required': ['name', 'description', 'category', 'photos', 'sellerID', 'quantity']
 }
 
 _unrequired_attributes = {
@@ -39,9 +37,7 @@ _unrequired_attributes = {
         'category': {'type': 'array'},
         'photos': {'type': 'string'},
         'sellerID': {'type': 'number'},
-        'price': {'type': 'number'},
-        'quantity': {'type': 'number'},
-        'shipping': {'type': 'number'},
+        'quantity': {'type': 'number'}
     },
     'required': ['item_id']
 }
@@ -181,7 +177,6 @@ def remove_item():
     for auction in json.loads(r.content):
         if auction["item_id"] == item_id:
             auction_id = auction["auction_id"]
-
     if auction_id:
         socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
         r = get_and_request(socket_url, 'get')
