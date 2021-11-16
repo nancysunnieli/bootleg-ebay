@@ -6,18 +6,26 @@ import os
 from flask import Flask, Response, request
 from flask_expects_json import expects_json
 from flask_cors import CORS
-
-# from items import * 
+from celery import Celery
 
 from routes import *
 
 app = Flask(__name__)
-app.register_blueprint(routes)
+app.register_blueprint(users_api, url_prefix='/users')
+app.register_blueprint(payments_api, url_prefix='/payments')
+app.register_blueprint(auctions_api, url_prefix='/auctions')
+app.register_blueprint(carts_api, url_prefix='/carts')
+app.register_blueprint(items_api, url_prefix='/items')
+app.register_blueprint(notifs_api, url_prefix='/notifs')
 
 socket_name = socket.gethostbyname(socket.gethostname())
 
 
 CORS(app, resources={r"/*": {"origins": "*"}})
+
+broker_url = "amqp://rabbitmq-server"
+celery = Celery(app.name, broker=broker_url, include=['celery_tasks.auctions'])
+app.celery = celery
 
 
 @app.route('/')
@@ -29,4 +37,4 @@ def base():
 
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 8011, host = socket_name)
+    app.run(debug = True, port = 8011, host = socket_name, threaded=True)

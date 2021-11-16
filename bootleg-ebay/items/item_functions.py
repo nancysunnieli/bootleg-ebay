@@ -3,11 +3,11 @@ import json
 import os
 import re
 import socket
-from types import ClassMethodDescriptorType
 import uuid
 import items
 
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 
 
@@ -20,16 +20,17 @@ class ItemsDBManager:
         items_collection = db["items"]
         flagged_items_collection = db["flagged_items"]
         photos_collection = db["photos"]
-        return items_collection, flagged_items_collection, photos_collection
+        categories_collection = db["categories"]
+        return items_collection, flagged_items_collection, photos_collection, categories_collection
     
     @classmethod
-    def ViewAllItems(cls, limit = None):
+    def view_all_items(cls, limit = None):
         """
         This returns back all available items
         in sorted order
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = {"available" : True}
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        query = {"quantity" : {"$gte": 0}}
         results = list(items_collection.find(query))
         if limit:
             return results[:limit]
@@ -37,11 +38,11 @@ class ItemsDBManager:
             return results
 
     @classmethod
-    def ViewFlaggedItems(cls, limit = None):
+    def view_flagged_items(cls, limit = None):
         """
         This returns all the flagged items
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = {"isFlagged": "True"}
 
         results = list(items_collection.find(query))
@@ -51,31 +52,31 @@ class ItemsDBManager:
             return results
     
     @classmethod
-    def GetAllItems(cls):
+    def get_all_items(cls):
         """
         This gets all the items from the items collection
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         items = list(items_collection.find({}))
         return items
     
     @classmethod
-    def GetItem(cls, id):
+    def get_item(cls, id):
         """
         this gets an item from the items collection
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = {"_id": id}
         results = list(items_collection.find(query))
         return results
 
     @classmethod
-    def EditCategories(cls, item_id, updated_categories):
+    def edit_categories(cls, item_id, updated_categories):
         """
         This edits the categories for an item
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = { "_id" : item_id }
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        query = {"_id": item_id}
         new_categories = { "$set": { "category": updated_categories } }
         result = items_collection.update_one(query, new_categories)
         if result.modified_count > 0:
@@ -84,15 +85,17 @@ class ItemsDBManager:
             return "Change was not Successful. Please Try Again."
     
     @classmethod
-    def AddItem(cls, name, description, category, photos, 
-                sellerID, price):
+    def add_item(cls, name, description, category, photos, 
+                sellerID, price, quantity, shipping):
         """
         This adds an item to the items collection
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         item = {"name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
-                "price": None, "isFlagged": False, "watchlist": None, "available": None}
+                "price": None, "isFlagged": False, "watchlist": None, "quantity": None,
+                "shipping": None}
+        item["_id"] = ObjectId()
         item["name"] = name
         item["description"] = description
         item["category"] = category
@@ -100,18 +103,21 @@ class ItemsDBManager:
         item["sellerID"] = sellerID
         item["price"] = price
         item["watchlist"] = []
-        item["available"] = True
+        item["quantity"] = quantity
+        item["shipping"] = shipping
         result = items_collection.insert_one(item)
 
         if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
-            return "Item Successfully Inserted!"
+            item = list(items_collection.find({ "_id": item["_id"]}))
+            item[0]["_id"] = str(item[0]["_id"])
+            return item[0]
         else:
             return "Item was not successfully inserted. Please Try Again."
 
     @classmethod
-    def ModifyItem(cls, id, name = None, description = None,
+    def modify_item(cls, id, name = None, description = None,
                 category = None, photos = None, price = None,
-                watchlist = None):
+                watchlist = None, quantity = None, shipping = None):
         """
         With this function, I can modify the item
         that matches the given id.
@@ -119,9 +125,9 @@ class ItemsDBManager:
         I can modify the name, description, category,
         photos, and price
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
 
-        query = { "_id" : id }
+        query = {"_id": id}
         modifications = []
         if name:
             new_name = { "$set": { "name": name } }
@@ -141,7 +147,12 @@ class ItemsDBManager:
         if watchlist:
             new_watchlist = { "$set": { "watchlist": watchlist } }
             modifications.append(new_watchlist)
-
+        if quantity:
+            new_quantity = {"$set": {"quantity": quantity}}
+            modifications.append(new_quantity)
+        if shipping:
+            new_shipping = {"$set": {"shipping": shipping}}
+            modifications.append(new_shipping)
         success = []
         failure = []
         for modification in modifications:
@@ -163,13 +174,13 @@ class ItemsDBManager:
         return string_to_return
 
     @classmethod
-    def ConvertToItemObjects(cls, items):
+    def convert_to_item_objects(cls, items):
         """
         This gets all the documents from the items database,
         and uploads them into objects of the items class
         and returns back an array of these items.
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         all_items = []
         for item in items:
             id = item["_id"]
@@ -188,19 +199,20 @@ class ItemsDBManager:
                     FlaggedReason.append(result["FlagReason"])
                 flags = {}
             watchlist = item["watchlist"]
-            available = item["available"]
+            quantity = item["quantity"]
+            shipping = item["shipping"]
             all_items.append(items.Item(name, description, category, photos,
                         sellerID, price, isFlagged, FlaggedReason,
-                        watchlist, available, id))
+                        watchlist, quantity, shipping, id))
         return all_items
 
 
     @classmethod
-    def AddFlaggedItem(cls, item_id, flag_reason):
+    def add_flagged_item(cls, item_id, flag_reason):
         """
         This adds a new flag to the database
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         item = {"itemID": item_id, "FlagReason": flag_reason}
         inserted_item = flagged_items_collection.insert_one(item)
 
@@ -212,30 +224,30 @@ class ItemsDBManager:
 
 
     @classmethod
-    def ReportItem(cls, id, flag_reason):
+    def report_item(cls, id, flag_reason):
         """
         This flags an item, and gives the flag reason
         """
         # updates item database
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = {"_id": id}
         flag = {"$set" : {"isFlagged" : "True" }}
         update_result = items_collection.update_one(query, flag)
 
         
         # updates flagged items database
-        result = cls.AddFlaggedItem(id, flag_reason)
+        result = cls.add_flagged_item(id, flag_reason)
         if (result == "Flag Successfully Added!"):
             return "Item Reported Successfully!"
         else:
             return "Item Report Failed. Please Try Again."
 
     @classmethod
-    def RemoveItem(cls, id):
+    def remove_item(cls, id):
         """
         This removes an item
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         find_item = {"_id": id}
         items_collection.delete_one(find_item)
 
@@ -249,11 +261,11 @@ class ItemsDBManager:
             return "Item Was Not Deleted! Please Try Again."
 
     @classmethod
-    def AddUserToWatchlist(cls, id, user_id):
+    def add_user_to_watch_list(cls, id, user_id):
         """
         This adds a user to the watchlist
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = { "_id": id }
         modification = { "$addToSet": {"watchlist" : user_id }}
         result = items_collection.update_one(query, modification)
@@ -268,62 +280,145 @@ class ItemsDBManager:
             return "Addition Failed. Please try again."
 
     @classmethod
-    def searchItem(cls, keywords):
+    def search_item(cls, keywords, category):
         """
         This searches the items in the database
         
         input:
         keywords (array of strings)
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
-        query = { "$or": []}
-        for word in keywords:
-            query["$or"].append({ "name" : {'$regex': word}})
-            query["$or"].append({ "description" : {'$regex': word}})
-        
-        results = list(items.collection.find(query))
-        return results
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+
+
+        if keywords and category:
+            main_query = {"$and": []}
+            query = { "$or": []}
+            for word in keywords:
+                query["$or"].append({ "name" : {'$regex': word}})
+                query["$or"].append({ "description" : {'$regex': word}})
+
+            main_query["$and"].append(query)
+            query = {"category": { '$in' : category }}
+            main_query["$and"].append(query)
+            results = list(items.collection.find(main_query))
+            return results
+
+        if keywords:
+            query = { "$or": []}
+            for word in keywords:
+                query["$or"].append({ "name" : {'$regex': word}})
+                query["$or"].append({ "description" : {'$regex': word}})
+            keyword_results = list(items.collection.find(query))
+            return keyword_results
+
+        if category:
+            query = {"category": { '$in' : category }}
+            category_results = list(items_collection.find(query))
+            return category_results
 
     @classmethod
-    def modifyAvailability(cls, item_id):
+    def modify_quantity(cls, item_id):
         """
-        This adjusts the availability of the item. If
-        the availability was successfully changed, it indicates it.
+        This adjusts the quantity of the item. If
+        the quantity was successfully changed, it indicates it.
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = {"_id" : item_id}
-        modification = { "$set": {"available" : False }}
+        item = list(items_collection.find(query))
+        quantity = item[0]["quantity"]
+        modification = { "$set": {"quantity" : quantity - 1 }}
         result = items_collection.update_one(query, modification)
         if result.modified_count > 0:
-            return "Successfully adjusted availability."
+            return "Successfully adjusted quantity."
         else:
-            return "Was unable to adjust availability. Item is no longer available."
+            return "Was unable to adjust quantity. Item is sold out."
 
     @classmethod
-    def getFlagReasons(cls, item_id):
+    def get_flag_reasons(cls, item_id):
         """
         This returns back the flagged reasons for a particular id.
         """
-        items_collection, flagged_items_collection, photos_collection = cls._init_items_collection()
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = {"_id" : item_id}
         result = list(flagged_items_collection.find(query))
         return result
+    
+    @classmethod
+    def get_photo(cls, photo_id):
+        """
+        This returns back the photo with the specified id
+        """
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        photo_id = ObjectId(photo_id)
+        query = {'_id': photo_id}
+        result = list(photos_collection.find(query))
+        if len(result) > 0:
+            return result[0]["photo"]
+        else:
+            return None
+
+    @classmethod
+    def get_categories(cls):
+        """
+        This returns back all the categories
+        """
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        result = list(categories_collection.find({}))
+        return result[0]["categories"]
+    
+    @classmethod
+    def add_category(cls, category):
+        """
+        This adds a category to the existing list of categories
+        """
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        result = list(categories_collection.find({}))
+        query = {'_id': result[0]["_id"]}
+        modification = { "$addToSet": {"categories" : category }}
+        result = categories_collection.update_one(query, modification)
+        if result.modified_count > 0:
+            return "Successfully added category!"
+        else:
+            return "Was unable to add category. The category either exists, or you should try again later."
+    
+    @classmethod
+    def remove_category(cls, category):
+        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        result = list(categories_collection.find({}))
+        query = {'_id': result[0]["_id"]}
+        current_categories = result[0]["categories"]
+        current_categories.remove(category)
+
+        modification = { "$set": {"categories" : current_categories }}
+
+        result = categories_collection.update_one(query, modification)
+        if result.modified_count > 0:
+            return "Successfully removed category!"
+        else:
+            return "Was unable to remove category. The category either exists, or you should try again later."      
 
 
-def ViewFlaggedItems(limit = None):
+
+
+def view_flagged_items(limit = None):
     """
     This function searches through all the items and returns
     the ones that are flagged
     """
-    all_items = ItemsDBManager.GetAllItems()
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+        
+
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
+        new_item.from_mongo(item, flags, photo)
         if new_item.isFlagged:
             new_dict = new_item.to_mongo()
+            print(new_dict)
+            new_dict["_id"] = str(item_id)
             item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
@@ -331,19 +426,25 @@ def ViewFlaggedItems(limit = None):
     return json.dumps(item_objects)
 
 
-def ViewAllItems(limit = None):
+def view_all_items(limit = None):
     """
     This returns back a list of all items
     """
-    all_items = ItemsDBManager.GetAllItems()
+    # The only available items are items
+    # that are currently being auctioned
+
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
-        if new_item.available:
+        new_item.from_mongo(item, flags, photo)
+        if new_item.quantity > 0:
             new_dict = new_item.to_mongo()
+            new_dict["_id"] = str(item_id)
             item_objects.append(new_dict)
         if limit:
             if len(item_objects) == limit:
@@ -351,73 +452,92 @@ def ViewAllItems(limit = None):
     return json.dumps(item_objects)
 
 
-def SearchItem(keywords):
+def search_item(keywords, category):
     """
     This function searches through all the items and returns
     the ones that match the search criteria
     """
-    all_items = ItemsDBManager.GetAllItems()
+    all_items = ItemsDBManager.get_all_items()
     item_objects = []
     for item in all_items:
         item_id = item["_id"]
-        flags = ItemsDBManager.getFlagReasons(item_id)
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+        
         new_item = items.Item()
-        new_item.from_mongo(item, flags)
-        if new_item.matches_search(keywords):
-            item_objects.append(new_item.to_mongo())
+        new_item.from_mongo(item, flags, photo)
+        if new_item.matches_search(keywords, category):
+            new_dict = new_item.to_mongo()
+            new_dict["_id"] = str(item_id)
+            item_objects.append(new_dict)
     return json.dumps(item_objects)
 
-def AddUserToWatchlist(item_id, user_id):
+def add_user_to_watch_list(item_id, user_id):
     """
     This adds a user to the watchlist
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    item_id = ObjectId(item_id)
+    item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
+        
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.addUserToWatchlist(user_id)
-    return json.dumps(ItemsDBManager.ModifyItem(new_item.id, None, None, None, None,
-                                    None, new_item.watchlist))
+    new_item.from_mongo(item, flags, photo)
+    new_item.add_user_to_watchlist(user_id)
+    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None, None,
+                                    None, new_item.watchlist, None, None))
 
-def RemoveItem(item_id):
+def remove_item(item_id):
     """
     This removes an item from the database
     """
-    return json.dumps(ItemsDBManager.RemoveItem(item_id))
+    item_id = ObjectId(item_id)
+    return json.dumps(ItemsDBManager.remove_item(item_id))
 
-def ReportItem(item_id, reason):
+def report_item(item_id, reason):
     """
     This reports an item
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    item_id = ObjectId(item_id)
+    item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
+        
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
+    new_item.from_mongo(item, flags, photo)
     new_item.report_item(reason)
-    return json.dumps(ItemsDBManager.ReportItem(new_item.id, reason))
+    return json.dumps(ItemsDBManager.report_item(new_item.id, reason))
 
-def GetItem(item_id):
+def get_item(item_id):
     """
     This gets an item from the database
     """
-    return json.dumps(ItemsDBManager.GetItem(item_id)[0])
+    item_id = ObjectId(item_id)
+    new_item = ItemsDBManager.get_item(item_id)[0]
+    photo = ItemsDBManager.get_photo(new_item["photos"])
+    new_item["photos"] = photo
+    new_item["_id"] = str(item_id)
+    return json.dumps(new_item)
 
-def ModifyItem(item_id, name = None, description = None,
+def modify_item(item_id, name = None, description = None,
                 category = None, photos = None, price = None,
-                watchlist = None):
+                watchlist = None, quantity = None, shipping = None):
     """
     This modifies the item
     """
-    item = ItemsDBManager.GetItem(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+    item_id = ObjectId(item_id)
+    item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.modifyItem(name, description, category, photos,
-                        price, watchlist)
+    new_item.from_mongo(item, flags, photo)
+    new_item.modify_item(name, description, photos,
+                        price, category, watchlist, quantity, shipping)
+
     if name:
         new_name = new_item.name
     else:
-        name = None
+        new_name = None
     if description:
         new_description = new_item.description
     else:
@@ -438,77 +558,112 @@ def ModifyItem(item_id, name = None, description = None,
         new_watchlist = new_item.watchlist
     else:
         new_watchlist = None
-    
-    return json.dumps(ItemsDBManager.ModifyItem(item_id, new_name, new_description,
+    if quantity:
+        new_quantity = new_item.quantity
+    else:
+        new_quantity = None
+    if shipping:
+        new_shipping = new_item.shipping
+    else:
+        new_shipping = None
+    return json.dumps(ItemsDBManager.modify_item(item_id, new_name, new_description,
                                         new_category, new_photos, new_price, 
-                                        new_watchlist))
+                                        new_watchlist, new_quantity, new_shipping))
 
-def AddItem(name, description, category, 
-                photos, sellerID, price):
+def add_item(name, description, category, 
+                photos, sellerID, price, quantity, shipping):
     """
     This adds the item
     """
     new_item = items.Item(name, description, category,
                             photos, sellerID, price, False,
-                            None, None, True, None)
-    return json.dumps(ItemsDBManager.AddItem(new_item.name, new_item.description,
+                            None, None, quantity, shipping, None)
+    return json.dumps(ItemsDBManager.add_item(new_item.name, new_item.description,
                             new_item.category, new_item.photos,
-                            new_item.sellerID, new_item.price))
+                            new_item.sellerID, new_item.price, new_item.quantity, new_item.shipping))
 
-def EditCategories(item_id, new_categories):
-    item = ItemsDBManager.GetItem(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+def edit_categories(item_id, new_categories):
+    item_id = ObjectId(item_id)
+    item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
+    new_item.from_mongo(item, flags, photo)
 
-    new_item.editCategories(new_categories)
-    return json.dumps(ItemsDBManager.ModifyItem(new_item.id, None, None, new_item.category,
-                                None, None, None))
+    new_item.edit_categories(new_categories)
+    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, new_item.category,
+                                None, None, None, None))
 
-def ModifyAvailability(item_id):
-    item = ItemsDBManager.GetItem(item_id)[0]
-    flags = ItemsDBManager.getFlagReasons(item_id)
+def modify_quantity(item_id):
+    item_id = ObjectId(item_id)
+    item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    photo = ItemsDBManager.get_photo(item["photos"])
     new_item = items.Item()
-    new_item.from_mongo(item, flags)
-    new_item.modifyItem(None, None, None, None,
-                        None, None, False)
-    return json.dumps(ItemsDBManager.modifyAvailability(new_item.id))
+
+    new_item.from_mongo(item, flags, photo)
+    new_item.modify_item(None, None, None, None,
+                        None, None, new_item.quantity - 1, None)
+    return json.dumps(ItemsDBManager.modify_quantity(new_item.id))
+
+def get_categories():
+    return json.dumps(ItemsDBManager.get_categories())
+
+def add_categories(category):
+    return json.dumps(ItemsDBManager.add_category(category))
+
+def remove_categories(category):
+    return json.dumps(ItemsDBManager.remove_category(category))
 
 
 
 # executing tests for my functions
 if __name__ == '__main__':
-    
+    print(view_all_items())
+    """
+    print(add_categories("Food"))
+    print(remove_categories("Food"))
+
     print("Search Item Test: ")
-    print(SearchItem(["caught"]))
-    
-    print("Add User To Watchlist Test: ")
-    print(AddUserToWatchlist("7ed25c8c-89b", "d35d484e-d66"))
-
-    print("Remove Item From Items List Test: ")
-    print(RemoveItem("4e889ad4-74b"))
-
-    print("Report Item Test/ Add Flagged Item Test: ")
-    print(ReportItem("e176a0d8-1a2", "counterfeit"))
-
-    print("Get Item Test: ")
-    print(GetItem("0ff1cb38-5d1"))
-
-    print("Modify Item Test: ")
-    print(ModifyItem("0ff1cb38-5d1", "lemon bars"))
+    print(search_item(["and"]))
 
     print("Add Items: ")
-    print(AddItem("potato test",
-            "re you do by for and not almost of  I to  an dark but not ran",
-            ["Jewelry", "Watches"], "0aa271bf-1b4", "492674a4-bbe",
-            23.82))
+    print(add_item("potato test",
+            "test",
+            ["Jewelry", "Watches"], "618ac0a5c43212f2d81be436", "for_see_room",
+            23.82, 6))
+    
 
+    print("Add User To Watchlist Test: ")
+    print(add_user_to_watch_list("618af8fde27c0181a0bc9bac", "example_user"))
+
+    
+
+    
+    print("Report Item Test/ Add Flagged Item Test: ")
+    print(report_item("618af8fde27c0181a0bc9bac", "counterfeit"))
+    
+    
+    print("Get Item Test: ")
+    print(get_item("618af8fde27c0181a0bc9bac"))
+
+    
+    print("Modify Item Test: ")
+    print(modify_item("618af8fde27c0181a0bc9bac", "lemon bars"))
+
+    
     print("Edit Categories Test: ")
-    print(EditCategories("0ff1cb38-5d1", ["potato"]))
-
+    print(edit_categories("618af8fde27c0181a0bc9bac", ["potato"]))
+    
     print("View Flagged Items Test: ")
-    print(ViewFlaggedItems())
-
-    print("Modify Availability Test: ")
-    print(ModifyAvailability("0ff1cb38-5d1"))
+    print(view_flagged_items())
+    
+    
+    print("Modify Quantity Test: ")
+    print(modify_quantity("618af8fde27c0181a0bc9bac"))
+    
+    
+    print("Remove Item From Items List Test: ")
+    print(remove_item("618af8fde27c0181a0bc9bac"))
+    """
     

@@ -2,3 +2,4 @@ requests==2.26.0
 flask==2.0.2
 flask-expects-json==1.6.0
 Flask-Cors==3.0.10
+celery==5.1.0

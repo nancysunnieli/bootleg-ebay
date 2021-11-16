@@ -33,9 +33,11 @@ class CartsDBManager:
         result = carts_collection.insert_one(shopping_cart)
 
         if len(list(carts_collection.find({ "_id": shopping_cart["_id"]}))) == 1:
-                return "Cart Successfully Created!"
+                cart = list(carts_collection.find({ "_id": shopping_cart["_id"]}))[0]
+                cart["_id"] = str(cart["_id"])
+                return cart
         else:
-            return "Cart was not successfully Created. Please Try Again."
+             return "Cart was not successfully Created. Please Try Again."
 
     @classmethod
     def add_item_to_cart(cls, user_id, item_id):
@@ -129,7 +131,7 @@ def add_item_to_cart(user_id, item_id):
                 return CartsDBManager.add_item_to_cart(user_id, item)
     # I call this either way because it will give me an error message if
     # it did not work
-    return CartsDBManager.add_item_to_cart(user_id, item)
+    return CartsDBManager.add_item_to_cart(user_id, item_id)
 
 def delete_item_from_cart(user_id, item_id):
     """
@@ -142,10 +144,10 @@ def delete_item_from_cart(user_id, item_id):
         dict_object = shopping_cart.to_mongo()
         for i in range(0, len(items)):
             if items[i] not in dict_object["items"]:
-                return CartsDBManager.delete_item_from_cart(user_id, items[i])
+                return CartsDBManager.delete_item_from_cart(int(user_id), items[i])
     # I call this either way because it will give me an error message if
     # it did not work
-    return CartsDBManager.delete_item_from_cart(user_id, item_id)
+    return CartsDBManager.delete_item_from_cart(int(user_id), item_id)
 
 def get_items(user_id):
     """

@@ -23,13 +23,15 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `suspended` tinyint(1) DEFAULT '0',
   `is_admin` tinyint(1) DEFAULT '0',
-  PRIMARY KEY (`id`),
+  `total_rating` int unsigned DEFAULT '0',
+  `number_of_ratings` int unsigned DEFAULT '0',
+  PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -40,7 +42,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'no__very','friendsyoubut','you.@lyft.com',1,1),(2,'and_measuring_feelings','partmustwidower','fact.good@uchicago.edu',0,1),(3,'watching_every_Her','Campbellsdoor','likes.@uchicago.edu',0,0),(4,'notions__the','toaccount','her.presumption@jpmorgan.com',0,1),(5,'how_takes_of','offbethe','period.that@jpmorgan.com',0,1),(6,'better_on_be','tothingsyou','happy.not@jpmorgan.com',0,1),(7,'_to_event','thatneverin','been.all@jpmorgan.com',1,1),(8,'so__reproached','theminebeing','.to@uchicago.edu',1,0),(9,'clearness_she_putting','theyouword','particulars.sad@uchicago.edu',0,1),(10,'Miss_watched_what','FranksofteningChurchills','I.herself@uchicago.edu',0,0),(11,'__and','topoint','Elton.well@jpmorgan.com',1,0),(12,'two_Mr_as','promisesfor','and.the@lyft.com',0,1),(13,'one_eligibly_it','ofcriedof','.visibly@lyft.com',0,0),(14,'expeditious_not_not','andattentiona','not.he@lyft.com',1,1),(15,'there_heard_bounds','brightexplanation','running.may@uchicago.edu',1,0),(16,'be__had','deeplatestdissipated','.feelings@jpmorgan.com',1,1),(17,'domestic_It_that','The','.that@lyft.com',0,0),(18,'was_and_not','in','yesterday.in@uchicago.edu',1,1),(19,'any_And_to','pleasuresthey','in.@uchicago.edu',1,1),(20,'moment_give_believe','thatevery','of.Mrs@jpmorgan.com',0,1),(21,'must_on_else','bepleased','Mrs.@lyft.com',1,0),(22,'home_had_','onthehave','most.young@uchicago.edu',1,1),(23,'of_Angry_own','fortoAnd','I.one@jpmorgan.com',0,1),(24,'profit_bring_no','inonly','His.had@uchicago.edu',1,1),(25,'neighbourhood_he_long','ofbaroucheI','Miss.And@jpmorgan.com',1,1),(26,'astonished_as_very','firessay','enter.than@jpmorgan.com',0,1),(27,'I__','itthat','Emma.@lyft.com',0,0),(28,'to__and','thoughtherrecollect','and.Knightley@lyft.com',0,1),(29,'to_know_and','notyouwill','on.but@lyft.com',1,1),(30,'and_self_door','tothathe','yet.bad@lyft.com',0,1);
+INSERT INTO `users` VALUES (1,'_a_She','occasionHenceforwardalert','it.possible@jpmorgan.com',0,1,0,0),(2,'matter_own_','Mrtalkstation','from.for@jpmorgan.com',1,0,0,0),(3,'no_keeping_unexamined','degreeguess','.was@uchicago.edu',0,0,0,0),(4,'that_make_all','twoMrsmeant','.a@uchicago.edu',1,1,0,0),(5,'looked_the_so','timea','Jane.The@lyft.com',0,1,0,0),(6,'_been_Mrs','jokewasof','Mrs.morning@lyft.com',0,0,0,0),(7,'they__bathing','andthatsuited','.means@lyft.com',0,0,0,0),(8,'madam_chosen_must','wesaid','my.detained@lyft.com',0,1,0,0),(9,'as__','Thebeingexpressive','.and@jpmorgan.com',1,0,0,0),(10,'I_from_of','blushingwasits','how.chose@uchicago.edu',0,0,0,0),(11,'sure_but_shall','satisfieddid','.Yorkshire@jpmorgan.com',0,1,0,0),(12,'workbags_cannot_another','butorwe','.doubt@lyft.com',1,0,0,0),(13,'direct__Martin','extentthe','Dear.We@uchicago.edu',1,1,0,0),(14,'poor_We_are','andmeaningit','her.my@jpmorgan.com',1,0,0,0),(15,'after_England_dare','wasto','body.consent@jpmorgan.com',1,1,0,0),(16,'cheerfully_comfort_to','gainingpointperceived','momentary.she@lyft.com',1,1,0,0),(17,'there_again_','thenimagineabout','to.line@jpmorgan.com',0,0,0,0),(18,'watching_of_utmost','inshetwo','greater.@jpmorgan.com',1,0,0,0),(19,'thing_safe_to','CHURCHILLparishpropose','.no@lyft.com',1,0,0,0),(20,'the__proposals','isto','been.is@jpmorgan.com',0,0,0,0),(21,'for_She_','ittalk','Emma.@uchicago.edu',1,0,0,0),(22,'and_Indifferent_attendance','felicitysucceedairy','.@uchicago.edu',1,1,0,0),(23,'South__likeness','objectspeakvery','I.Mrs@lyft.com',0,0,0,0),(24,'wife_real_nothing','too','satin.being@lyft.com',1,0,0,0),(25,'been_are_think','hercompliment','I.Emma@jpmorgan.com',1,1,0,0),(26,'and_a_to','notthatHe','eager.own@uchicago.edu',1,1,0,0),(27,'_remained_','mentionedwhich','.given@uchicago.edu',1,1,0,0),(28,'every_deserve_catching','behimwhat','time.did@lyft.com',1,0,0,0),(29,'was_very_to','hisme','we.@jpmorgan.com',0,0,0,0),(30,'_unless_One','waswerebe','Emma.@uchicago.edu',1,0,0,0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-04  2:02:07
+-- Dump completed on 2021-11-12 20:28:28

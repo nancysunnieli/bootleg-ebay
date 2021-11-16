@@ -37,7 +37,7 @@ class Cart(object):
     
     def remove_item(self, item):
         if item not in self.items:
-            return "ITEM WAS ALREADY NOT IN CART."
+            raise "ITEM WAS NOT ALREADY IN CART."
         else:
             self._items.remove(item)
             return "ITEM SUCCESSFULLY REMOVED."

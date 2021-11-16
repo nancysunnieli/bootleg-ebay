@@ -7,6 +7,10 @@ import re
 import uuid
 from PIL import Image
 import io
+from bson.objectid import ObjectId
+
+import base64
+
 
 def convert_image_to_string(image_directory):
     image = Image.open(image_directory)
@@ -29,7 +33,7 @@ def generate_random_date(start_date, end_date):
     return random_date_epoch_time
 
 def generate_random_id():
-    return str(uuid.uuid4())[:12]
+    return ObjectId()
 
 def generate_random_bool():
     random_bit = random.getrandbits(1)
@@ -81,6 +85,7 @@ def items():
             price, isFlagged
     """
     # getting names of potential sellers
+    
     file = open("users.csv")
     csvreader = csv.reader(file)
     all_users = []
@@ -110,13 +115,32 @@ def items():
             new = random.choice(all_users)
             if new not in watch_list:
                 watch_list.append(new)
-        available = True
+        quantity = random.choice(range(1, 11))
+        shipping = random.choice([5, 10, 15])
         all_items.append([id, name, description, categories, photos,
-                            seller_id, price, isFlagged, watch_list, available])
+                            seller_id, price, isFlagged, watch_list, quantity, shipping])
     
     with open('items.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
         writer.writerows(all_items)
+    f.close()
+
+def categories():
+    category = ["Auto Parts and Accessories", "Automotive Tools & Supplies",
+                    "Other Vehicles and Trailers", "Motorcycles",
+                    "Powersport Vehicles", "Boats", "Top Vehicle Makes",
+                    "Fashion", "Women's Clothing", "Women's Shoes",
+                    "Women's Accessories", "Women's Bags & Handbangs",
+                    "Men's Clothing", "Men's Shoes", "Men's Accessories",
+                    "Kid's Clothing, Shoes, & Accessories", 
+                    "Baby Clothing, Shoes, & Accessories", "Jewelry",
+                    "Watches, Parts & Accessories"]
+    all = []
+    for c in category:
+        all.append([c])
+    with open('category.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(all)
     f.close()
 
 def users():
@@ -127,7 +151,7 @@ def users():
 
     So we won't use `generate_random_id`
 
-    Schema: username, password, email, suspended, is_admin 
+    Schema: username, password, email, suspended, is_admin, total_rating, number_of_ratings 
     """
     all_users = []
     existing_usernames = set()
@@ -146,7 +170,11 @@ def users():
         isAdmin = int(generate_random_bool())
         suspended = int(generate_random_bool())
         password_hash = get_random_words(3, "")
-        all_users.append([username, password_hash, email, suspended, isAdmin])
+        total_rating = 0
+        number_of_ratings = 0
+        all_users.append([
+            username, password_hash, email, suspended, isAdmin,
+            total_rating, number_of_ratings])
 
     with open('users.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -213,7 +241,7 @@ def flagged_items():
         itemID = item[0]
         item_index = all_items.index(item)
         flagReason = random.choice(flagReasons)
-        all_items[item_index][-2] = True
+        all_items[item_index][7] = True
         all_flagged_items.append([id, itemID, flagReason])
         
     with open('flagged_items.csv', 'w', newline = "") as f:
@@ -363,9 +391,11 @@ def photos():
     """
     all_photos = []
     for i in range(0, 30):
+        with open("sample1.png", "rb") as img_file:
+            my_string = base64.b64encode(img_file.read())
         id = generate_random_id()
-        photo = convert_image_to_string("sample1.png")
-        all_photos.append([id, photo])
+        all_photos.append([id, my_string.decode('utf-8')])
+        img_file.close()
     
     with open('photos.csv', 'w', newline = "") as f:
         writer = csv.writer(f)
@@ -437,6 +467,7 @@ def generate_all_data():
     photos()
     users()
     items()
+    categories()
     auctions()
     flagged_items()
     bids()

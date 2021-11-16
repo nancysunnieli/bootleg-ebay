@@ -3,6 +3,7 @@ import json
 app = Flask(__name__)
 import item_functions
 import socket
+from bson.objectid import ObjectId
 
 @app.route('/')
 def base():
@@ -10,53 +11,69 @@ def base():
                     status = 200,
                     mimetype = 'application/json')
 
-@app.route('/ViewAllItems', methods = ['POST'])
-def ViewAllItems():
+@app.route('/view_all_items', methods = ['POST'])
+def view_all_items():
     data = request.get_json()
+    if not data:
+        data = {}
     if "limit" in data:
         limit = data["limit"]
     else:
         limit = None
-    return item_functions.ViewAllItems(limit)
+    return item_functions.view_all_items(limit)
 
-@app.route('/ViewFlaggedItems', methods=['GET'])
-def ViewFlaggedItems():
-    return item_functions.ViewFlaggedItems()
-
-@app.route('/SearchItem', methods=['POST'])
-def SearchItem():
+@app.route('/view_flagged_items', methods=['POST'])
+def view_flagged_items():
     data = request.get_json()
-    keywords = data["keywords"]
-    return item_functions.SearchItem(keywords)
+    if not data:
+        data = {}
+    if "limit" in data:
+        limit = data["limit"]
+    else:
+        limit = None
+    return item_functions.view_flagged_items(limit)
 
-@app.route('/AddUserToWatchlist', methods = ['POST'])
-def AddUserToWarchlist():
+@app.route('/search_item', methods=['POST'])
+def search_item():
+    data = request.get_json()
+    if "keywords" in data:
+        keywords = data["keywords"]
+    else:
+        keywords = None
+    if "category" in data:
+        category = data["category"]
+    else:
+        category = None
+    return item_functions.search_item(keywords, category)
+
+@app.route('/add_user_to_watch_list', methods = ['POST'])
+def add_user_to_watch_list():
     data = request.get_json()
     id = data["item_id"]
     user_id = data["user_id"]
-    return item_functions.AddUserToWatchlist(id, user_id)
+    return item_functions.add_user_to_watch_list(id, user_id)
 
-@app.route('/RemoveItem', methods = ['POST'])
-def RemoveItem():
+@app.route('/remove_item', methods = ['POST'])
+def remove_item():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.RemoveItem(id)
+    return item_functions.remove_item(id)
 
-@app.route('/ReportItem', methods = ['POST'])
-def ReportItem():
+@app.route('/report_item', methods = ['POST'])
+def report_item():
     data = request.get_json()
     item = data["item_id"]
     reason = data["reason"]
-    return item_functions.ReportItem(item, reason)
+    return item_functions.report_item(item, reason)
 
-@app.route("/GetItem", methods = ['POST'])
-def GetItem():
-    data = request.get_json()
+@app.route("/get_item", methods = ['POST'])
+def get_item():
+    data = json.loads(request.get_json())
     item = data["item_id"]
-    return item_functions.GetItem(item)
+    return item_functions.get_item(item)
 
-@app.route("/ModifyItem", methods = ['POST'])
-def ModifyItem():
+@app.route("/modify_item", methods = ['POST'])
+def modify_item():
     data = request.get_json()
     id = data["item_id"]
 
@@ -84,14 +101,27 @@ def ModifyItem():
         price = data["price"]
     else:
         price = None
+    if "watchlist" in data:
+        watchlist = data["watchlist"]
+    else:
+        watchlist = None
+    if "quantity" in data:
+        quantity = data["quantity"]
+    else:
+        quantity = None
+    if "shipping" in data:
+        shipping = data["shipping"]
+    else:
+        shipping = None
 
-    return item_functions.ModifyItem(id, name,
+    return item_functions.modify_item(id, name,
                                     description, 
                                     category, photos, 
-                                    price)
+                                    price, watchlist, quantity,
+                                    shipping)
 
-@app.route("/AddItem", methods = ['POST'])
-def AddItem():
+@app.route("/add_item", methods = ['POST'])
+def add_item():
     data = request.get_json()
     name = data["name"]
     description = data["description"]
@@ -99,25 +129,44 @@ def AddItem():
     photos = data["photos"]
     sellerID = data["sellerID"]
     price = data["price"]
+    quantity = data["quantity"]
+    shipping = data["shipping"]
 
-    return item_functions.AddItem(name, description, category,
-                                photos, sellerID, price)
+    return item_functions.add_item(name, description, category,
+                                photos, sellerID, price, quantity, shipping)
 
-@app.route("/EditCategories", methods = ['POST'])
-def EditCategories():
+@app.route("/edit_categories", methods = ['POST'])
+def edit_categories():
     data = request.get_json()
     id = data["item_id"]
     category = data["category"]
-    return item_functions.EditCategories(id, category)
+    return item_functions.edit_categories(id, category)
 
-@app.route("/ModifyAvailability", methods = ['POST'])
-def ModifyAvailability():
+@app.route("/lock", methods = ['POST'])
+def modify_quantity():
     data = request.get_json()
     id = data["item_id"]
-    return item_functions.ModifyAvailability(id)
+    return item_functions.modify_quantity(id)
+
+@app.route("/categories", methods = ['GET'])
+def get_categories():
+    return item_functions.get_categories()
+
+
+@app.route("/add_category", methods = ['POST'])
+def add_category():
+    data = request.get_json()
+    category = data["category"]
+    return item_functions.add_categories(category)
+
+@app.route("/remove_category", methods = ['POST'])
+def remove_category():
+    data = request.get_json()
+    category = data["category"]
+    return item_functions.remove_categories(category)
 
 
 if __name__ == '__main__':
     # Don't set host as localhost, otherwise it wont be reachable through docker networks
     # Should run this file with docker-compose up, and talk to it via localhost:8011 on your system
-    app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()))
+    app.run(debug = True, port = 8099, host = socket.gethostbyname(socket.gethostname()), threaded=True)

@@ -1,6 +1,7 @@
 import pymongo
 from pymongo import MongoClient
 import csv
+from bson.objectid import ObjectId
 
 client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27020")
 db = client["carts"]
@@ -17,8 +18,8 @@ def create_carts_collection(carts_data_file_path,
     all_entries = []
     for row in csvreader:
         cart = {}
-        cart["_id"] = row[0]
-        cart["user_id"] = row[1]
+        cart["_id"] = ObjectId(row[0])
+        cart["user_id"] = int(row[1])
         cart["items"] = []
 
         all_entries.append(cart)

@@ -1,7 +1,8 @@
 from typing import Any, Dict, Optional, Sequence
 import datetime
+import json
 
-AuctionID = int
+AuctionID = str
 BidID = Optional[int]
 UserID = int
 Price = float
@@ -11,6 +12,15 @@ MongoDBData = Dict[str, Any]
 
 def current_time():
     return float(datetime.datetime.now().timestamp())
+
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
 
 class Bid:
     """Represents the bid made by a particular user
@@ -67,15 +77,21 @@ class Bid:
         Returns:
             bid (Bid)
         """
+
+        if 'buyer_id' in mongodb_data:
+            bid_id = mongodb_data['buyer_id']
+        else:
+            bid_id = None
+
         bid = cls(
-            bid_id=mongodb_data['bid_id'],
+            bid_id=bid_id,
             price=mongodb_data['price'],
             buyer_id=mongodb_data['buyer_id'],
             bid_time=mongodb_data['bid_time'])
 
         return bid
 
-    def to_mongodb_fmt(self) -> MongoDBData:
+    def to_dict(self) -> MongoDBData:
         """Export this class to mongodb format
         """
 
@@ -91,6 +107,9 @@ class Bid:
 
         return bid_info
 
+    def to_json(self):
+        dict_ = self.to_dict()
+        return json.dumps(dict_)
 
 class Auction:
     """Represents the auction
@@ -122,7 +141,6 @@ class Auction:
 
         for k in auction_info.keys():
             if k not in self._auction_info:
-                print(k)
                 raise ValueError('You cannot have key:' + k + ' for `auction_info`')
 
         self._auction_info.update(auction_info)
@@ -139,22 +157,31 @@ class Auction:
             auction (Auction)
         """
 
-        bids = [Bid.from_mongodb_fmt(bid) for bid in mongodb_data['bids']]
-        auction_id = mongodb_data['_id']
-        del mongodb_data['bids']
+        if 'bids' in mongodb_data:
+            bids = [Bid.from_mongodb_fmt(bid) for bid in mongodb_data['bids']]
+            del mongodb_data['bids']
+        else:
+            bids = []
+
+        auction_id = str(mongodb_data['_id'])
+        
         del mongodb_data['_id']
         
         auction = cls(auction_id=auction_id, bids=bids, auction_info=mongodb_data)
         return auction
 
-    def to_mongodb_fmt(self):
+    def to_dict(self):
         """Export this class to mongodb format
         """
         mongodb_dict = self.auction_info
-        mongodb_dict['_id'] = self.auction_id
-        mongodb_dict['bids'] = [b.to_mongodb_fmt() for b in self.bids]
+        mongodb_dict['auction_id'] = self.auction_id
+        mongodb_dict['bids'] = [b.to_dict() for b in self.bids]
 
         return mongodb_dict
+
+    def to_json(self):
+        dict_ = self.to_dict()
+        return json.dumps(dict_)
 
     @property
     def auction_id(self):
@@ -167,6 +194,10 @@ class Auction:
     @property
     def auction_info(self):
         return self._auction_info
+
+    @property
+    def max_bid_price(self):
+        return self._bids[-1].price
 
     def previous_bid(self):
         highest_price = -1
@@ -193,21 +224,19 @@ class Auction:
         auction_info = self._auction_info
         
         if auction_info['start_time'] > bid.bid_time:
-            raise ValueError('You cannot place a bid on an action that has not started.')
+            raise BadInputError('You cannot place a bid on an action that has not started.')
 
         if auction_info['end_time'] < bid.bid_time:
-            raise ValueError('You cannot place a bid on an auction that has finished.')
+            raise BadInputError('You cannot place a bid on an auction that has finished.')
 
         
         highest_price, latest_bid = self.previous_bid()
 
         if bid.price > highest_price and bid.bid_time > latest_bid:
             self._bids.append(bid)
-            successful = True
         else:
-            successful = False
+            raise BadInputError('You can only place a bid higher than the current price!')
 
-        return successful
 
     def view_bids(self, buyer_id: Optional[UserID] = None) -> Sequence[Bid]:
         """View all the bids
@@ -221,6 +250,16 @@ class Auction:
         else:
             return list(filter(lambda x: x.buyer_id == buyer_id, self.bids))
 
+    def sort_bids_by_time(self, order):
+
+        if order == 'desc':
+            reverse = True
+        elif order == 'asc':
+            reverse = False
+        else:
+            raise ValueError('The order can either be `desc` or `asc`')
+
+        self._bids = sorted(self.bids, key=lambda x: x.bid_time, reverse=reverse)
             
 
     

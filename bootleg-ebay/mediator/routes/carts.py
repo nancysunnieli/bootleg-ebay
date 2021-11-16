@@ -3,86 +3,201 @@ import requests
 import json
 
 from flask_expects_json import expects_json
-from flask import Response, request
+from flask import Response, request, Blueprint
 
 from utils import get_and_post
-from . import routes
 from config import *
+import time
 
 # getting IP Address of carts container
 # The following are functions for the carts microservice
 
-@routes.route("/Carts/CreateCart", methods = ['POST'])
-def CreateCart():
+carts_api = Blueprint('carts', __name__)
+
+
+_none_schema = {
+    'type': 'object',
+    'properties': {
+    },
+    'required': []
+}
+
+_item = {
+    'type': 'object',
+    'properties': {
+        'item_id': {'type': 'string'},
+        'user_id': {'type': 'number'}
+    },
+    'required': ['item_id', 'user_id']
+}
+
+_user = {
+    'type': 'object',
+    'properties': {
+        'user_id': {'type': 'number'}
+    },
+    'required': ['user_id']
+}
+
+
+@carts_api.route("/cart", methods = ['POST'])
+@expects_json(_user)
+def create_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/CreateCart")
+                    CARTS_PORT + "/create_cart")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    return r.content
+
+@carts_api.route("/addition", methods = ['POST'])
+@expects_json(_item)
+def add_item_to_cart():
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
+                    CARTS_PORT + "/add_item_to_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/AddItemToCart", methods = ['POST'])
-def AddItemToCart():
+@carts_api.route("/removal", methods = ['POST'])
+@expects_json(_item)
+def delete_item_from_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/AddItemToCart")
+                    CARTS_PORT + "/delete_item_from_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
-@routes.route("/Carts/DeleteItemFromCart", methods = ['POST'])
-def DeleteItemFromCart():
+@carts_api.route("/cart/<user_id>", methods = ['GET'])
+def get_items_from_cart(user_id):
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/DeleteItemFromCart")
-    data_content = request.get_json()
+                    CARTS_PORT + "/get_items_from_cart")
+    data_content = {"user_id": int(user_id)}
     r = requests.post(url = socket_url, json = data_content)
-    return r.content
+    # getting actual items from item_ids
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                     ITEMS_PORT + "/get_item")
+    all_items = []
+    for item_id in json.loads(r.content):
+        data_content = {"item_id": item_id}
+        r = requests.post(url = socket_url, json = json.dumps(data_content))
+        all_items.append(json.loads(r.content))
 
-@routes.route("/Carts/GetItemsFromCart", methods = ['POST'])
-def GetItemsFromCart():
-    socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/GetItemsFromCart")
-    data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content)
-    return r.content
+    return json.dumps(all_items)
 
-@routes.route("/Carts/EmptyCart", methods = ['POST'])
-def EmptyCart():
+@carts_api.route("/empty", methods = ['POST'])
+@expects_json(_user)
+def empty_cart():
     socket_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/EmptyCart")
+                    CARTS_PORT + "/empty_cart")
     data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
     return r.content
 
-@routes.route("/Carts/Checkout", methods = ['POST'])
-def Checkout():
-    data_content = request.get_json()
-
+@carts_api.route("/checkout", methods = ['POST'])
+@expects_json(_user)
+def checkout():
     # gets all items in user's cart
+    data_content = request.get_json()
     get_items_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/GetItemsFromCart")
-    items = json.loads((requests.post(url = get_items_url, json = data_content)).content)
+                    CARTS_PORT + "/get_items_from_cart")
+    items = requests.post(url = get_items_url, json = data_content).content
 
-
+    items = json.loads(items)
     # checks availability of all items
     items_availability_url = ("http://" + ITEMS_SERVICE_HOST +
-                            ":8099" + "/GetItemsFromCart")
+                            ITEMS_PORT + "/lock")
     available_items = []
     unavailable_items = []
     for item in items:
-        availability = (requests.post(url = items_availability_url, data = {"item_id" : item})).content
+        item_dict = {"item_id" : item}
+        availability = (requests.post(url = items_availability_url, data = item_dict)).content
         if availability == "Was unable to adjust availability. Item is no longer available.":
             unavailable_items.append(item)
         else:
             available_items.append(item)
-    
+
+    # get user_id from username
+    user_id = data_content["user_id"]
+
+
     # GET CREDIT CARD INFO
 
-    # CREATE PAYMENT INFO
+    socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
+                    + "/card_by_user/" + str(user_id))
+    r = requests.get(socket_url)
+    payment = json.loads(r.content)
+    if "error" in payment:
+        return "User does not have payment information yet. Please enter your payment information before checking out."
+    payment_id = payment["payment_id"]
+
+    # CREATE TRANSACTION INFO
+    items_info_url = ("http://" + ITEMS_SERVICE_HOST +
+                            ITEMS_PORT + "/get_item")
+    transaction_url = ("http://" + PAYMENTS_SERVICE_HOST +
+                            PAYMENTS_PORT + "/transaction")
+
+    # getting current time to compare with auction end times
+    current_time = int(time.time())
+    successfully_bought = []
+    seen_auctions = []
+    for item in available_items:
+        item_info = requests.post(url = items_info_url, json = json.dumps({"item_id": item})).content
+        item_info = json.loads(item_info)
+        # for price, I need to figure out whether its an auction or a buy now
+        # transaction
+
+        # I have to call get auction by item id
+        auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                            AUCTIONS_PORT + "/auctions_by_item/" + item)
+        auctions = json.loads(requests.get(auction_url).content)
+        
+        total_price = None
+        for auction in auctions:
+            if auction["auction_id"] not in seen_auctions:
+                if auction["end_time"] < current_time:
+                    most_recent_bid_time = 0
+                    most_recent_buyer = None
+                    most_recent_price = None
+                    for bid in auction["bids"]:
+                        if bid["bid_time"] > most_recent_bid_time:
+                            most_recent_bid_time = bid["bid_time"]
+                            most_recent_buyer = bid["buyer_id"]
+                            most_recent_price = bid["price"]
+                    if most_recent_buyer == user_id:
+                        seen_auctions.append(auction["auction_id"])
+                        total_price = item_info["shipping"] + most_recent_price
+                        break
+
+        if not total_price:
+            total_price = float(item_info["price"]) + float(item_info["shipping"])
+            # also have to delete current auctions
+            for auction in auctions:
+                if auction["end_time"] > current_time and auction["start_time"] < current_time:
+                    auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                            AUCTIONS_PORT + "/auction/" + auction["auction_id"])
+                    requests.delete(url = auction_url)
+
+        transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
+                        "money": total_price, "quantity": 1}
+
+        r = requests.post(transaction_url, json = transaction)
+
+        successfully_bought.append(json.loads(r.content))
+
+
 
     # DELETE ALL ITEMS FROM CART
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
-                    ":3211" + "/EmptyCart")
-    r = requests.post(empty_cart_url, json = data_content)
-    return r.content
+                    CARTS_PORT + "/empty_cart")
+    user = {"user_id": user_id}
+    r = requests.post(empty_cart_url, json = user)
+
+    # return transaction information for successful transactions
+    return json.dumps(successfully_bought)
 
 
 

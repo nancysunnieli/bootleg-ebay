@@ -2,24 +2,35 @@ import axios from "axios";
 import { API_URL } from "../config";
 import AuthService from "./auth.service";
 
-export const getUserInfo = (user_id) => {
-    return axios.post(API_URL + "/Users/view_user", {
-        user_id,
-    });
+// export const getUserInfo = (user_id) => {
+//     return axios.post(API_URL + "/Users/view_user", {
+//         user_id,
+//     });
+// };
+
+const suspendAccount = async (user_id, suspended) => {
+    const response = await axios.put(API_URL + "users/suspend", { user_id });
+    console.log("response", response);
+    localStorage.setItem("user", JSON.stringify(response.data));
+    return response.data;
 };
 
-export const suspendAccount = (user_id) => {
-    return axios.post(API_URL + "/Users/suspend_account", { user_id });
+const modifyProfile = async (user_id, fields) => {
+    const response = await axios.put(API_URL + `users/user/${user_id}`, { ...fields });
+    localStorage.setItem("user", JSON.stringify(response.data));
+    return response.data;
 };
 
-export const modifyProfile = (user_id, fields) => {
-    return axios.post(API_URL + "/Users/modify_profile", { user_id, ...fields });
-};
-
-export const deleteAccount = async (user_id) => {
-    const response = await axios.post(API_URL + "Users/delete_account", {
-        user_id,
-    });
+const deleteAccount = async (user_id) => {
+    const response = await axios.delete(API_URL + `users/user/${user_id}`, { data: {} });
     AuthService.logout();
     return response.data;
 };
+
+const UserService = {
+    suspendAccount,
+    modifyProfile,
+    deleteAccount,
+};
+
+export default UserService;

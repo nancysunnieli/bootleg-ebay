@@ -1,4 +1,5 @@
 import json
+from bson.objectid import ObjectId
 
 class Item(object):
     """
@@ -19,8 +20,8 @@ class Item(object):
 
     def __init__(self, name = None, description = None, category = None, 
                 photos = None, sellerID = None, price = None, isFlagged = None, 
-                FlaggedReason = None, watchlist = None, availability = None, id = None):
-        self.availability = availability
+                FlaggedReason = None, watchlist = None, quantity = None, shipping = None, id = None):
+        self._quantity = quantity
         self._name = name
         self._description = description
         self._category = category
@@ -29,6 +30,7 @@ class Item(object):
         self._price = price
         self._isFlagged = isFlagged
         self._id = id
+        self._shipping = shipping
         if FlaggedReason == None:
             self._FlaggedReason = []
         else:
@@ -81,21 +83,29 @@ class Item(object):
         return self._watchlist
 
     @property
-    def available(self):
-        return self._availability
+    def quantity(self):
+        return self._quantity
+
+    @property
+    def shipping(self):
+        return self._shipping
     
-    def from_mongo(self, item, flagged_info):
+    def from_mongo(self, item, flagged_info, photo):
         if item == []:
             return
         self._name = item["name"]
         self._description = item["description"]
         self._category = item["category"]
-        self._photos = item["photos"]
+        self._photos = photo
         self._sellerID = item["sellerID"]
         self._price = item["price"]
-        self._isFlagged = item["price"]
-        self._watchlist = item["watchlist"]
-        self._availability = item["available"]
+        self._isFlagged = item["isFlagged"]
+        if tuple(item["watchlist"]) == tuple(["True"]):
+            self._watchlist = []
+        else:
+            self._watchlist = item["watchlist"]
+        self._quantity = item["quantity"]
+        self._shipping = item["shipping"]
         self._FlaggedReason = []
         if self._isFlagged:
             for info in flagged_info:
@@ -105,17 +115,18 @@ class Item(object):
     def to_mongo(self):
         return {"name": self.name, "description": self.description,
                 "category": self.category, "photos": self.photos,
-                "sellerID": self.price, "isFlagged": self.isFlagged,
-                "watchlist": self.watchlist, "available": self.available}
+                "sellerID": self.sellerID, "price": self.price, "isFlagged": self.isFlagged,
+                "watchlist": self.watchlist, "quantity": self.quantity, "shipping": self.shipping, "_id": self._id}
 
-    def modifyItem(self,
+    def modify_item(self,
                     new_name = None,
                     new_description = None,
                     new_photos = None,
                     new_price = None,
                     new_categories = None,
                     new_watchlist = None,
-                    available = None):
+                    quantity = None,
+                    shipping = None):
         """
         This modifies the specified attributes.
         The attributes that can be modified by this
@@ -134,10 +145,12 @@ class Item(object):
             self._category = new_categories
         if new_watchlist:
             self._watchlist = new_watchlist
-        if available:
-            self.available = available
+        if quantity:
+            self._quantity = quantity
+        if shipping:
+            self._shipping = shipping
     
-    def editCategories(self, new_categories):
+    def edit_categories(self, new_categories):
         self._category = new_categories
     
     def report_item(self, new_flag_reason):
@@ -145,38 +158,52 @@ class Item(object):
             self._isFlagged = True
         self._FlaggedReason.append(new_flag_reason)
 
-    def editAvailability(self):
-        if self.availability == False:
-            return "Item was already not available."
-        self.availability = False
+    def edit_quantity(self):
+        if self.quantity == 0:
+            return "Item is sold out."
+        self._quantity -= 1
         return "Successfully Put Lock On Item."
     
-    def addUserToWatchlist(self, user):
+    def add_user_to_watchlist(self, user):
         self._watchlist.append(user)
 
-    def matches_search(self, keywords):
+    def matches_search(self, keywords, category):
         """
         Returns back True if it matches the search.
         Returns back False if it does not.
         """
-        matches = False
-        for word in keywords:
-            if word in self.name or word in self.description:
-                matches = True
-                break
-        return matches
+        if keywords and category:
+            matches = False
+            for word in keywords:
+                if word in self.name or word in self.description:
+                    matches = True
+                    break
+            if category not in self.category:
+                matches = False
+            return matches
+        elif keywords:
+            matches = False
+            for word in keywords:
+                if word in self.name or word in self.description:
+                    matches = True
+                    break
+            return matches
+        elif category:
+            if category not in self.category:
+                return False
+            return True
 
 
-def Create_Item(name, description, category, photos, 
+def create_item(name, description, category, photos, 
                 sellerID, price, isFlagged, FlaggedReasons, 
-                Watchlist, Available,
+                Watchlist, Quantity,
                 Id):
     """
     This creates a new item of the item class and
     returns it
     """
     new_item = Item(name, description, category, photos, sellerID, 
-                    price, isFlagged, FlaggedReasons, Watchlist, Available, Id)
+                    price, isFlagged, FlaggedReasons, Watchlist, Quantity, Id)
     return new_item
 
 

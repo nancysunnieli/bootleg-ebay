@@ -1,6 +1,16 @@
 from abc import ABC, abstractmethod
 import json
+import copy
 from typing import Any, Dict, Optional
+
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
 
 class User(ABC):
     """Abstract class for the user
@@ -15,7 +25,12 @@ class User(ABC):
         self._user_id = user_id
         self._username = username
         self._password = password
-        self._user_info = {'email': None, 'suspended': False}
+        self._user_info = {
+            'email': None, 
+            'suspended': False, 
+            'is_admin': False,
+            'total_rating': None,
+            'number_of_ratings': None}
 
         for k in user_info.keys():
             if k not in self._user_info:
@@ -26,7 +41,7 @@ class User(ABC):
         # self._logged_in = False
 
         if user_info['email'] is None:
-            raise ValueError('You must provide an email!')
+            raise BadInputError('You must provide an email!')
 
 
     @property
@@ -55,13 +70,14 @@ class User(ABC):
         Returns
         """
 
-        user_info = {
-            'email': dict_['email'],
-            'suspended': dict_['suspended']
-        }
+        
+        user_info = copy.deepcopy(dict_)
+        del user_info['user_id']
+        del user_info['username']
+        del user_info['password']
 
         new_instance = cls(
-            user_id=dict_['id'],
+            user_id=dict_['user_id'],
             username=dict_['username'],
             password=dict_['password'],
             user_info=user_info
@@ -74,12 +90,12 @@ class User(ABC):
         """
 
         user_info = {
-            'id': self.user_id,
+            'user_id': self.user_id,
             'username': self.username,
-            'password': self.password,
-            'email': self.user_info['email'],
-            'suspended': self.user_info['suspended']
+            'password': self.password
         }
+
+        user_info.update(self.user_info)
 
         return user_info
 
@@ -91,7 +107,7 @@ class User(ABC):
 
     def _assert_not_suspended(self, operation):
         if self._user_info['suspended']:
-            raise ValueError('You cannot perform {} because you are suspended'.format(operation))
+            raise BadInputError('You cannot perform {} because you are suspended'.format(operation))
 
     def _assert_logged_in(self, operation):
         if self._logged_in is False:
@@ -120,22 +136,37 @@ class User(ABC):
         """
         self._logged_in = False
 
-    def suspend_account(self) -> None:
+    def suspend(self) -> None:
         """Suspend own account
         """
 
         self._user_info['suspended'] = True
 
+    def unsuspend(self) -> None:
+        self._user_info['suspended'] = False
+
+    def update_rating(self, rating) -> None:
+        """Update the rating. Rating has to be between 1 and 5 inclusively
+        """
+
+        if not isinstance(rating, int):
+            raise BadInputError('The rating must be an integer!')
+
+        if rating <= 0 or rating > 5:
+            raise BadInputError('The rating must be between 1 and 5 inclusively!')
+
+        if self._user_info['is_admin']:
+            raise BadInputError('You cannot rate an admin!')
+
+        self._user_info['total_rating'] += rating
+        self._user_info['number_of_ratings'] += 1
+
     def modify_profile(
         self, 
-        username: Optional[str] = None, 
-        password: Optional[str] = None, 
         user_info: Optional[Dict[str, Any]] = None) -> None:
         """Update the profile information
 
         Args:
-            username: Updated username
-            password: Updated password
             user_info: Updated user information
         """
 
@@ -143,12 +174,25 @@ class User(ABC):
         self._assert_not_suspended(operation=operation)
         # self._assert_logged_in(operation=operation)
     
-
-        if username is not None:
+        if 'username' in user_info:
+            username = user_info['username']
+            del user_info['username']
             self._username = username
+        else:
+            username = None
 
-        if password is not None:
+        if 'password' in user_info:
+            password = user_info['password']
+            del user_info['password']
             self._password = password
+        else:
+            password = None
+
+        if 'is_admin' in user_info:
+            raise BadInputError('You cannot modify admin priviledges!')
+
+        if 'suspended' in user_info and user_info['suspended'] is False:
+            raise BadInputError('You cannot unsuspend your own account!')
 
         if user_info is not None:
             for k in user_info.keys():

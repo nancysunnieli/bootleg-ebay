@@ -69,7 +69,7 @@ class TestUser(TestCase):
 
     def test_suspend_account(self):
         user = TestUser.init_user()
-        user.suspend_account()
+        user.suspend()
 
         self.assertTrue(user.user_info['suspended'])
 

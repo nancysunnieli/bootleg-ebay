@@ -5,8 +5,18 @@
 * https://igeorgiev.eu/python/tdd/python-unittest-database-applications/
 * https://www.w3schools.com/sql/sql_dates.asp
 
+
+# APIs
+
+* https://www.ibm.com/docs/ru/qradar-common?topic=overview-api-error-messages
+* https://www.w3schools.com/python/ref_requests_response.asp
+* https://medium.com/datasparq-technology/flask-api-exception-handling-with-custom-http-response-codes-c51a82a51a0f
+* https://metamug.com/article/rest-api-naming-best-practices.html
+
 # Commands
 
+
+* To rebuild: `docker-compose up --build`
 `docker-compose up -d users-db -d users-api`
 `docker-compose up -d payments-db -d payments-api`
 `docker-compose up -d auctions-db -d auctions-api `
@@ -22,7 +32,7 @@ Start mysql
 ```
 docker exec -it 0dfc203c9d89 bash
 mysql -uroot -pbootleg2 payments
-
+mysql -uroot -pbootleg users
 ```
 
 # MongoDB issues for M1 Mac

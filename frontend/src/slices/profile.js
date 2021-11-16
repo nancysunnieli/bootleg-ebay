@@ -1,8 +1,54 @@
-import { createSlice, createAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
+import UserService from "../services/user.service";
+import { setUser } from "./auth";
 
 const initialState = {
     visible: false,
+    isSaving: false,
 };
+
+export const modifyProfile = createAsyncThunk(
+    "auth/modifyProfile",
+    async ({ id, email, password }, thunkAPI) => {
+        console.log("Modify profile");
+        try {
+            const data = await UserService.modifyProfile(id, { email, password });
+            thunkAPI.dispatch(setUser(data));
+            thunkAPI.dispatch(setEditModalVisible(false));
+            return { user: data };
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const deleteAccount = createAsyncThunk("auth/deleteAccount", async (id, thunkAPI) => {
+    console.log("Delete account");
+    try {
+        const result = await UserService.deleteAccount(id);
+        window.location.reload();
+        return result;
+    } catch (error) {
+        const message = error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+});
+
+export const suspendAccount = createAsyncThunk(
+    "auth/suspendAccount",
+    async ({ id, suspended }, thunkAPI) => {
+        try {
+            const data = await UserService.suspendAccount(id, suspended);
+            thunkAPI.dispatch(setUser(data));
+            return { user: data };
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 
 const profileSlice = createSlice({
     name: "profile",
@@ -12,7 +58,22 @@ const profileSlice = createSlice({
             state.visible = action.payload;
         },
     },
-    extraReducers: {},
+    extraReducers: {
+        [modifyProfile.pending]: (state, action) => {
+            state.isSaving = true;
+        },
+        [modifyProfile.fulfilled]: (state, action) => {
+            state.isSaving = false;
+        },
+        [modifyProfile.rejected]: (state, action) => {
+            toast.error(`Oops, something went wrong ${action.payload}`);
+        },
+        [deleteAccount.pending]: (state, action) => {},
+        [deleteAccount.fulfilled]: (state, action) => {},
+        [deleteAccount.rejected]: (state, action) => {
+            toast.error(`Oops, something went wrong ${action.payload}`);
+        },
+    },
 });
 export const { setEditModalVisible } = profileSlice.actions;
 

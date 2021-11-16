@@ -1,111 +1,45 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import NavBar from "react-bootstrap/NavBar";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
-
-import Login from "./components/Login/Login";
-import Register from "./components/Register/Register";
-import Home from "./components/Home/Home";
-import Profile from "./components/Profile/Profile";
 import AdminDashboard from "./components/AdminDashboard/AdminDashboard";
-
-import { logout } from "./slices/auth";
-import PrivateRoute from "./components/Routing/PrivateRouter";
-import { ROLE_USER, ROLE_ADMIN } from "./constants";
-import Logout from "./components/Logout/Logout";
-import { useHistory } from "react-router-dom";
-import Items from "./components/Items/Items";
+import Auction from "./components/Auctions/Auction";
 import Auctions from "./components/Auctions/Auctions";
 import Cart from "./components/Cart/Cart";
-const NotFound = () => {
-    return <h1>Not found</h1>;
-};
+import Home from "./components/Home/Home";
+import Item from "./components/Items/Item";
+import Items from "./components/Items/Items";
+import Login from "./components/Login/Login";
+import Logout from "./components/Logout/Logout";
+import NavBar from "./components/NavBar/NavBar.js";
+import NotFound from "./components/NotFound/NotFound";
+import Profile from "./components/Profile/Profile";
+import Register from "./components/Register/Register";
+import PrivateRoute from "./components/Routing/PrivateRouter";
+import Splash from "./components/Splash/Splash";
+import { ROLE_ADMIN, ROLE_USER } from "./constants";
+import { checkLocalLogin } from "./slices/auth";
+
 const App = () => {
-    const [showAdminBoard, setShowAdminBoard] = useState(false);
-    const history = useHistory();
-    const { user: currentUser } = useSelector((state) => state.auth);
-    console.log("user", currentUser);
+    const { isLoggedIn } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
-    const logOut = useCallback(() => {
-        dispatch(logout());
+    const _checkLocalLogin = useCallback(() => {
+        dispatch(checkLocalLogin());
     }, [dispatch]);
 
     useEffect(() => {
-        if (currentUser) {
-            setShowAdminBoard(currentUser.is_admin);
-        } else {
-            setShowAdminBoard(false);
-        }
+        _checkLocalLogin();
+    }, [_checkLocalLogin]);
 
-        document.addEventListener("logout", () => {
-            logOut();
-        });
-
-        return () => {
-            document.removeEventListener("logout", () => {});
-        };
-    }, [currentUser, logOut]);
+    if (isLoggedIn == null) {
+        return <Splash />;
+    }
 
     return (
         <Router>
             <div>
-                <NavBar bg="light" expand="lg">
-                    <Container>
-                        <NavBar.Brand as={Link} to={"/home"}>
-                            Bootleg Ebay
-                        </NavBar.Brand>
-                        <NavBar.Toggle aria-controls="basic-navbar-nav" />
-                        <NavBar.Collapse id="basic-navbar-nav">
-                            <Nav className="me-auto">
-                                {currentUser && [
-                                    <Nav.Link as={Link} to="/home" key={0}>
-                                        Home
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/profile" key={1}>
-                                        Profile
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/items" key={2}>
-                                        Items
-                                    </Nav.Link>,
-                                    <Nav.Link as={Link} to="/auctions" key={3}>
-                                        Auctions
-                                    </Nav.Link>,
-                                ]}
-                                {currentUser ? (
-                                    <Nav.Link as={Link} to="/logout">
-                                        Logout
-                                    </Nav.Link>
-                                ) : (
-                                    [
-                                        <Nav.Link as={Link} to="/login" key={0}>
-                                            Login
-                                        </Nav.Link>,
-                                        <Nav.Link as={Link} to="/register" key={1}>
-                                            Register
-                                        </Nav.Link>,
-                                    ]
-                                )}
-                                {showAdminBoard && (
-                                    <Nav.Link as={Link} to="/admin">
-                                        Admin
-                                    </Nav.Link>
-                                )}
-                            </Nav>
-                            {currentUser && (
-                                <Nav>
-                                    <Nav.Link as={Link} to="/cart">
-                                        Cart
-                                    </Nav.Link>
-                                </Nav>
-                            )}
-                        </NavBar.Collapse>
-                    </Container>
-                </NavBar>
-
+                <NavBar />
                 <div className="container mt-3">
                     <Switch>
                         <Route exact path="/login" component={Login} />
@@ -126,11 +60,22 @@ const App = () => {
                         />
                         <PrivateRoute exact path="/items" component={Items} roles={[ROLE_USER]} />
                         <PrivateRoute
+                            path={`/items/:item_id`}
+                            component={Item}
+                            roles={[ROLE_USER]}
+                        />
+                        <PrivateRoute
                             exact
                             path="/auctions"
                             component={Auctions}
                             roles={[ROLE_USER]}
                         />
+                        <PrivateRoute
+                            path={`/auctions/:auction_id`}
+                            component={Auction}
+                            roles={[ROLE_USER]}
+                        />
+
                         <PrivateRoute exact path="/cart" component={Cart} roles={[ROLE_USER]} />
                         <PrivateRoute
                             exact

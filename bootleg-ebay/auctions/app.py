@@ -1,13 +1,29 @@
 import json
 import socket
 
-from flask import Flask, Response, request
+from flask import Flask, Response, request, jsonify
 
 
 import auctions_functions
+from auction import APIError
 
 app = Flask(__name__)
 socket_name = socket.gethostbyname(socket.gethostname())
+
+@app.errorhandler(500)
+def handle_exception(err):
+    """Return JSON instead of HTML for server error"""
+    response = {"error": str(err)}
+    return jsonify(response), 500
+
+@app.errorhandler(APIError)
+def handle_api_error(err):
+    """Return custom JSON when APIError"""
+    response = {"error": err.description, "message": ""}
+    if len(err.args) > 0:
+        response["message"] = err.args[0]
+        
+    return jsonify(response), err.code
 
 @app.route('/')
 def base():
@@ -16,44 +32,64 @@ def base():
                     mimetype = 'application/json')
 
 
-@app.route('/create_auction', methods=['POST'])
+@app.route('/auction', methods=['POST'])
 def create_auction():
     data = request.get_json()
     return auctions_functions.create_auction(data)
 
-@app.route('/get_auction', methods=['POST'])
-def get_auction():
-    data = request.get_json()
-    auction_id = data['_id']
+@app.route('/auction/<auction_id>', methods=['GET'])
+def get_auction(auction_id):
     return auctions_functions.get_auction(auction_id)
 
-@app.route('/view_current_auctions', methods=['POST'])
+@app.route("/auction/<auction_id>/max_bid", methods = ['GET'])
+def get_max_bid(auction_id):
+    return auctions_functions.get_max_bid(auction_id)
+
+
+@app.route('/auctions_by_item/<item_id>', methods=['GET'])
+def get_auctions_by_item_id(item_id):
+    return auctions_functions.get_auctions_by_item_id(item_id)
+
+@app.route('/auction_metrics', methods=['POST'])
+def get_auction_metrics():
+    data = request.get_json()
+    start = data['start']
+    end = data['end']
+    return auctions_functions.get_auction_metrics(start, end)
+
+
+@app.route('/finished_auctions', methods=['GET'])
+def view_finished_auctions():
+    return auctions_functions.view_finished_auctions()
+
+@app.route('/upcoming_auctions', methods=['GET'])
+def view_upcoming_auctions():
+    return auctions_functions.view_upcoming_auctions()
+
+@app.route('/current_auctions', methods=['GET'])
 def view_current_auctions():
     return auctions_functions.view_current_auctions()
 
-@app.route('/remove_auction', methods=['POST'])
-def remove_auction():
-    data = request.get_json()
-    auction_id = data['_id']
+@app.route('/auction/<auction_id>', methods=['DELETE'])
+def remove_auction(auction_id):
     return auctions_functions.remove_auction(auction_id)
 
 
-@app.route('/bids_by_user', methods=['POST'])
-def bids_by_user():
-    data = request.get_json()
-    return auctions_functions.bids_by_user(data['buyer_id'])
+@app.route('/bids/<user_id>', methods=['GET'])
+def user_bids(user_id):
+    return auctions_functions.user_bids(user_id)
 
-@app.route('/create_bid', methods=['POST'])
+@app.route('/bid', methods=['POST'])
 def create_bid():
     data = request.get_json()
-    auction_id = data['_id']
+    auction_id = data['auction_id']
     return auctions_functions.create_bid(auction_id, data['price'], data['buyer_id'])
 
-@app.route('/view_bids', methods=['POST'])
-def view_bids():
-    data = request.get_json()
-    auction_id = data['_id']
+@app.route('/<auction_id>/bids', methods=['GET'])
+def view_bids(auction_id):
+    # data = request.get_json()
+    # auction_id = data['auction_id']
     return auctions_functions.view_bids(auction_id)
 
 if __name__ == '__main__':
-    app.run(debug = True, port = 2222, host = socket_name)
+    app.run(debug = True, port = 2222, host = socket_name, threaded=True)
