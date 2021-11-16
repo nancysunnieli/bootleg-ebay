@@ -41,10 +41,11 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
         auction["start_time"] = int(row[1])
         auction["end_time"] = int(row[2])
         auction["item_id"] = row[3]
-        #auction["buy_now"] = row[4]
+        auction["buy_now"] = row[4]
         auction["seller_id"] = int(row[5])
-        auction["price"] = float(row[6])
+        auction["buy_now_price"] = float(row[6])
         auction["shipping"] = int(row[7])
+        auction["starting_price"] = int(row[8])
         auction["bids"] = []
         for bid in all_bids:
             if "AuctionID" in bid:

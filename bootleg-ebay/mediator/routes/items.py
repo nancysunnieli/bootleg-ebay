@@ -174,9 +174,11 @@ def remove_item():
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
     r = get_and_request(socket_url, 'get')
     auction_id = None
+    return r.content
     for auction in json.loads(r.content):
         if auction["item_id"] == item_id:
             auction_id = auction["auction_id"]
+    
     if auction_id:
         socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/bids")
         r = get_and_request(socket_url, 'get')
