@@ -6,7 +6,7 @@ from flask import Response
 
 from config import *
 
-# NOTE: don't use get_and_request for files under directory celery_tasks/
+# NOTE: don't use request.get_json() for celery tasks. This will create bugs
 # NOTE: when modifying celery tasks, you have to restart docker for your code to see changes
 @celery.shared_task(name='celery_tasks.add_together')
 def add_together(x, y):
@@ -126,5 +126,13 @@ def bid_alert(auction_id):
         requests.post(url = socket_url, json = data)
 
 
-    
-    
+@celery.shared_task(name='celery_tasks.bid_alert')   
+def watch_list_alert(auction_id):
+    """Execute this when an auction goes live and we want to alert the people watching the items
+    """
+    raise NotImplementedError
+    socket_url = AUCTIONS_URL + "/auction/{}".format(auction_id)
+    r = requests.get(url=socket_url, json=None)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    auction_info = r.json()
