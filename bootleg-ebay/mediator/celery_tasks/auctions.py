@@ -82,3 +82,49 @@ def alert_auction(auction_id, time_left):
 
         if not r.ok:
             return Response(response=r.text, status=r.status_code)
+
+@celery.shared_task(name='celery_tasks.bid_alert')
+def bid_alert(auction_id):
+    """Call this asynchronous task whenever some one places a bid
+    """
+
+    socket_url = AUCTIONS_URL + "/auction/{}".format(auction_id)
+    r = requests.get(url=socket_url, json=None)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    auction_info = r.json()
+
+    # send email to seller
+    socket_url = USERS_URL + "/user/{}".format(auction_info["seller_id"])
+    r = requests.get(url=socket_url, json=None)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    seller_email = r.json()["email"]
+
+    socket_url = NOTIFS_URL + "/seller_bid"
+    data = {"recipient": seller_email, "auction_id": auction_id}
+    r = requests.post(url=socket_url, json=data)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    # send email to buyers
+    buyer_ids = []
+    for bid in auction_info["bids"]:
+        buyer_ids.append(bid["buyer_id"])
+    buyer_ids = list(set(buyer_ids))
+
+    for b_id in buyer_ids:
+        socket_url = USERS_URL + "/user/{}".format(b_id)
+        r = requests.get(url=socket_url, json=None)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+
+        buyer_info = r.json()
+
+        socket_url = NOTIFS_URL + "/buyer_bid"
+        data = {"recipient": buyer_info["email"], "auction_id": auction_id}
+        requests.post(url = socket_url, json = data)
+
+
+    
+    

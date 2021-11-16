@@ -80,6 +80,7 @@ def create_auction():
 
 
     # alert buyers and sellers before auction ends
+    # TODO(jin): remove one second from this. One second is just for testing purposes
     times = [
         datetime.timedelta(days=1), 
         datetime.timedelta(hours=1), 
@@ -249,43 +250,8 @@ def create_bid():
     auction_id = data_content["auction_id"]
     # username = data_content["buyer_id"]
 
-
-    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
-    auction_info = get_and_request(socket_url, 'get').content
-    auction_info = json.loads(auction_info)
-
-    buyers = []
-    for bid in auction_info["bids"]:
-        buyers.append(bid["buyer_id"])
-
-    buyers = list(set(buyers))
-    seller_id = auction_info["seller_id"]
-
-    # now I must get the contact information of the buyers
-    # and seller
-    socket_url = (USERS_URL + "/user/{}".format(seller_id))
-    seller_info = json.loads(get_and_request(socket_url, 'get').content)
-    seller_email = seller_info["email"]
-
-    buyer_emails = []
-    for buyer in buyers:
-        socket_url = (USERS_URL + "/user/{}".format(buyer))
-        buyer_info = json.loads(get_and_request(socket_url, 'get').content)
-        buyer_emails.append(buyer_info["email"])
-
-    # next I need to get the item_id
-    auction_id = auction_info["auction_id"]
-
-    # send email to seller
-    socket_url = (NOTIFS_URL + "/seller_bid")
-    data = {"recipient": seller_email, "auction_id": auction_id}
-    result = requests.post(url = socket_url, json = data)
-
-    # send emails to buyers
-    socket_url = (NOTIFS_URL + "/buyer_bid")
-    for buyer_email in buyer_emails:
-        data = {"recipient": buyer_email, "auction_id": auction_id}
-        requests.post(url = socket_url, json = data)
+    result = current_app.celery.send_task(
+        'celery_tasks.bid_alert',args=[auction_id, ])
 
     # return new bid content
     return r.content
