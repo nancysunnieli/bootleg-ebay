@@ -97,10 +97,6 @@ def modify_item():
     else:
         photos = None
     
-    if "price" in data:
-        price = data["price"]
-    else:
-        price = None
     if "watchlist" in data:
         watchlist = data["watchlist"]
     else:
@@ -109,16 +105,11 @@ def modify_item():
         quantity = data["quantity"]
     else:
         quantity = None
-    if "shipping" in data:
-        shipping = data["shipping"]
-    else:
-        shipping = None
 
     return item_functions.modify_item(id, name,
                                     description, 
                                     category, photos, 
-                                    price, watchlist, quantity,
-                                    shipping)
+                                    watchlist, quantity)
 
 @app.route("/add_item", methods = ['POST'])
 def add_item():
@@ -128,12 +119,10 @@ def add_item():
     category = data["category"]
     photos = data["photos"]
     sellerID = data["sellerID"]
-    price = data["price"]
     quantity = data["quantity"]
-    shipping = data["shipping"]
 
     return item_functions.add_item(name, description, category,
-                                photos, sellerID, price, quantity, shipping)
+                                photos, sellerID, quantity)
 
 @app.route("/edit_categories", methods = ['POST'])
 def edit_categories():

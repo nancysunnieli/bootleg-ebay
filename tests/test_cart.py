@@ -23,7 +23,7 @@ class TestCart(TestCase):
 
         # add item it cart successfully
         url = self.base_url + "addition"
-        item = {'item_id': "618ecbd2864f5897415ff300",
+        item = {'item_id': "6193034be0f9a3f41d053c55",
                 'user_id': 40}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)

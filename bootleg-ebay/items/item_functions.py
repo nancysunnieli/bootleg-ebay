@@ -86,25 +86,22 @@ class ItemsDBManager:
     
     @classmethod
     def add_item(cls, name, description, category, photos, 
-                sellerID, price, quantity, shipping):
+                sellerID, quantity):
         """
         This adds an item to the items collection
         """
         items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         item = {"name": None, "description": None,
                 "category": None, "photos": None, "sellerID": None,
-                "price": None, "isFlagged": False, "watchlist": None, "quantity": None,
-                "shipping": None}
+                "isFlagged": False, "watchlist": None, "quantity": None}
         item["_id"] = ObjectId()
         item["name"] = name
         item["description"] = description
         item["category"] = category
         item["photos"] = photos
         item["sellerID"] = sellerID
-        item["price"] = price
         item["watchlist"] = []
         item["quantity"] = quantity
-        item["shipping"] = shipping
         result = items_collection.insert_one(item)
 
         if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
@@ -116,8 +113,8 @@ class ItemsDBManager:
 
     @classmethod
     def modify_item(cls, id, name = None, description = None,
-                category = None, photos = None, price = None,
-                watchlist = None, quantity = None, shipping = None):
+                category = None, photos = None,
+                watchlist = None, quantity = None):
         """
         With this function, I can modify the item
         that matches the given id.
@@ -141,18 +138,12 @@ class ItemsDBManager:
         if photos:
             new_photos = { "$set": { "photos": photos } }
             modifications.append(new_photos)
-        if price:
-            new_price = { "$set": { "price": price } }
-            modifications.append(new_price)
         if watchlist:
             new_watchlist = { "$set": { "watchlist": watchlist } }
             modifications.append(new_watchlist)
         if quantity:
             new_quantity = {"$set": {"quantity": quantity}}
             modifications.append(new_quantity)
-        if shipping:
-            new_shipping = {"$set": {"shipping": shipping}}
-            modifications.append(new_shipping)
         success = []
         failure = []
         for modification in modifications:
@@ -188,7 +179,6 @@ class ItemsDBManager:
             description = item["description"]
             category = item["category"]
             photos = item["photos"]
-            price = item["price"]
             sellerID = item["sellerID"]
             isFlagged = item["isFlagged"]
             FlaggedReason = []
@@ -200,10 +190,9 @@ class ItemsDBManager:
                 flags = {}
             watchlist = item["watchlist"]
             quantity = item["quantity"]
-            shipping = item["shipping"]
             all_items.append(items.Item(name, description, category, photos,
-                        sellerID, price, isFlagged, FlaggedReason,
-                        watchlist, quantity, shipping, id))
+                        sellerID, isFlagged, FlaggedReason,
+                        watchlist, quantity, id))
         return all_items
 
 
@@ -485,7 +474,7 @@ def add_user_to_watch_list(item_id, user_id):
     new_item.from_mongo(item, flags, photo)
     new_item.add_user_to_watchlist(user_id)
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None, None,
-                                    None, new_item.watchlist, None, None))
+                                    None, new_item.watchlist, None))
 
 def remove_item(item_id):
     """
@@ -520,8 +509,8 @@ def get_item(item_id):
     return json.dumps(new_item)
 
 def modify_item(item_id, name = None, description = None,
-                category = None, photos = None, price = None,
-                watchlist = None, quantity = None, shipping = None):
+                category = None, photos = None, 
+                watchlist = None, quantity = None):
     """
     This modifies the item
     """
@@ -532,7 +521,7 @@ def modify_item(item_id, name = None, description = None,
     new_item = items.Item()
     new_item.from_mongo(item, flags, photo)
     new_item.modify_item(name, description, photos,
-                        price, category, watchlist, quantity, shipping)
+                        category, watchlist, quantity)
 
     if name:
         new_name = new_item.name
@@ -550,10 +539,6 @@ def modify_item(item_id, name = None, description = None,
         new_photos = new_item.photos
     else:
         new_photos = None
-    if price:
-        new_price = new_item.price
-    else:
-        new_price = None
     if watchlist:
         new_watchlist = new_item.watchlist
     else:
@@ -562,25 +547,22 @@ def modify_item(item_id, name = None, description = None,
         new_quantity = new_item.quantity
     else:
         new_quantity = None
-    if shipping:
-        new_shipping = new_item.shipping
-    else:
-        new_shipping = None
+
     return json.dumps(ItemsDBManager.modify_item(item_id, new_name, new_description,
-                                        new_category, new_photos, new_price, 
-                                        new_watchlist, new_quantity, new_shipping))
+                                        new_category, new_photos,
+                                        new_watchlist, new_quantity))
 
 def add_item(name, description, category, 
-                photos, sellerID, price, quantity, shipping):
+                photos, sellerID, quantity):
     """
     This adds the item
     """
     new_item = items.Item(name, description, category,
-                            photos, sellerID, price, False,
-                            None, None, quantity, shipping, None)
+                            photos, sellerID, False,
+                            None, None, quantity, None)
     return json.dumps(ItemsDBManager.add_item(new_item.name, new_item.description,
                             new_item.category, new_item.photos,
-                            new_item.sellerID, new_item.price, new_item.quantity, new_item.shipping))
+                            new_item.sellerID, new_item.quantity))
 
 def edit_categories(item_id, new_categories):
     item_id = ObjectId(item_id)
@@ -592,7 +574,7 @@ def edit_categories(item_id, new_categories):
 
     new_item.edit_categories(new_categories)
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, new_item.category,
-                                None, None, None, None))
+                                None, None))
 
 def modify_quantity(item_id):
     item_id = ObjectId(item_id)
@@ -603,7 +585,7 @@ def modify_quantity(item_id):
 
     new_item.from_mongo(item, flags, photo)
     new_item.modify_item(None, None, None, None,
-                        None, None, new_item.quantity - 1, None)
+                        None, new_item.quantity - 1, None)
     return json.dumps(ItemsDBManager.modify_quantity(new_item.id))
 
 def get_categories():

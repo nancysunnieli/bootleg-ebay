@@ -19,11 +19,9 @@ class TestItem(TestCase):
             "name": "test",
             "description": "test",
             "category": ["Women's Clothing", "Shoes"],
-            "photos": "618c53ec8f3def6e8f10adb9",
+            "photos": "6193032ce0f9a3f41d053c37",
             "sellerID": 1,
-            "price": 29.75,
-            "quantity": 6,
-            "shipping": 5}
+            "quantity": 6}
         
         output = requests.post(url=url, json=item_info)
         self.assertTrue(output.ok)
