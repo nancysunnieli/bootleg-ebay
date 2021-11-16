@@ -22,7 +22,7 @@ class TestUser(TestCase):
         url = self.base_url + "user"
         user_info_params = {
             "username": user_name,
-            "email": "jinli7255@gmail.com",
+            "email": "bootlegebay@gmail.com",
             "password": password,
             "is_admin": False,
             "suspended": False
@@ -114,7 +114,7 @@ class TestUser(TestCase):
         url = self.base_url + "user"
         user_info_params = {
             "username": user_name,
-            "email": "jinli7255@gmail.com",
+            "email": "bootlegebay@gmail.com",
             "password": password,
             "is_admin": False,
             "suspended": False

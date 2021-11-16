@@ -22,7 +22,7 @@ class TestAuction(TestCase):
         url = self.users_url + "user"
         user_info_params = {
             "username": user_name,
-            "email": "jinli7255@gmail.com",
+            "email": "bootlegebay@gmail.com",
             "password": password,
             "is_admin": False,
             "suspended": False
