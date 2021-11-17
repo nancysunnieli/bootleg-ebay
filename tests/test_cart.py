@@ -56,7 +56,7 @@ class TestCart(TestCase):
 
         # I must create an auction for this item
         start_time = current_time()
-        auction_duration = 10
+        auction_duration = 8000
 
         auction_info = {
             "start_time": start_time,

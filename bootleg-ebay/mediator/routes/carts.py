@@ -161,7 +161,7 @@ def checkout():
                             PAYMENTS_PORT + "/transaction")
 
     # getting current time to compare with auction end times
-    current_time = int(time.time())
+    current_time = time.time()
     successfully_bought = []
     seen_auctions = []
     for item in available_items:
@@ -201,7 +201,7 @@ def checkout():
         if not total_price:
             # also have to delete current auctions
             for auction in auctions:
-                if auction["end_time"] > current_time and auction["start_time"] < current_time:
+                if auction["end_time"] >= current_time and auction["start_time"] <= current_time:
                     total_price = float(auction["buy_now_price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])

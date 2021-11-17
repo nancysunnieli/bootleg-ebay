@@ -19,7 +19,7 @@ class TestItem(TestCase):
             "name": "test",
             "description": "test",
             "category": ["Women's Clothing", "Shoes"],
-            "photos": "6193032ce0f9a3f41d053c37",
+            "photos": "6195389726e831839aaa22a3",
             "sellerID": 1,
             "quantity": 6}
         
