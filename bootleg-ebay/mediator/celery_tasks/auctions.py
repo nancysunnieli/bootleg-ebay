@@ -126,13 +126,36 @@ def bid_alert(auction_id):
         requests.post(url = socket_url, json = data)
 
 
-@celery.shared_task(name='celery_tasks.bid_alert')   
+@celery.shared_task(name='celery_tasks.watch_list_alert')   
 def watch_list_alert(auction_id):
     """Execute this when an auction goes live and we want to alert the people watching the items
     """
-    raise NotImplementedError
+    # raise NotImplementedError
     socket_url = AUCTIONS_URL + "/auction/{}".format(auction_id)
     r = requests.get(url=socket_url, json=None)
+
+    # if we can't find the auction because it has been deleted
+    if not r.ok:
+        return
+
+    auction_info = r.json()
+
+    url = ITEMS_URL + "/get_item"
+    item = {"item_id": auction_info['item_id']}
+    r = requests.post(url=url, json=item)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
-    auction_info = r.json()
+
+    # send email out to everyone on the item watch list
+    user_ids = item.json()['watchlist']
+    for user_id in user_ids:
+        socket_url = USERS_URL + "/user/{}".format(user_id)
+        r = requests.get(url=socket_url, json=None)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+
+        user_info = r.json()
+
+        socket_url = NOTIFS_URL + "/watchlist"
+        data = {"recipient": user_info["email"], "auction_id": auction_id}
+        requests.post(url=socket_url, json=data)

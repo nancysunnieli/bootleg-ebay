@@ -13,9 +13,9 @@ def base():
     
 
 @app.route('/email', methods=['POST'])
-def SendEmail():
+def send_email():
     data = request.get_json()
-    return notifs_functions.SendEmail(data)
+    return notifs_functions.send_email(data)
 
 @app.route('/watchlist', methods = ['POST'])
 def watchlist():

@@ -90,6 +90,10 @@ def create_auction():
         'celery_tasks.end_auction_actions',args=[r_json['auction_id'],],
         eta=end_time)
 
+    result = current_app.celery.send_task(
+        'celery_tasks.watch_list_alert',args=[r_json['auction_id'],],
+        eta=start_time)
+
 
     # alert buyers and sellers before auction ends
     # TODO(jin): remove one second from this. One second is just for testing purposes
