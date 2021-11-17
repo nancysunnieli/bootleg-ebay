@@ -9,9 +9,9 @@ from config import *
 from utils import id_generator, current_time
 import logging
 import sys
-logging.basicConfig( stream=sys.stderr )
-logging.getLogger( "AuctionTest.debug" ).setLevel( logging.DEBUG )
-log = logging.getLogger( "AuctionTest.debug" )
+# logging.basicConfig( stream=sys.stderr )
+# logging.getLogger( "AuctionTest.debug" ).setLevel( logging.DEBUG )
+# log = logging.getLogger( "AuctionTest.debug" )
 
 class TestAuction(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, AUCTIONS_NAME)
@@ -48,9 +48,7 @@ class TestAuction(TestCase):
             "category": ["Women's Clothing", "Shoes"],
             "photos": "618c53ec8f3def6e8f10adb9",
             "sellerID": 10,
-            "price": 29.75,
-            "quantity": 6,
-            "shipping": 5}
+            "quantity": 6}
         
         output = requests.post(url=url, json=item_info)
         self.assertTrue(output.ok)
@@ -99,6 +97,10 @@ class TestAuction(TestCase):
             "end_time": start_time + auction_duration,
             "item_id": item_id,
             "seller_id": seller_id,
+            'shipping': 10.0,
+            'buy_now': True,
+            'buy_now_price': 25.0,
+            'starting_price': 5.0,
             "bids": []
         }
 
@@ -183,7 +185,6 @@ class TestAuction(TestCase):
         for b_id in [buyer_id1, buyer_id2]:
             url = self.base_url + "bids/{}".format(b_id)
             output = requests.get(url=url, json=None)
-            log.debug( "wtf %r %r", b_id, output )
     
             output_json = output.json()
             self.assertGreaterEqual(len(output_json), 1)

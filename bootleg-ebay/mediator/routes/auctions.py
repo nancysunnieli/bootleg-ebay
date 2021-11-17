@@ -20,9 +20,18 @@ _create = {
         'end_time': {'type': 'number'},
         'item_id': {'type': 'string'},
         'seller_id': {'type': 'integer'},
-        'bids': {'type': 'array'}
+        'bids': {'type': 'array'},
+        'shipping': {'type': 'number'},
+
+        'buy_now': {'type': 'boolean'},
+        'buy_now_price': {'type': 'number'},
+        'starting_price': {'type': 'number'},
     },
-    'required': ['start_time', 'end_time', 'item_id', 'seller_id']
+    'required': [
+        'start_time', 'end_time', 'item_id', 
+        'seller_id', 
+        'shipping', 
+        'buy_now', 'buy_now_price', 'starting_price']
 }
 
 _auction = {
@@ -69,6 +78,9 @@ def create_auction():
     socket_url = (AUCTIONS_URL + "/auction")
     r = get_and_request(socket_url, 'post')
     
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+        
     r_json = r.json()
 
     start_time = datetime.datetime.fromtimestamp(r_json['start_time'])
@@ -97,9 +109,6 @@ def create_auction():
         result = current_app.celery.send_task(
             'celery_tasks.alert_auction',args=[r_json['auction_id'], time_strs[i]],
             eta=eta)
-
-    if not r.ok:
-        return Response(response=r.text, status=r.status_code)
 
     return r.content
 

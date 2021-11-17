@@ -137,13 +137,21 @@ class Auction:
             'start_time': None, # DateTime
             # end time of the auction
             'end_time': None, # DateTime
+
+            'shipping': None,
+            'buy_now': None,
+            'buy_now_price': None,
+            'starting_price': None
         }
 
         for k in auction_info.keys():
             if k not in self._auction_info:
                 raise ValueError('You cannot have key:' + k + ' for `auction_info`')
-
+        
         self._auction_info.update(auction_info)
+
+        if self._auction_info['buy_now_price'] < self._auction_info['starting_price']:
+            raise BadInputError('Buy now price must be greater than starting price!')
 
 
     @classmethod
@@ -229,8 +237,10 @@ class Auction:
         if auction_info['end_time'] < bid.bid_time:
             raise BadInputError('You cannot place a bid on an auction that has finished.')
 
-        
         highest_price, latest_bid = self.previous_bid()
+
+        if bid.price < self._auction_info['starting_price']:
+            raise BadInputError('The bid must be greater or equal to the starting price.')
 
         if bid.price > highest_price and bid.bid_time > latest_bid:
             self._bids.append(bid)
