@@ -473,7 +473,7 @@ def add_user_to_watch_list(item_id, user_id):
     new_item = items.Item()
     new_item.from_mongo(item, flags, photo)
     new_item.add_user_to_watchlist(user_id)
-    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None, None,
+    return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None,
                                     None, new_item.watchlist, None))
 
 def remove_item(item_id):
