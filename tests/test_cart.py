@@ -53,6 +53,28 @@ class TestCart(TestCase):
 
 
         # checkout
+
+        # I must create an auction for this item
+        start_time = current_time()
+        auction_duration = 10
+
+        auction_info = {
+            "start_time": start_time,
+            "end_time": start_time + auction_duration,
+            "item_id": "61945d45d2b33ab0d2bbb75a",
+            "seller_id": 7,
+            'shipping': 10.0,
+            'buy_now': True,
+            'buy_now_price': 25.0,
+            'starting_price': 5.0,
+            "bids": []
+        }
+
+        url = MEDIATOR_LINK + "/auctions/auction"
+        output = requests.post(url=url, json=auction_info)
+        self.assertTrue(output.ok)
+
+
         url = self.base_url + "checkout"
         output = requests.post(url=url, json=user)
 
