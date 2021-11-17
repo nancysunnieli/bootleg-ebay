@@ -55,12 +55,12 @@ class TestCart(TestCase):
         # checkout
 
         # I must create an auction for this item
-        start_time = current_time() - 100
-        auction_duration = 8000
+        start_time = current_time() - 20000
+        auction_duration = 100000
 
         auction_info = {
-            "start_time": start_time,
-            "end_time": start_time + auction_duration,
+            "start_time": int(start_time),
+            "end_time": int(start_time + auction_duration),
             "item_id": "619538ad26e831839aaa22c1",
             "seller_id": 7,
             'shipping': 10.0,
