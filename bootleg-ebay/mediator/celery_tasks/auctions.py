@@ -141,7 +141,7 @@ def watch_list_alert(auction_id):
     auction_info = r.json()
 
     url = ITEMS_URL + "/get_item"
-    item = {"item_id": auction_info['item_id']}
+    item = json.dumps({"item_id": auction_info['item_id']})
     r = requests.post(url=url, json=item)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
