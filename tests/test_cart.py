@@ -53,6 +53,7 @@ class TestCart(TestCase):
 
 
         # checkout
+
         # I must create an auction for this item
         start_time = current_time()
         auction_duration = 10
@@ -72,6 +73,7 @@ class TestCart(TestCase):
         url = MEDIATOR_LINK + "/auctions/auction"
         output = requests.post(url=url, json=auction_info)
         self.assertTrue(output.ok)
+
 
         url = self.base_url + "checkout"
         output = requests.post(url=url, json=user)
