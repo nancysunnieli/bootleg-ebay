@@ -15,33 +15,20 @@ class TestCart(TestCase):
         
         # create cart successfully
         url = self.base_url + "cart"
-        user = {"user_id" : 40}
+        user = {"user_id" : 400}
         output = requests.post(url = url, json = user)
         self.assertTrue(output.ok)
 
         cart_id = output.json()["_id"]
 
-        # add item it cart successfully
+        # add item, get cart, then remove it
         url = self.base_url + "addition"
-        item = {'item_id': "6193034be0f9a3f41d053c55",
-                'user_id': 40}
+        item = {'user_id': 400, 'item_id': "61945d45d2b33ab0d2bbb75a"}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
-        # get cart
-        url = self.base_url + "cart/%s" % str(40)
+        url = self.base_url + "cart/%s" % str(400)
         output = requests.get(url=url)
-        self.assertTrue(output.ok)
-
-
-        # checkout
-        url = self.base_url + "checkout"
-        output = requests.post(url=url, json=user)
-
-        # add item then remove it
-        url = self.base_url + "addition"
-        item = {'user_id': 40, 'item_id': "618ecbd2864f5897415ff300"}
-        output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
         url = self.base_url + "removal"
@@ -54,5 +41,22 @@ class TestCart(TestCase):
         self.assertTrue(output.ok)
 
         url = self.base_url + "empty"
+        output = requests.post(url = url, json = user)
+        self.assertTrue(output.ok)
+
+        # add item to cart successfully
+        url = self.base_url + "addition"
+        item = {'item_id': "61945d45d2b33ab0d2bbb75a",
+                'user_id': 400}
+        output = requests.post(url = url, json = item)
+        self.assertTrue(output.ok)
+
+
+        # checkout
+        url = self.base_url + "checkout"
+        output = requests.post(url=url, json=user)
+
+        # remove cart completely
+        url = self.base_url + "remove_cart"
         output = requests.post(url = url, json = user)
         self.assertTrue(output.ok)

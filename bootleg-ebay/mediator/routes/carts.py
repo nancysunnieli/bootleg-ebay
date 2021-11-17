@@ -202,7 +202,7 @@ def checkout():
             # also have to delete current auctions
             for auction in auctions:
                 if auction["end_time"] > current_time and auction["start_time"] < current_time:
-                    total_price = float(auction["price"]) + float(auction["shipping"])
+                    total_price = float(auction["buy_now_price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
                     r = requests.delete(url = auction_url)
