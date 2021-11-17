@@ -39,6 +39,16 @@ _user = {
     'required': ['user_id']
 }
 
+@carts_api.route("/remove_cart", methods = ['POST'])
+@expects_json(_user)
+def remove_cart():
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
+                    CARTS_PORT + "/remove_cart")
+    data_content = request.get_json()
+    r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    return r.content
 
 @carts_api.route("/cart", methods = ['POST'])
 @expects_json(_user)
@@ -58,6 +68,8 @@ def add_item_to_cart():
                     CARTS_PORT + "/add_item_to_cart")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/removal", methods = ['POST'])
@@ -77,6 +89,8 @@ def get_items_from_cart(user_id):
                     CARTS_PORT + "/get_items_from_cart")
     data_content = {"user_id": int(user_id)}
     r = requests.post(url = socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     # getting actual items from item_ids
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/get_item")
@@ -84,6 +98,8 @@ def get_items_from_cart(user_id):
     for item_id in json.loads(r.content):
         data_content = {"item_id": item_id}
         r = requests.post(url = socket_url, json = json.dumps(data_content))
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
         all_items.append(json.loads(r.content))
 
     return json.dumps(all_items)
@@ -95,6 +111,8 @@ def empty_cart():
                     CARTS_PORT + "/empty_cart")
     data_content = request.get_json()
     r = requests.post(socket_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 @carts_api.route("/checkout", methods = ['POST'])
@@ -104,7 +122,10 @@ def checkout():
     data_content = request.get_json()
     get_items_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/get_items_from_cart")
-    items = requests.post(url = get_items_url, json = data_content).content
+    r = requests.post(url = get_items_url, json = data_content)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    items = r.content
 
     items = json.loads(items)
     # checks availability of all items
@@ -114,18 +135,16 @@ def checkout():
     unavailable_items = []
     for item in items:
         item_dict = {"item_id" : item}
-        availability = (requests.post(url = items_availability_url, data = item_dict)).content
-        if availability == "Was unable to adjust availability. Item is no longer available.":
+        r = requests.post(url = items_availability_url, json = item_dict)
+        if not r.ok:
             unavailable_items.append(item)
         else:
             available_items.append(item)
-
     # get user_id from username
     user_id = data_content["user_id"]
 
 
     # GET CREDIT CARD INFO
-
     socket_url = ("http://" + PAYMENTS_SERVICE_HOST + PAYMENTS_PORT
                     + "/card_by_user/" + str(user_id))
     r = requests.get(socket_url)
@@ -133,6 +152,7 @@ def checkout():
     if "error" in payment:
         return "User does not have payment information yet. Please enter your payment information before checking out."
     payment_id = payment["payment_id"]
+
 
     # CREATE TRANSACTION INFO
     items_info_url = ("http://" + ITEMS_SERVICE_HOST +
@@ -145,7 +165,10 @@ def checkout():
     successfully_bought = []
     seen_auctions = []
     for item in available_items:
-        item_info = requests.post(url = items_info_url, json = json.dumps({"item_id": item})).content
+        r = requests.post(url = items_info_url, json = json.dumps({"item_id": item}))
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+        item_info = r.content
         item_info = json.loads(item_info)
         # for price, I need to figure out whether its an auction or a buy now
         # transaction
@@ -153,7 +176,10 @@ def checkout():
         # I have to call get auction by item id
         auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auctions_by_item/" + item)
-        auctions = json.loads(requests.get(auction_url).content)
+        r = requests.get(auction_url)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+        auctions = json.loads(r.content)
         
         total_price = None
         for auction in auctions:
@@ -179,13 +205,17 @@ def checkout():
                     total_price = float(auction["price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
-                    requests.delete(url = auction_url)
+                    r = requests.delete(url = auction_url)
+                    if not r.ok:
+                        return Response(response=r.text, status=r.status_code)
                     break
 
         transaction = {"user_id": user_id, "payment_id": payment_id, "item_id": item,
                         "money": total_price, "quantity": 1}
 
         r = requests.post(transaction_url, json = transaction)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
 
         successfully_bought.append(json.loads(r.content))
 
@@ -195,7 +225,10 @@ def checkout():
     empty_cart_url = ("http://" + CARTS_SERVICE_HOST +
                     CARTS_PORT + "/empty_cart")
     user = {"user_id": user_id}
+
     r = requests.post(empty_cart_url, json = user)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
 
     # return transaction information for successful transactions
     return json.dumps(successfully_bought)
