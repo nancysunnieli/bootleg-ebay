@@ -53,6 +53,8 @@ services:
       - ./bootleg-ebay/users/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3307:3306
+    logging:
+      driver: none
 
   users-api:
     # take the build from Dockerfile
@@ -74,6 +76,8 @@ services:
       - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3309:3306
+    logging:
+      driver: none
 
   payments-api:
     # take the build from Dockerfile
@@ -95,6 +99,8 @@ services:
       - ./bootleg-ebay/advertisements/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3308:3306
+    logging:
+      driver: none
 
   items-db:
     image: mongo:latest
@@ -106,18 +112,20 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/items-db:/data/db
+    logging:
+      driver: none
 
   items-db-mongo-express:
-     image: mongo-express
-     restart: always
-     depends_on:
-       - items-db
-     ports:
-       - 8081:8081
-     environment:
-       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@items-db:27017/
+    image: mongo-express
+    restart: always
+    depends_on:
+      - items-db
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@items-db:27017/
 
   notifs-db:
     image: mongo:latest
@@ -129,18 +137,20 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/notifs-db:/data/db
+    logging:
+      driver: none
 
   notifs-db-mongo-express:
-     image: mongo-express
-     depends_on:
-       - notifs-db
-     restart: always
-     ports:
-       - 8082:8081
-     environment:
-       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
+    image: mongo-express
+    depends_on:
+      - notifs-db
+    restart: always
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
 
   notifs-api:
     build: ./bootleg-ebay/notifs/
@@ -161,18 +171,20 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/carts-db:/data/db
+    logging:
+      driver: none
 
   carts-db-mongo-express:
-     image: mongo-express
-     depends_on:
-       - carts-db
-     restart: always
-     ports:
-       - 8084:8081
-     environment:
-       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
+    image: mongo-express
+    depends_on:
+      - carts-db
+    restart: always
+    ports:
+      - 8084:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
 
   auctions-db:
     image: mongo:latest
@@ -184,18 +196,20 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/auctions-db:/data/db
+    logging:
+      driver: none
 
   auctions-db-mongo-express:
-     image: mongo-express
-     depends_on:
-       - auctions-db
-     restart: always
-     ports:
-       - 8083:8081
-     environment:
-       ME_CONFIG_MONGODB_ADMINUSERNAME: root
-       ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
+    image: mongo-express
+    depends_on:
+      - auctions-db
+    restart: always
+    ports:
+      - 8083:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
 
   auctions-api:
     build: ./bootleg-ebay/auctions/
