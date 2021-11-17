@@ -42,6 +42,12 @@ def empty_cart():
     user_id = data["user_id"]
     return carts_functions.empty_cart(user_id)
 
+@app.route('/remove_cart', methods = ['POST'])
+def remove_cart():
+    data = request.get_json()
+    user_id = data["user_id"]
+    return carts_functions.remove_cart(user_id)
+
 
 if __name__ == '__main__':
     app.run(debug = True, port = 3211, host = socket.gethostbyname(socket.gethostname()), threaded=True)
