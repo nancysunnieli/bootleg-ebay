@@ -8,6 +8,14 @@ import uuid
 from pymongo import MongoClient
 import Cart
 
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
+
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
 
 class CartsDBManager:
     @classmethod
@@ -37,7 +45,7 @@ class CartsDBManager:
                 cart["_id"] = str(cart["_id"])
                 return cart
         else:
-             return "Cart was not successfully Created. Please Try Again."
+             raise BadInputError("Cart was not successfully Created. Please Try Again.")
 
     @classmethod
     def add_item_to_cart(cls, user_id, item_id):
@@ -51,13 +59,13 @@ class CartsDBManager:
         result = carts_collection.update_one(query, modification)
 
         if len(list(carts_collection.find(query))) == 0:
-            return "User Does Not Exist."
+            raise BadInputError("User Does Not Exist.")
         if result.modified_count > 0:
             return "Successfully added item to Shopping Cart."
         elif item_id in set(list(carts_collection.find(query))[0]["items"]):
-            return "Item was already in Shopping Cart."
+            raise BadInputError("Item was already in Shopping Cart.")
         else:
-            return "Addition Failed. Please try again."
+            raise BadInputError("Addition Failed. Please try again.")
 
     @classmethod
     def delete_item_from_cart(cls, user_id, item_id):
@@ -71,13 +79,13 @@ class CartsDBManager:
         result = carts_collection.update_one(query, modification)
 
         if len(list(carts_collection.find(query))) == 0:
-                return "User Does Not Exist."
+            raise BadInputError("User Does Not Exist.")
         if result.modified_count > 0:
             return "Successfully removed item to Shopping Cart."
         elif item_id not in set(list(carts_collection.find(query))[0]["items"]):
-            return "Item was orginally not in Shopping Cart."
+            raise BadInputError("Item was orginally not in Shopping Cart.")
         else:
-            return "Removal Failed. Please try again."
+            raise BadInputError("Removal Failed. Please try again.")
 
     @classmethod
     def get_items_from_cart(cls, user_id):
@@ -101,6 +109,13 @@ class CartsDBManager:
         modification = { "$set": {"items" : [] }}
         result = carts_collection.update_one(query, modification)
         return "Successfully Emptied Cart!"
+    
+    @classmethod
+    def remove_cart(cls, user_id):
+        carts_collection = cls._init_carts_collection()
+        query = {"user_id": user_id}
+        result = carts_collection.delete_many(query)
+        return "Successfully Removed Cart"
     
 
 
@@ -168,6 +183,12 @@ def empty_cart(user_id):
     dict_object = shopping_cart.to_mongo()
 
     return CartsDBManager.empty_cart(dict_object["user_id"])
+
+def remove_cart(user_id):
+    """
+    This removes the cart
+    """
+    return CartsDBManager.remove_cart(user_id)
     
 
 

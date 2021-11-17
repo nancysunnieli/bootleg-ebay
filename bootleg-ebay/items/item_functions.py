@@ -9,7 +9,14 @@ import items
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+class APIError(Exception):
+    """All custom API Exceptions"""
+    pass 
 
+class BadInputError(APIError):
+    """Custom bad input error class."""
+    code = 400
+    description = "Bad input Error"
 
 class ItemsDBManager:
     @classmethod
@@ -82,7 +89,7 @@ class ItemsDBManager:
         if result.modified_count > 0:
             return "Change was Successful!"
         else:
-            return "Change was not Successful. Please Try Again."
+            raise BadInputError("Change was not Successful. Please Try Again.")
     
     @classmethod
     def add_item(cls, name, description, category, photos, 
@@ -109,7 +116,7 @@ class ItemsDBManager:
             item[0]["_id"] = str(item[0]["_id"])
             return item[0]
         else:
-            return "Item was not successfully inserted. Please Try Again."
+            raise BadInputError("Item was not successfully inserted. Please Try Again.")
 
     @classmethod
     def modify_item(cls, id, name = None, description = None,
@@ -209,7 +216,7 @@ class ItemsDBManager:
         if len(list(flagged_items_collection.find({"itemID" : item_id, "FlagReason": flag_reason}))) > 0:
             return "Flag Successfully Added!"
         else:
-            return "Flag Failure. Please Try Again."
+            raise BadInputError("Flag Failure. Please Try Again.")
 
 
     @classmethod
@@ -229,7 +236,7 @@ class ItemsDBManager:
         if (result == "Flag Successfully Added!"):
             return "Item Reported Successfully!"
         else:
-            return "Item Report Failed. Please Try Again."
+            raise BadInputError("Item Report Failed. Please Try Again.")
 
     @classmethod
     def remove_item(cls, id):
@@ -247,7 +254,7 @@ class ItemsDBManager:
             and len(list(flagged_items_collection.find(find_flags))) == 0):
             return "Item Successfully Deleted."
         else:
-            return "Item Was Not Deleted! Please Try Again."
+            raise BadInputError("Item Was Not Deleted! Please Try Again.")
 
     @classmethod
     def add_user_to_watch_list(cls, id, user_id):
@@ -260,13 +267,13 @@ class ItemsDBManager:
         result = items_collection.update_one(query, modification)
 
         if len(list(items_collection.find(query))) == 0:
-            return "Item was not in the database."
+            raise BadInputError("Item was not in the database.")
         if result.modified_count > 0:
             return "Successfully added user to Watchlist."
         elif user_id in set(list(items_collection.find(query))[0]["watchlist"]):
-            return "User was already in Watchlist."
+            raise BadInputError("User was already in Watchlist.")
         else:
-            return "Addition Failed. Please try again."
+            raise BadInputError("Addition Failed. Please try again.")
 
     @classmethod
     def search_item(cls, keywords, category):
@@ -315,12 +322,14 @@ class ItemsDBManager:
         query = {"_id" : item_id}
         item = list(items_collection.find(query))
         quantity = item[0]["quantity"]
+        if quantity < 1:
+            raise BadInputError("Was unable to adjust quantity. Item is sold out.")
         modification = { "$set": {"quantity" : quantity - 1 }}
         result = items_collection.update_one(query, modification)
         if result.modified_count > 0:
             return "Successfully adjusted quantity."
         else:
-            return "Was unable to adjust quantity. Item is sold out."
+            raise BadInputError("Was unable to adjust quantity. Item is sold out.")
 
     @classmethod
     def get_flag_reasons(cls, item_id):
@@ -368,7 +377,7 @@ class ItemsDBManager:
         if result.modified_count > 0:
             return "Successfully added category!"
         else:
-            return "Was unable to add category. The category either exists, or you should try again later."
+            raise BadInputError("Was unable to add category. The category either exists, or you should try again later.")
     
     @classmethod
     def remove_category(cls, category):
@@ -384,7 +393,7 @@ class ItemsDBManager:
         if result.modified_count > 0:
             return "Successfully removed category!"
         else:
-            return "Was unable to remove category. The category either exists, or you should try again later."      
+            raise BadInputError("Was unable to remove category. The category either exists, or you should try again later.")      
 
 
 
@@ -585,7 +594,7 @@ def modify_quantity(item_id):
 
     new_item.from_mongo(item, flags, photo)
     new_item.modify_item(None, None, None, None,
-                        None, new_item.quantity - 1, None)
+                        None, new_item.quantity - 1)
     return json.dumps(ItemsDBManager.modify_quantity(new_item.id))
 
 def get_categories():

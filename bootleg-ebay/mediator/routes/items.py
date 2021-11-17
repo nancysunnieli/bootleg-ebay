@@ -126,10 +126,13 @@ def view_all_items():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/view_all_items")
     data_content = request.get_json()
-    r = requests.post(url = socket_url, json = data_content).content
+    r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
 
     all_items = []
-    for item in json.loads(r):
+    for item in json.loads(r.content):
         all_items.append(item)
     return json.dumps(all_items)
 
@@ -140,6 +143,10 @@ def view_flagged_items():
                      ITEMS_PORT + "/view_flagged_items")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -150,6 +157,10 @@ def search_item():
                      ITEMS_PORT + "/search_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -160,6 +171,10 @@ def add_user_to_watch_list():
                      ITEMS_PORT + "/add_user_to_watch_list")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -168,13 +183,14 @@ def add_user_to_watch_list():
 def remove_item():
     
     # getting auction name
+    # commenting this out until auctions starts running
+    """
     data_content = request.get_json()
     item_id = data_content["item_id"]
 
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
     r = get_and_request(socket_url, 'get')
     auction_id = None
-    return r.content
     for auction in json.loads(r.content):
         if auction["item_id"] == item_id:
             auction_id = auction["auction_id"]
@@ -184,12 +200,15 @@ def remove_item():
         r = get_and_request(socket_url, 'get')
         if len(r.content) != 0:
             return "There are already bids on this item! It cannot be deleted"
-    
+    """
     data_content = request.get_json()
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/remove_item")
     
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
     return r.content
 
 
@@ -200,6 +219,10 @@ def report_item():
                      ITEMS_PORT + "/report_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -210,6 +233,10 @@ def get_item():
                      ITEMS_PORT + "/get_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = json.dumps(data_content))
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -220,6 +247,10 @@ def modify_item():
                     ITEMS_PORT + "/modify_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -230,6 +261,10 @@ def add_item():
                     ITEMS_PORT + "/add_item")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -240,6 +275,10 @@ def edit_categories():
                     ITEMS_PORT + "/edit_categories")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -250,6 +289,10 @@ def modify_quantity():
                     ITEMS_PORT + "/lock")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -258,6 +301,10 @@ def get_categories():
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                     ITEMS_PORT + "/categories")
     r = requests.get(url = socket_url)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 
@@ -268,6 +315,10 @@ def add_category():
                     ITEMS_PORT + "/add_category")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
 @items_api.route("/category_removal", methods = ['POST'])
@@ -277,5 +328,9 @@ def remove_category():
                     ITEMS_PORT + "/remove_category")
     data_content = request.get_json()
     r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
     return r.content
 
