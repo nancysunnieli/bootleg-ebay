@@ -177,11 +177,18 @@ def update_rating(user_id):
 
 
 @users_api.route("/user/<user_id>", methods = ['DELETE'])
-@expects_json(_none_schema)
 def delete_account(user_id):
     socket_url = USERS_URL + "/user/{}".format(user_id)
     r = get_and_request(socket_url, 'delete')
     if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+    
+    # removing cart
+    socket_url = ("http://" + CARTS_SERVICE_HOST +
+                    CARTS_PORT + "/remove_cart")
+    data_content = {"user_id": int(user_id)}
+    cart = requests.post(url = socket_url, json = data_content)
+    if not cart.ok:
         return Response(response=r.text, status=r.status_code)
 
     return r.content

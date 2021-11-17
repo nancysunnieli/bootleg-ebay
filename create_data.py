@@ -107,12 +107,12 @@ def items():
         description = get_random_words(30, " ")
         categories = get_random_categories(3)
         photos = random.choice(all_photos)
-        seller_id = random.choice(list(range(0, 31)))
+        seller_id = random.choice(list(range(1, 31)))
         
         isFlagged = False
         watch_list = []
         while len(watch_list) != 3:
-            new = random.choice(list(range(0, 31)))
+            new = random.choice(list(range(1, 31)))
             if new not in watch_list:
                 watch_list.append(new)
         quantity = random.choice(range(1, 11))
@@ -300,7 +300,7 @@ def bids():
             existing_bids[itemid] = {}
         existing_bids[itemid]["Time"] = timestamp
         existing_bids[itemid]["Amount"] = amount
-        userid = random.choice(list(range(0, 31)))
+        userid = random.choice(list(range(1, 31)))
         all_bids.append([bid_id, auctionID, timestamp, amount, userid])
     
     with open('bids.csv', 'w', newline = "") as f:
@@ -376,7 +376,7 @@ def notifications():
         timestamp = generate_random_date(datetime.datetime(2021, 10, 23, 0, 0), 
                                     datetime.datetime(2021, 12, 31, 0, 0))
         content = get_random_words(30, " ")
-        recipient = random.choice(list(range(0, 31)))
+        recipient = random.choice(list(range(1, 31)))
         all_notifications.append([id, timestamp, content, recipient])
     
 
