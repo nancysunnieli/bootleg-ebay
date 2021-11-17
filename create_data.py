@@ -112,7 +112,7 @@ def items():
         isFlagged = False
         watch_list = []
         while len(watch_list) != 3:
-            new = random.choice(all_users)
+            new = random.choice(list(range(0, 31)))
             if new not in watch_list:
                 watch_list.append(new)
         quantity = random.choice(range(1, 11))
@@ -243,7 +243,7 @@ def flagged_items():
         itemID = item[0]
         item_index = all_items.index(item)
         flagReason = random.choice(flagReasons)
-        all_items[item_index][7] = True
+        all_items[item_index][6] = True
         all_flagged_items.append([id, itemID, flagReason])
         
     with open('flagged_items.csv', 'w', newline = "") as f:
@@ -466,18 +466,18 @@ def generate_all_data():
     """
     This generates the random data
     """
-    #photos()
-    #users()
-    #items()
-    #categories()
+    photos()
+    users()
+    items()
+    categories()
     auctions()
-    #flagged_items()
+    flagged_items()
     bids()
-    #advertisers()
-    #advertisements()
-    #notifications()
-    #cards()
-    #carts()
+    advertisers()
+    advertisements()
+    notifications()
+    cards()
+    carts()
 
 if __name__ == '__main__':
     generate_all_data()

@@ -22,6 +22,7 @@ def reformat_list_csv(array):
         result[i] = result[i].replace('"', "")
         if result[i][0] == " ":
             result[i] = result[i][1:]
+
     return result
 
 def create_categories(data_file_path, collection = categories_collection):
@@ -84,6 +85,8 @@ def create_items_database(data_file_path, collection = items_collection):
         item["sellerID"] = int(row[5])
         item["isFlagged"] = row[6]
         watchlist = reformat_list_csv(row[7])
+        for i in range(0, len(watchlist)):
+            watchlist[i] = int(watchlist[i])
         item["watchlist"] = watchlist
         item["quantity"] = int(row[8])
 
