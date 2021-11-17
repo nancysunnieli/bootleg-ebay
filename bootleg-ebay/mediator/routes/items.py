@@ -184,7 +184,6 @@ def remove_item():
     
     # getting auction name
     # commenting this out until auctions starts running
-    """
     data_content = request.get_json()
     item_id = data_content["item_id"]
 
@@ -200,7 +199,6 @@ def remove_item():
         r = get_and_request(socket_url, 'get')
         if len(r.content) != 0:
             return "There are already bids on this item! It cannot be deleted"
-    """
     data_content = request.get_json()
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/remove_item")
