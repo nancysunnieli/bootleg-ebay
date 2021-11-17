@@ -94,7 +94,9 @@ class CartsDBManager:
         user's cart
         """
         carts_collection = cls._init_carts_collection()
-        query = {"user_id": user_id}
+        query = {"user_id": int(user_id)}
+        if len(list(carts_collection.find(query))) == 0:
+            return json.dumps([])
         results = list(carts_collection.find(query))[0]["items"]
         return json.dumps(results)
     

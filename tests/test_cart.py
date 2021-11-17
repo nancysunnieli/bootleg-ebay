@@ -23,7 +23,7 @@ class TestCart(TestCase):
 
         # add item, get cart, then remove it
         url = self.base_url + "addition"
-        item = {'user_id': 400, 'item_id': "61945d45d2b33ab0d2bbb75a"}
+        item = {'user_id': 400, 'item_id': "619538ad26e831839aaa22c1"}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
@@ -46,7 +46,7 @@ class TestCart(TestCase):
 
         # add item to cart successfully
         url = self.base_url + "addition"
-        item = {'item_id': "61945d45d2b33ab0d2bbb75a",
+        item = {'item_id': "619538ad26e831839aaa22c1",
                 'user_id': 400}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
@@ -60,7 +60,7 @@ class TestCart(TestCase):
         auction_info = {
             "start_time": start_time,
             "end_time": start_time + auction_duration,
-            "item_id": "61945d45d2b33ab0d2bbb75a",
+            "item_id": "619538ad26e831839aaa22c1",
             "seller_id": 7,
             'shipping': 10.0,
             'buy_now': True,
