@@ -606,11 +606,30 @@ def add_categories(category):
 def remove_categories(category):
     return json.dumps(ItemsDBManager.remove_category(category))
 
+def items_by_seller(seller_id):
+    all_items = ItemsDBManager.get_all_items()
+    item_objects = []
+    for item in all_items:
+        item_id = item["_id"]
+        flags = ItemsDBManager.get_flag_reasons(item_id)
+        photo = ItemsDBManager.get_photo(item["photos"])
+        
+        new_item = items.Item()
+        new_item.from_mongo(item, flags, photo)
+
+        if new_item.sellerID == int(seller_id):
+            new_dict = new_item.to_mongo()
+            new_dict["_id"] = str(item_id)
+            item_objects.append(new_dict)
+    return json.dumps(item_objects)
+
+
 
 
 # executing tests for my functions
 if __name__ == '__main__':
-    print(view_all_items())
+    print(items_by_seller("27"))
+    #print(view_all_items())
     """
     print(add_categories("Food"))
     print(remove_categories("Food"))

@@ -154,6 +154,12 @@ def remove_category():
     category = data["category"]
     return item_functions.remove_categories(category)
 
+@app.route("/items_by_seller", methods = ['POST'])
+def items_by_seller():
+    data = request.get_json()
+    sellerID = data["sellerID"]
+    return item_functions.items_by_seller(sellerID)
+
 
 if __name__ == '__main__':
     # Don't set host as localhost, otherwise it wont be reachable through docker networks

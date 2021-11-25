@@ -332,3 +332,16 @@ def remove_category():
 
     return r.content
 
+
+@items_api.route("/items_by_seller/<seller_id>", methods = ['GET'])
+def items_by_seller(seller_id):
+    socket_url = ("http://" + ITEMS_SERVICE_HOST +
+                    ITEMS_PORT + "/items_by_seller")
+    data_content = {"sellerID": seller_id}
+    r = requests.post(url = socket_url, json = data_content)
+
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
