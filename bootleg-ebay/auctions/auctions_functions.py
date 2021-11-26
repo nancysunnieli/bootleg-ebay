@@ -235,13 +235,25 @@ def user_bids(buyer_id):
     all_auctions = AuctionDBManager.query_collection({})
 
     buyer_id = int(buyer_id)
-
-    all_bids = []
+    all_auctions_info = []
     for current_auction in all_auctions:
         auction = AuctionDBManager.get_auction(current_auction["_id"])
         bids = auction.view_bids(buyer_id=buyer_id)
-        all_bids += [b.to_dict() for b in bids]
-    return json.dumps(all_bids)
+        if len(bids) == 0:
+            continue
+
+        auction_info = auction.to_dict()
+        bids_info = auction_info['bids']
+        del auction_info['bids']
+
+        auction_and_bids_info = {
+            'auction': auction_info,
+            'user_bids': bids_info
+        }
+
+        all_auctions_info.append(auction_and_bids_info)
+
+    return json.dumps(all_auctions_info)
 
 def create_bid(auction_id, price, user_id):
     """

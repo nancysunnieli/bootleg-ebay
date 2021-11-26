@@ -147,7 +147,7 @@ def watch_list_alert(auction_id):
         return Response(response=r.text, status=r.status_code)
 
     # send email out to everyone on the item watch list
-    user_ids = item.json()['watchlist']
+    user_ids = r.json()['watchlist']
     for user_id in user_ids:
         socket_url = USERS_URL + "/user/{}".format(user_id)
         r = requests.get(url=socket_url, json=None)

@@ -242,7 +242,16 @@ def user_bids(user_id):
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
-    return r.content
+    auctions_info = r.json()
+    for a in auctions_info:
+        socket_url = ITEMS_URL + ("/get_item") 
+        data = json.dumps({"item_id": a['auction']["item_id"]})
+        r = requests.post(url = socket_url, json=data)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+        a['item'] = r.json()
+
+    return json.dumps(auctions_info)
 
 
 @auctions_api.route("/bid", methods = ['POST'])
