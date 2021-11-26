@@ -107,11 +107,13 @@ def bid_alert(auction_id):
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
-    # send email to buyers
+    # send email to buyers, except for the latest buyer
     buyer_ids = []
     for bid in auction_info["bids"]:
         buyer_ids.append(bid["buyer_id"])
     buyer_ids = list(set(buyer_ids))
+    latest_buyer_id = max(auction_info['bids'], key=lambda x: x['price'])['buyer_id']
+    buyer_ids.remove(latest_buyer_id)
 
     for b_id in buyer_ids:
         socket_url = USERS_URL + "/user/{}".format(b_id)
