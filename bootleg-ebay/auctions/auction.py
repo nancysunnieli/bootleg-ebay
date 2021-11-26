@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional, Sequence
 import datetime
 import json
+from bson.objectid import ObjectId
 
 AuctionID = str
 BidID = Optional[int]
@@ -78,8 +79,8 @@ class Bid:
             bid (Bid)
         """
 
-        if 'buyer_id' in mongodb_data:
-            bid_id = mongodb_data['buyer_id']
+        if 'bid_id' in mongodb_data:
+            bid_id = str(mongodb_data['bid_id'])
         else:
             bid_id = None
 
@@ -103,7 +104,8 @@ class Bid:
 
         if self.bid_id is not None:
             bid_info['bid_id'] = self.bid_id
-
+        else:
+            bid_info['bid_id'] = str(ObjectId())
 
         return bid_info
 
