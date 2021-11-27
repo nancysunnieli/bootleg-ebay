@@ -34,6 +34,16 @@ _create = {
         'buy_now', 'buy_now_price', 'starting_price']
 }
 
+_modify = {
+    'type': 'object',
+    'properties': {
+        'shipping': {'type': 'number'},
+        'buy_now': {'type': 'boolean'},
+        'buy_now_price': {'type': 'number'},
+    },
+    'required': []
+}
+
 _auction = {
     'type': 'object',
     'properties': {
@@ -151,6 +161,16 @@ def get_auction(auction_id):
     # get the bidder username for each bid
     # return r.content
 
+@auctions_api.route("/auction/<auction_id>", methods = ['PUT'])
+@expects_json(_modify)
+def modify_auction(auction_id):
+    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
+    r = get_and_request(socket_url, 'put')
+    
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
 
 @auctions_api.route("/auction/<auction_id>/max_bid", methods = ['GET'])
 def get_max_bid(auction_id):

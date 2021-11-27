@@ -272,6 +272,21 @@ class Auction:
             raise ValueError('The order can either be `desc` or `asc`')
 
         self._bids = sorted(self.bids, key=lambda x: x.bid_time, reverse=reverse)
+
+
+    def modify_auction(self, auction_info):
+        modifiable_properties = [
+            'shipping',
+            'buy_now',
+            'buy_now_price',
+        ]
+
+        for k in auction_info.keys():
+            if k not in modifiable_properties:
+                raise BadInputError('You cannot modify: {}'.format(k))
+
+        self._auction_info.update(auction_info)
+
             
 
     

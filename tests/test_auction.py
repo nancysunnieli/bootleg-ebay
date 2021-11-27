@@ -207,6 +207,22 @@ class TestAuction(TestCase):
         output = requests.get(url=url, json=None)
         self.assertTrue(output.ok)
 
+        # modify auctions
+        url = self.base_url + "auction/{}".format(id_)
+        new_shipping_cost = 11.2
+        new_buy_now = True
+        new_buy_now_price = 612312.1
+        data = {
+            'shipping': new_shipping_cost,
+            'buy_now': new_buy_now,
+            'buy_now_price': new_buy_now_price,
+        }
+        output = requests.put(url=url, json=data)
+        self.assertTrue(output.ok)
+        output_json = output.json()
+        self.assertEqual(new_shipping_cost, output_json['shipping'])
+        self.assertEqual(new_buy_now_price, output_json['buy_now_price'])
+
 
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)

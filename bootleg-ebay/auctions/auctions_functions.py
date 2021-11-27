@@ -81,6 +81,20 @@ def get_auction(auction_id):
     auction.sort_bids_by_time(order='desc')
     return auction.to_json()
 
+def modify_auction(auction_id, auction_info):
+    """
+    Get an auction. Can either be completed or currently running
+
+    """
+
+    auction = AuctionDBManager.get_auction(auction_id)
+    auction.modify_auction(auction_info)
+    AuctionDBManager.update_auction(auction=auction)
+
+    auction = AuctionDBManager.get_auction(auction_id)
+
+    return auction.to_json()
+
 def get_max_bid(auction_id):
     auction = AuctionDBManager.get_auction(auction_id)
     max_bid = {
