@@ -61,7 +61,7 @@ class TestItem(TestCase):
         self.assertTrue(output.ok)
 
         # add to watchlist
-        watchlist = {"item_id": id_, "user_id": 1}
+        watchlist = {"item_id": id_, "user_id": 1, "max_price": 100}
         url = self.base_url + "watchlist"
         output = requests.post(url=url, json=watchlist)
         self.assertTrue(output.ok)

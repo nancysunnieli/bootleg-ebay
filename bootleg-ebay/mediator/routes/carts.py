@@ -95,12 +95,57 @@ def get_items_from_cart(user_id):
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/get_item")
     all_items = []
+    seen_auctions = []
     for item_id in json.loads(r.content):
         data_content = {"item_id": item_id}
         r = requests.post(url = socket_url, json = json.dumps(data_content))
         if not r.ok:
             return Response(response=r.text, status=r.status_code)
-        all_items.append(json.loads(r.content))
+        item = json.loads(r.content)
+        
+        auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                     AUCTIONS_PORT + "/auctions_by_item/" + item_id)
+        r = requests.get(url=auction_url)
+        if not r.ok:
+            return Response(response=r.text, status=r.status_code)
+        
+        item_price = None
+        shipping_price = None
+        
+
+        current_time = time.time()
+        auctions = json.loads(r.content)
+        for auction in auctions:
+            if auction["end_time"] < current_time:
+                if auction["auction_id"] not in seen_auctions:
+                    most_recent_bid_time = 0
+                    most_recent_buyer = None
+                    most_recent_price = None
+                    for bid in auction["bids"]:
+                        if bid["bid_time"] > most_recent_bid_time:
+                            most_recent_bid_time = bid["bid_time"]
+                            most_recent_buyer = bid["buyer_id"]
+                            most_recent_price = bid["price"]
+                        if most_recent_buyer == user_id:
+                            seen_auctions.append(auction["auction_id"])
+                            shipping_price = auction["shipping"]
+                            item_price = most_recent_price
+                            break
+
+        if not item_price:
+            for auction in auctions:
+                if auction["end_time"] >= current_time and auction["start_time"] <= current_time:
+                    price = float(auction["buy_now_price"]) + float(auction["shipping"])
+                    item_price = auction["buy_now_price"]
+                    shipping_price = auction["shipping"]
+                    break
+        
+        # note, if the price is still null, this means that we cannot buy the item,
+        # but this doesn't really matter, because we don't allow for check out.
+
+        item["item_price"] = item_price
+        item["shipping_price"] = shipping_price
+        all_items.append(item)
 
     return json.dumps(all_items)
 

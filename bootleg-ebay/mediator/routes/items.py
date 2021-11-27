@@ -73,8 +73,9 @@ _watchlist = {
     'properties': {
         'item_id': {'type': 'string'},
         'user_id': {'type': 'number'},
+        'max_price': {'type': 'number'}
     },
-    'required': ['user_id', 'item_id']
+    'required': ['user_id', 'item_id', 'max_price']
 }
 
 

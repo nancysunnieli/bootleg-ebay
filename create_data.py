@@ -458,7 +458,34 @@ def carts():
         writer.writerows(all_carts)
     f.close()
 
+def watchlist():
+    # getting names of items
+    file = open("items.csv")
+    csvreader = csv.reader(file)
+    all_items = []
+    for row in csvreader:
+        all_items.append(row[0])
+    file.close()
 
+
+    watchlist_examples = []
+    for item in all_items:
+        seen_users = []
+        for i in range(0, 3):
+            example = []
+            example.append(item)
+            user = random.choice(list(range(1, 30)))
+            while user in seen_users:
+                user = random.choice(list(range(1, 30)))
+            example.append(user)
+            seen_users.append(user)
+            example.append(random.choice(list(range(1, 1000))))
+            watchlist_examples.append(example)
+    
+    with open('watchlist.csv', 'w', newline = "") as f:
+        writer = csv.writer(f)
+        writer.writerows(watchlist_examples)
+    f.close()   
 
 
 
@@ -466,18 +493,19 @@ def generate_all_data():
     """
     This generates the random data
     """
-    photos()
-    users()
-    items()
-    categories()
-    auctions()
-    flagged_items()
-    bids()
-    advertisers()
-    advertisements()
-    notifications()
-    cards()
-    carts()
+    #photos()
+    #users()
+    #items()
+    #categories()
+    #auctions()
+    #flagged_items()
+    #bids()
+    #advertisers()
+    #advertisements()
+    #notifications()
+    #cards()
+    #carts()
+    watchlist()
 
 if __name__ == '__main__':
     generate_all_data()

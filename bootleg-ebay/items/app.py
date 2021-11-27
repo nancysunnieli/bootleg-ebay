@@ -50,8 +50,8 @@ def search_item():
 def add_user_to_watch_list():
     data = request.get_json()
     id = data["item_id"]
-    user_id = data["user_id"]
-    return item_functions.add_user_to_watch_list(id, user_id)
+    watchlist_item = {"user_id": data["user_id"], "max_price": data["max_price"]}
+    return item_functions.add_user_to_watch_list(id, watchlist_item)
 
 @app.route('/remove_item', methods = ['POST'])
 def remove_item():
