@@ -95,8 +95,8 @@ def get_auctions_by_item_id(item_id):
     query = {"item_id": item_id}
     auctions_mongo = AuctionDBManager.query_collection(query)
     
-    if len(auctions_mongo) == 0:
-        raise BadInputError('We could not find any auctions with item_id {}'.format(item_id))
+    # if len(auctions_mongo) == 0:
+    #     raise BadInputError('We could not find any auctions with item_id {}'.format(item_id))
 
     auctions = []
     for a in auctions_mongo:
