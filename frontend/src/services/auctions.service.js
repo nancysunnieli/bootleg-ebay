@@ -38,6 +38,31 @@ const createBid = async (buyer_id, auction_id, price) => {
     return resp.data;
 };
 
+const createAuction = async (
+    start_time,
+    end_time,
+    item_id,
+    seller_id,
+    bids,
+    shipping,
+    buy_now,
+    buy_now_price,
+    starting_price
+) => {
+    const resp = await axios.post(API_URL + "auctions/auction", {
+        start_time,
+        end_time,
+        item_id,
+        seller_id,
+        bids,
+        shipping,
+        buy_now,
+        buy_now_price,
+        starting_price,
+    });
+    return resp.data;
+};
+
 const AuctionsService = {
     getCurrentAuctions,
     getAuction,
@@ -46,6 +71,7 @@ const AuctionsService = {
     removeAuction,
     getUserBids,
     createBid,
+    createAuction,
 };
 
 export default AuctionsService;

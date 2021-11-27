@@ -7,6 +7,7 @@ import Auction from "./components/Auctions/Auction";
 import Auctions from "./components/Auctions/Auctions";
 import Cart from "./components/Cart/Cart";
 import Home from "./components/Home/Home";
+import CreateItem from "./components/Items/CreateItem";
 import Item from "./components/Items/Item";
 import Items from "./components/Items/Items";
 import Login from "./components/Login/Login";
@@ -62,6 +63,12 @@ const App = () => {
                         <PrivateRoute
                             path={`/items/:item_id`}
                             component={Item}
+                            roles={[ROLE_USER]}
+                        />
+                        <PrivateRoute
+                            exact
+                            path="/create_item"
+                            component={CreateItem}
                             roles={[ROLE_USER]}
                         />
                         <PrivateRoute

@@ -18,7 +18,8 @@ const getFlaggedItems = async (limit) => {
 };
 
 const searchItem = async (keywords, category) => {
-    const resp = await axios.post(API_URL + "items/search", { keywords, category });
+    let payload = Object.assign({}, category === null ? null : { category }, { keywords });
+    const resp = await axios.post(API_URL + "items/search", payload);
     return resp.data;
 };
 
@@ -37,50 +38,30 @@ const reportItem = async (item_id, reason) => {
     return resp.data;
 };
 
-const modifyItem = async (
-    item_id,
-    name,
-    description,
-    category,
-    photos,
-    sellerID,
-    price,
-    quantity,
-    shipping
-) => {
-    const resp = await axios.post(API_URL + "items/modification", {
+const modifyItem = async (item_id, name, description, category, photos, sellerID, quantity) => {
+    let payload = {
         item_id,
         name,
         description,
         category,
-        photos,
         sellerID,
-        price,
         quantity,
-        shipping,
-    });
+    };
+    if (photos != null && photos.length != 0) {
+        payload[photos] = photos;
+    }
+    const resp = await axios.post(API_URL + "items/modification", payload);
     return resp.data;
 };
 
-const createItem = async (
-    name,
-    description,
-    category,
-    photos,
-    sellerID,
-    price,
-    quantity,
-    shipping
-) => {
+const createItem = async (name, description, category, photos, sellerID, quantity) => {
     const resp = await axios.post(API_URL + "items/addition", {
         name,
         description,
         category,
         photos,
         sellerID,
-        price,
         quantity,
-        shipping,
     });
     return resp.data;
 };
@@ -104,6 +85,11 @@ const removeCategory = async (category) => {
     return resp.data;
 };
 
+const getItemsBySeller = async (seller_id) => {
+    const resp = await axios.get(API_URL + `items/items_by_seller/${seller_id}`);
+    return resp.data;
+};
+
 const ItemsService = {
     getAllItems,
     getItem,
@@ -118,6 +104,7 @@ const ItemsService = {
     getCategories,
     addCategory,
     removeCategory,
+    getItemsBySeller,
 };
 
 export default ItemsService;

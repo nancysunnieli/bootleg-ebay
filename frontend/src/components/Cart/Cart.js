@@ -1,13 +1,11 @@
 import { useCallback, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllItems } from "../../slices/items";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import { addItemToCart, checkOut, deleteItemFromCart, getItemsFromCart } from "../../slices/cart";
-import CartItem from "./CartItem";
-import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
-import { createTransaction } from "../../slices/payments";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
+import { useDispatch, useSelector } from "react-redux";
+import { checkOut, deleteItemFromCart, getItemsFromCart } from "../../slices/cart";
+import CartItem from "./CartItem";
 const Cart = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const dispatch = useDispatch();

@@ -132,11 +132,51 @@ export const createBid = createAsyncThunk(
     }
 );
 
+export const createAuction = createAsyncThunk(
+    "auctions/createAuction",
+    async (
+        {
+            start_time,
+            end_time,
+            item_id,
+            seller_id,
+            bids,
+            shipping,
+            buy_now,
+            buy_now_price,
+            starting_price,
+            history,
+        },
+        thunkAPI
+    ) => {
+        try {
+            const data = await AuctionsService.createAuction(
+                start_time,
+                end_time,
+                item_id,
+                seller_id,
+                bids,
+                shipping,
+                buy_now,
+                buy_now_price,
+                starting_price
+            );
+            history.push(`/auctions/${data.auction_id}`);
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 const initialState = {
     auctions: [],
     auction: null,
     isBidding: false,
     getAuctionLoading: true,
+    getUserBidsLoading: true,
+    userBids: [],
 };
 
 const auctionsSlice = createSlice({
@@ -181,6 +221,26 @@ const auctionsSlice = createSlice({
             state.isBdding = false;
             console.log("Create bid failed", action);
             toast.error(`Failed to create bid ${action.payload}`);
+        },
+        [getUserBids.pending]: (state, action) => {
+            state.getUserBidsLoading = true;
+        },
+        [getUserBids.fulfilled]: (state, action) => {
+            state.getUserBidsLoading = false;
+            state.userBids = action.payload;
+        },
+        [getUserBids.rejected]: (state, action) => {
+            state.getUserBidsLoading = false;
+            toast.error("Unable to fetch user bids " + action.payload);
+        },
+        [createAuction.pending]: (state, action) => {
+            toast("Creating Auction...");
+        },
+        [createAuction.fulfilled]: (state, action) => {
+            toast.success("Succesfully created auction!");
+        },
+        [createAuction.rejected]: (state, action) => {
+            toast.error("Error creating auction " + action.payload);
         },
     },
 });

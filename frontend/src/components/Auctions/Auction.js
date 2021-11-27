@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { clearAuction, createBid, getAuction, getAuctionBids } from "../../slices/auctions";
 import Loading from "../Loading/Loading";
 import NotFound from "../NotFound/NotFound";
@@ -16,14 +16,19 @@ import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 import { addItemToCart } from "../../slices/cart";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import "./Auction.css";
+import EditAuctionModal from "./EditAuctionModal";
+import { setEditModalVisible } from "../../slices/profile";
 export default function Auction() {
     const { auction_id } = useParams();
     const dispatch = useDispatch();
     const { cartItems } = useSelector((state) => state.cart);
     const { auction, getAuctionLoading } = useSelector((state) => state.auctions);
     const { user } = useSelector((state) => state.auth);
+    const [showEditAuctionModal, setEditAuctionModalVisible] = useState(false);
     const [timeNow, setTimeNow] = useState(new Date());
     const [bidAmount, setBidAmount] = useState("");
+    const history = useHistory();
     const [progress, setProgressBar] = useState(0);
 
     const _getAuction = useCallback(() => {
@@ -48,13 +53,16 @@ export default function Auction() {
         setProgressBar((progress + 10) % 100);
     }, 1000);
 
+    useInterval(() => {
+        if (auction == null) return;
+        _getAuctionBids();
+    }, 10 * 1000);
+
     useEffect(() => {
         _getAuction();
-        let interval = setInterval(_getAuctionBids, 10 * 1000);
 
         return () => {
             dispatch(clearAuction());
-            clearInterval(interval);
         };
     }, []);
 
@@ -66,13 +74,33 @@ export default function Auction() {
         return <NotFound />;
     }
 
-    const isBuyNowDisabled = cartItems.findIndex((c) => c.item._id === auction.item._id) != -1;
-
-    const { bids, end_time, item_id, seller_id, start_time } = auction.auction;
-    const { _id, category, description, isFlagged, name, photos, price, sellerID, watchlist } =
+    const {
+        bids,
+        end_time,
+        item_id,
+        seller_id,
+        seller_username,
+        start_time,
+        buy_now,
+        buy_now_price,
+        starting_price,
+        shipping,
+    } = auction.auction;
+    const { _id, category, description, isFlagged, name, photos, sellerID, watchlist } =
         auction.item;
 
+    let isSeller = false;
+    if (seller_id == user.user_id) {
+        isSeller = true;
+    }
+
+    const isBuyNowDisabled = buy_now === "False" || buy_now === false;
+    const itemIsInCart = cartItems.findIndex((c) => c.item._id === auction.item._id) != -1;
+
+    let isStarted = start_time * 1000 < new Date().getTime();
+    let timeToStart = moment(start_time * 1000).fromNow();
     let remainingDuration = Math.min(end_time * 1000 - timeNow.getTime());
+    let isEnded = end_time * 1000 < new Date().getTime();
     let timeRemaining = moment.utc(remainingDuration).format("D [days,] HH:mm:ss");
 
     const tbody = bids.map((bid, i) => (
@@ -83,11 +111,78 @@ export default function Auction() {
         </tr>
     ));
 
-    // TODO: This should be done from the backend
     let maxBid = 0;
     if (bids.length) {
         maxBid = Math.max(...bids.map((bid) => bid.price)) || 0;
     }
+
+    const getActionBody = () => (
+        <div>
+            {isStarted ? (
+                <div>
+                    <h5>
+                        Auction Ends In: <span style={{ color: "red" }}>{timeRemaining}</span>
+                    </h5>
+                    <Row>
+                        <Col className={"my-auto"}>
+                            <h5>
+                                {isBuyNowDisabled || itemIsInCart
+                                    ? "Unavailable for Buy Now"
+                                    : `Buy Now Price: ${buy_now_price}`}
+                            </h5>
+                        </Col>
+                        <Col>
+                            <Button
+                                size="lg"
+                                variant="success"
+                                onClick={buyNow}
+                                disabled={isBuyNowDisabled || itemIsInCart}
+                            >
+                                Buy Now
+                            </Button>
+                        </Col>
+                    </Row>
+                    <h5>Current bid: ${maxBid}</h5>
+                    <h5>Starting bid price: ${starting_price}</h5>
+
+                    <Row>
+                        <Col className={"my-auto"}>
+                            <Form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    placeBid();
+                                    setBidAmount("");
+                                }}
+                            >
+                                <Form.Control
+                                    placeholder="Enter new bid"
+                                    value={bidAmount}
+                                    onChange={(event) => {
+                                        setBidAmount(event.target.value);
+                                    }}
+                                />
+                            </Form>
+                        </Col>
+                        <Col>
+                            <Button
+                                size="lg"
+                                onClick={placeBid}
+                                disabled={bidAmount.length === 0 || itemIsInCart}
+                            >
+                                Place Bid
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
+            ) : (
+                <h5>Auction Starts: {timeToStart}</h5>
+            )}
+        </div>
+    );
+
+    const goToItem = () => {
+        history.push(`/items/${item_id}`);
+    };
 
     return (
         <div>
@@ -104,8 +199,12 @@ export default function Auction() {
                         />
                     </Col>
                     <Col>
-                        <h1>{name}</h1>
+                        <h1 onClick={goToItem} className="title">
+                            {name}
+                        </h1>
                         <h4>{description}</h4>
+                        <h5>Shipping fee ${shipping}</h5>
+                        <h6>Sold by {seller_username}</h6>
 
                         <Row>
                             {category.map((c, i) => (
@@ -116,49 +215,21 @@ export default function Auction() {
                                 </Col>
                             ))}
                         </Row>
-                        <br />
-                        {/* TODO: Add Auction starts in.. */}
-                        <h5>
-                            Auction Ends In: <span style={{ color: "red" }}>{timeRemaining}</span>
-                        </h5>
-                        <Row>
-                            <Col className={"my-auto"}>
-                                <h5>Buy Now Price: ${price}</h5>
-                            </Col>
-                            <Col>
-                                <Button
-                                    size="lg"
-                                    variant="success"
-                                    onClick={buyNow}
-                                    disabled={isBuyNowDisabled}
-                                >
-                                    Buy Now
-                                </Button>
-                            </Col>
-                        </Row>
-                        <h5>Current bid: ${maxBid}</h5>
-                        <Row>
-                            <Col className={"my-auto"}>
-                                <Form>
-                                    <Form.Control
-                                        placeholder="Enter new bid"
-                                        value={bidAmount}
-                                        onChange={(event) => {
-                                            setBidAmount(event.target.value);
-                                        }}
-                                    />
-                                </Form>
-                            </Col>
-                            <Col>
-                                <Button
-                                    size="lg"
-                                    onClick={placeBid}
-                                    disabled={bidAmount.length === 0 || isBuyNowDisabled}
-                                >
-                                    Place Bid
-                                </Button>
-                            </Col>
-                        </Row>
+                        {isSeller && (
+                            <div>
+                                <br />
+                                <Row>
+                                    <Button
+                                        variant="info"
+                                        onClick={() => setEditAuctionModalVisible(true)}
+                                    >
+                                        Edit
+                                    </Button>
+                                </Row>
+                                <br />
+                            </div>
+                        )}
+                        {isEnded ? <h5>This auction has ended</h5> : getActionBody()}
                     </Col>
                 </Row>
                 <br />
@@ -179,6 +250,10 @@ export default function Auction() {
                 </Row>
                 <ProgressBar animated now={progress} />
             </Container>
+            <EditAuctionModal
+                show={showEditAuctionModal}
+                handleClose={() => setEditAuctionModalVisible(false)}
+            />
         </div>
     );
 }

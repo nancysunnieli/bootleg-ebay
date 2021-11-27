@@ -6,6 +6,7 @@ import Container from "react-bootstrap/Container";
 import { Link } from "react-router-dom";
 import Badge from "react-bootstrap/Badge";
 import { FaShoppingCart } from "react-icons/fa";
+import "./NavBar.css";
 export default function Navbar() {
     const [showAdminBoard, setShowAdminBoard] = useState(false);
     const { user: currentUser, isLoggedIn } = useSelector((state) => state.auth);
@@ -22,8 +23,8 @@ export default function Navbar() {
     return (
         <NavBar bg="light" expand="lg">
             <Container>
-                <NavBar.Brand as={Link} to={"/home"}>
-                    Bootleg Ebay
+                <NavBar.Brand as={Link} to={"/home"} className="logo">
+                    <div>Bootleg Ebay</div>
                 </NavBar.Brand>
                 <NavBar.Toggle aria-controls="basic-navbar-nav" />
                 <NavBar.Collapse id="basic-navbar-nav">

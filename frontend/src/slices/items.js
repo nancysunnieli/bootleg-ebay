@@ -17,7 +17,13 @@ export const getAllItems = createAsyncThunk("items/getAllItems", async (limit, t
 export const getItem = createAsyncThunk("items/getItem", async ({ item_id }, thunkAPI) => {
     try {
         const data = await ItemsService.getItem(item_id);
-        const itemAuction = await AuctionsService.getAuctionByItemID(item_id);
+        let itemAuction;
+        try {
+            itemAuction = await AuctionsService.getAuctionByItemID(item_id);
+        } catch (error) {
+            itemAuction = [];
+        }
+
         return { item: data, auction: itemAuction };
     } catch (error) {
         const message = error.toString();
@@ -64,15 +70,19 @@ export const addUserToWatchlist = createAsyncThunk(
     }
 );
 
-export const removeItem = createAsyncThunk("items/removeItem", async ({ item_id }, thunkAPI) => {
-    try {
-        const data = await ItemsService.removeItem(item_id);
-        return data;
-    } catch (error) {
-        const message = error.toString();
-        return thunkAPI.rejectWithValue(message);
+export const removeItem = createAsyncThunk(
+    "items/removeItem",
+    async ({ item_id, history }, thunkAPI) => {
+        try {
+            const data = await ItemsService.removeItem(item_id);
+            history.push("/home");
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
     }
-});
+);
 
 export const reportItem = createAsyncThunk(
     "items/reportItem",
@@ -90,7 +100,7 @@ export const reportItem = createAsyncThunk(
 export const modifyItem = createAsyncThunk(
     "items/modifyItem",
     async (
-        { item_id, name, description, category, photos, sellerID, price, quantity, shipping },
+        { item_id, name, description, category, photos, sellerID, quantity, history },
         thunkAPI
     ) => {
         try {
@@ -101,10 +111,9 @@ export const modifyItem = createAsyncThunk(
                 category,
                 photos,
                 sellerID,
-                price,
-                quantity,
-                shipping
+                quantity
             );
+            history.go(0);
             return data;
         } catch (error) {
             const message = error.toString();
@@ -126,6 +135,7 @@ export const getCategories = createAsyncThunk("items/getCategories", async (_, t
 export const addCategory = createAsyncThunk("items/addCategory", async ({ category }, thunkAPI) => {
     try {
         const data = await ItemsService.addCategory(category);
+        console.log("Data", data);
         return data;
     } catch (error) {
         const message = error.toString();
@@ -148,10 +158,7 @@ export const removeCategory = createAsyncThunk(
 
 export const createItem = createAsyncThunk(
     "items/createItem",
-    async (
-        { name, description, category, photos, sellerID, price, quantity, shipping },
-        thunkAPI
-    ) => {
+    async ({ name, description, category, photos, sellerID, quantity, history }, thunkAPI) => {
         try {
             const data = await ItemsService.createItem(
                 name,
@@ -159,10 +166,24 @@ export const createItem = createAsyncThunk(
                 category,
                 photos,
                 sellerID,
-                price,
-                quantity,
-                shipping
+                quantity
             );
+            console.log("uploaded", data, history);
+            history.push(`/items/${data._id}`);
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const getItemsBySeller = createAsyncThunk(
+    "items/getItemsBySeller",
+    async ({ seller_id }, thunkAPI) => {
+        try {
+            console.log("seler", seller_id);
+            const data = await ItemsService.getItemsBySeller(seller_id);
             return data;
         } catch (error) {
             const message = error.toString();
@@ -181,6 +202,8 @@ const initialState = {
     searchItems: [],
     categories: [],
     isGetCategoriesLoading: true,
+    sellerItems: [],
+    isGetSellerItemsLoading: true,
 };
 
 const itemsSlice = createSlice({
@@ -189,6 +212,9 @@ const itemsSlice = createSlice({
     reducers: {
         clearItem: (state, action) => {
             state.item = null;
+        },
+        resetSearchItems: (state, action) => {
+            state.searchItems = [];
         },
     },
     extraReducers: {
@@ -265,11 +291,10 @@ const itemsSlice = createSlice({
         },
         [modifyItem.fulfilled]: (state, action) => {
             toast.success("Succesfully updated item");
-            state.item = action.payload;
+            // state.item = action.payload;
         },
         [modifyItem.rejected]: (state, action) => {
             toast.error("Error on modifying item " + action.payload);
-            state.item = action.payload;
         },
         [getCategories.fulfilled]: (state, action) => {
             state.isGetCategoriesLoading = false;
@@ -283,12 +308,11 @@ const itemsSlice = createSlice({
             toast.error("Error on retrieving categories " + action.payload);
         },
         [addCategory.fulfilled]: (state, action) => {
-            // TODO: Check me
-            // state.categories = action.payload
+            state.categories.push(action.meta.arg.category);
             toast.success("Succesfully added category");
         },
         [addCategory.rejected]: (state, action) => {
-            toast.error("Error on adding category " + action.payload);
+            toast.error(`Error, the category ${action.meta.arg.category} already exists`);
         },
         [removeCategory.fulfilled]: (state, action) => {
             // TODO: Check me
@@ -307,10 +331,23 @@ const itemsSlice = createSlice({
         [createItem.rejected]: (state, action) => {
             toast.error("Error on creating item " + action.payload);
         },
+        [getItemsBySeller.pending]: (state, action) => {
+            state.isGetSellerItemsLoading = true;
+            state.sellerItems = [];
+        },
+        [getItemsBySeller.fulfilled]: (state, action) => {
+            console.log("Fulfilled", action.payload);
+            state.isGetSellerItemsLoading = false;
+            state.sellerItems = action.payload;
+        },
+        [getItemsBySeller.rejected]: (state, action) => {
+            state.isGetSellerItemsLoading = false;
+            toast.error("Unable to get seller items " + action.payload);
+        },
     },
 });
 
-export const { clearItem } = itemsSlice.actions;
+export const { clearItem, resetSearchItems } = itemsSlice.actions;
 
 const { reducer } = itemsSlice;
 export default reducer;

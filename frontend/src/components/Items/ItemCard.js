@@ -38,8 +38,8 @@ const ItemCard = ({ item }) => {
                 <Card.Footer>
                     <Row>
                         {item.category.map((c, i) => (
-                            <Col md="auto">
-                                <Badge key={i}>{c}</Badge>
+                            <Col md="auto" key={i}>
+                                <Badge>{c}</Badge>
                             </Col>
                         ))}
                     </Row>

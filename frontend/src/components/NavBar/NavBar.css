@@ -1,0 +1,9 @@
+.logo {
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+        linear-gradient(101deg, rgb(120, 228, 255), rgb(255, 72, 250));
+    box-shadow: rgb(255 255 255) 2px 1000px 1px inset;
+    border: 1.5px solid transparent;
+    padding: 0 12px;
+    opacity: 1;
+    border-radius: 5px;
+}

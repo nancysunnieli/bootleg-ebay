@@ -131,7 +131,7 @@ const paymentsSlice = createSlice({
         },
         [getPaymentCardByUserID.rejected]: (state, action) => {
             state.getPaymentCardLoading = false;
-            toast.error(`Oops, something went wrong ${action.payload}`);
+            toast.error(`Oops, unable to retrieve a payment card for you. ${action.payload}`);
         },
         [paymentsDeleteAccount.fulfilled]: (state, action) => {
             toast.success("Succesfully deleted Payment Card");
