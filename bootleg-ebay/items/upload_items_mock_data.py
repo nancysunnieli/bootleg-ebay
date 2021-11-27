@@ -60,7 +60,7 @@ def create_flagged_items_database(data_file_path, collection = flagged_items_col
     collection.insert_many(all_entries)
 
 
-def create_items_database(data_file_path, collection = items_collection):
+def create_items_database(items_file_path, watchlist_file_path, collection = items_collection):
     """
     This creates the items database in mongo db with
     the fake data in the mock_data folder.
@@ -70,7 +70,7 @@ def create_items_database(data_file_path, collection = items_collection):
             price, isFlagged
     """
 
-    file = open(data_file_path)
+    file = open(items_file_path)
     csvreader = csv.reader(file)
     all_items = []
     for row in csvreader:
@@ -84,9 +84,18 @@ def create_items_database(data_file_path, collection = items_collection):
         item["photos"] = row[4]
         item["sellerID"] = int(row[5])
         item["isFlagged"] = row[6]
-        watchlist = reformat_list_csv(row[7])
-        for i in range(0, len(watchlist)):
-            watchlist[i] = int(watchlist[i])
+        
+
+        watchlist_file = open(watchlist_file_path)
+        watchlist_reader = csv.reader(watchlist_file)
+        watchlist = []
+        for i in watchlist_reader:
+            if i[0] == row[0]:
+                curr = {}
+                curr["user_id"] = int(i[1])
+                curr["max_price"] = int(i[2])
+                watchlist.append(curr)
+
         item["watchlist"] = watchlist
         item["quantity"] = int(row[8])
 
@@ -96,7 +105,7 @@ def create_items_database(data_file_path, collection = items_collection):
 
     collection.insert_many(all_items)
 
-def create_all_databases(items_data_file_path, flagged_items_data_file_path,
+def create_all_databases(items_data_file_path, watchlist_data_file_path, flagged_items_data_file_path,
                         photos_data_file_path, categories_data_file_path,
                         item_collection = items_collection, 
                         flagged_item_collection = flagged_items_collection,
@@ -104,7 +113,7 @@ def create_all_databases(items_data_file_path, flagged_items_data_file_path,
     """
     This creates all the collections in our microservice
     """
-    create_items_database(items_data_file_path, item_collection)
+    create_items_database(items_data_file_path, watchlist_data_file_path, item_collection)
     print("Done!")
     create_flagged_items_database(flagged_items_data_file_path, flagged_item_collection)
     print("Done!")
@@ -118,6 +127,7 @@ if __name__ == '__main__':
     
     # This is the command to run to create the database in mongo db
     create_all_databases("../../data/mock_data/items.csv", 
+                        "../../data/mock_data/watchlist.csv",
                         "../../data/mock_data/flagged_items.csv",
                         "../../data/mock_data/photos.csv",
                         "../../data/mock_data/category.csv")

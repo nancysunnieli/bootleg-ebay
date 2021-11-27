@@ -265,23 +265,21 @@ class ItemsDBManager:
             raise BadInputError("Item Was Not Deleted! Please Try Again.")
 
     @classmethod
-    def add_user_to_watch_list(cls, id, user_id):
+    def add_user_to_watch_list(cls, id, watchlist_item):
         """
         This adds a user to the watchlist
         """
         items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
         query = { "_id": id }
-        modification = { "$addToSet": {"watchlist" : user_id }}
+        modification = { "$addToSet": {"watchlist" : watchlist_item }}
         result = items_collection.update_one(query, modification)
 
         if len(list(items_collection.find(query))) == 0:
             raise BadInputError("Item was not in the database.")
         if result.modified_count > 0:
             return "Successfully added user to Watchlist."
-        elif user_id in set(list(items_collection.find(query))[0]["watchlist"]):
-            raise BadInputError("User was already in Watchlist.")
         else:
-            raise BadInputError("Addition Failed. Please try again.")
+            raise BadInputError("Addition Failed, or User was already in Watchlist. Please try again.")
 
     @classmethod
     def search_item(cls, keywords, category):
@@ -478,7 +476,7 @@ def search_item(keywords, category):
             item_objects.append(new_dict)
     return json.dumps(item_objects)
 
-def add_user_to_watch_list(item_id, user_id):
+def add_user_to_watch_list(item_id, watchlist_item):
     """
     This adds a user to the watchlist
     """
@@ -489,7 +487,7 @@ def add_user_to_watch_list(item_id, user_id):
         
     new_item = items.Item()
     new_item.from_mongo(item, flags, photo)
-    new_item.add_user_to_watchlist(user_id)
+    new_item.add_user_to_watchlist(watchlist_item)
     return json.dumps(ItemsDBManager.modify_item(new_item.id, None, None, None,
                                     None, new_item.watchlist, None))
 

@@ -148,8 +148,8 @@ class Item(object):
         self._quantity -= 1
         return "Successfully Put Lock On Item."
     
-    def add_user_to_watchlist(self, user):
-        self._watchlist.append(user)
+    def add_user_to_watchlist(self, watchlist_item):
+        self._watchlist.append(watchlist_item)
 
     def matches_search(self, keywords, category):
         """
