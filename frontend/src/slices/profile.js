@@ -38,9 +38,9 @@ export const deleteAccount = createAsyncThunk("auth/deleteAccount", async (id, t
 
 export const suspendAccount = createAsyncThunk(
     "auth/suspendAccount",
-    async ({ id, suspended }, thunkAPI) => {
+    async ({ user_id }, thunkAPI) => {
         try {
-            const data = await UserService.suspendAccount(id, suspended);
+            const data = await UserService.suspendAccount(user_id);
             thunkAPI.dispatch(setUser(data));
             return { user: data };
         } catch (error) {

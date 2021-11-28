@@ -23,7 +23,13 @@ const WatchlistModal = ({ show, handleClose }) => {
     };
 
     const handleSave = () => {
-        dispatch(addUserToWatchlist({ user_id: user.user_id, item_id: item.item._id }));
+        dispatch(
+            addUserToWatchlist({
+                user_id: user.user_id,
+                item_id: item.item._id,
+                max_price: parseFloat(maxStartingPrice),
+            })
+        );
         handleClose();
     };
 

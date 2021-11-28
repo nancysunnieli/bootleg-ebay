@@ -31,18 +31,15 @@ export const getItem = createAsyncThunk("items/getItem", async ({ item_id }, thu
     }
 });
 
-export const getFlaggedItems = createAsyncThunk(
-    "items/getFlaggedItems",
-    async ({ limit }, thunkAPI) => {
-        try {
-            const data = await ItemsService.getFlaggedItems(limit);
-            return data;
-        } catch (error) {
-            const message = error.toString();
-            return thunkAPI.rejectWithValue(message);
-        }
+export const getFlaggedItems = createAsyncThunk("items/getFlaggedItems", async (_, thunkAPI) => {
+    try {
+        const data = await ItemsService.getFlaggedItems();
+        return data;
+    } catch (error) {
+        const message = error.toString();
+        return thunkAPI.rejectWithValue(message);
     }
-);
+});
 
 export const searchItem = createAsyncThunk(
     "items/searchItem",
@@ -59,9 +56,9 @@ export const searchItem = createAsyncThunk(
 
 export const addUserToWatchlist = createAsyncThunk(
     "items/addUserToWatchlist",
-    async ({ user_id, item_id }, thunkAPI) => {
+    async ({ user_id, item_id, max_price }, thunkAPI) => {
         try {
-            const data = await ItemsService.addUserToWatchlist(user_id, item_id);
+            const data = await ItemsService.addUserToWatchlist(user_id, item_id, max_price);
             return data;
         } catch (error) {
             const message = error.toString();
@@ -315,8 +312,7 @@ const itemsSlice = createSlice({
             toast.error(`Error, the category ${action.meta.arg.category} already exists`);
         },
         [removeCategory.fulfilled]: (state, action) => {
-            // TODO: Check me
-            // state.categories = action.payload
+            state.categories = state.categories.filter((c) => c !== action.meta.arg.category);
             toast.success("Successfully removed category");
         },
         [removeCategory.rejected]: (state, action) => {

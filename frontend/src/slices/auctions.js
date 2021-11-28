@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 
 import AuctionsService from "../services/auctions.service";
 import ItemsService from "../services/items.service";
+import UserService from "../services/user.service";
 
 export const getCurrentAuctions = createAsyncThunk(
     "auctions/getCurrentAuctions",
@@ -35,9 +36,13 @@ export const getAuction = createAsyncThunk(
         try {
             const auction = await AuctionsService.getAuction(auction_id);
             const item = await ItemsService.getItem(auction.item_id);
-            console.log("Auction", auction_id, auction, item);
+            console.log("Auction", auction);
+            const seller = await UserService.getUserInfo(auction.seller_id);
             return {
-                auction,
+                auction: {
+                    ...auction,
+                    seller_rating: (seller.total_rating / seller.number_of_ratings || 0).toFixed(1),
+                },
                 item,
             };
         } catch (error) {
@@ -177,6 +182,8 @@ const initialState = {
     getAuctionLoading: true,
     getUserBidsLoading: true,
     userBids: [],
+    getAuctionMetricsLoading: false,
+    auctionMetrics: null,
 };
 
 const auctionsSlice = createSlice({
@@ -241,6 +248,17 @@ const auctionsSlice = createSlice({
         },
         [createAuction.rejected]: (state, action) => {
             toast.error("Error creating auction " + action.payload);
+        },
+        [getAuctionMetrics.pending]: (state, action) => {
+            state.getAuctionMetricsLoading = true;
+        },
+        [getAuctionMetrics.fulfilled]: (state, action) => {
+            state.getAuctionMetricsLoading = false;
+            state.auctionMetrics = action.payload;
+        },
+        [getAuctionMetrics.rejected]: (state, action) => {
+            state.getAuctionMetricsLoading = false;
+            toast.error("Error on fetching auction metrics " + action.payload);
         },
     },
 });

@@ -5,6 +5,8 @@ import profileReducer from "./slices/profile";
 import auctionsReducer from "./slices/auctions";
 import cartReducer from "./slices/cart";
 import paymentsReducer from "./slices/payments";
+import usersReducer from "./slices/users";
+
 const reducer = {
     auth: authReducer,
     items: itemsReducer,
@@ -12,6 +14,7 @@ const reducer = {
     auctions: auctionsReducer,
     cart: cartReducer,
     payments: paymentsReducer,
+    users: usersReducer,
 };
 
 const store = configureStore({

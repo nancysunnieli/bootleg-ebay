@@ -12,8 +12,8 @@ const getItem = async (item_id) => {
     return resp.data;
 };
 
-const getFlaggedItems = async (limit) => {
-    const resp = await axios.post(API_URL + "items/flagged_items", { limit });
+const getFlaggedItems = async () => {
+    const resp = await axios.post(API_URL + "items/flagged_items", {});
     return resp.data;
 };
 
@@ -23,8 +23,8 @@ const searchItem = async (keywords, category) => {
     return resp.data;
 };
 
-const addUserToWatchlist = async (user_id, item_id) => {
-    const resp = await axios.post(API_URL + "items/watchlist", { user_id, item_id });
+const addUserToWatchlist = async (user_id, item_id, max_price) => {
+    const resp = await axios.post(API_URL + "items/watchlist", { user_id, item_id, max_price });
     return resp.data;
 };
 

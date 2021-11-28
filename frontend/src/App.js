@@ -18,6 +18,7 @@ import Profile from "./components/Profile/Profile";
 import Register from "./components/Register/Register";
 import PrivateRoute from "./components/Routing/PrivateRouter";
 import Splash from "./components/Splash/Splash";
+import Users from "./components/Users/Users";
 import { ROLE_ADMIN, ROLE_USER } from "./constants";
 import { checkLocalLogin } from "./slices/auth";
 
@@ -80,6 +81,11 @@ const App = () => {
                         <PrivateRoute
                             path={`/auctions/:auction_id`}
                             component={Auction}
+                            roles={[ROLE_USER]}
+                        />
+                        <PrivateRoute
+                            path={`/users/:user_id`}
+                            component={Users}
                             roles={[ROLE_USER]}
                         />
 

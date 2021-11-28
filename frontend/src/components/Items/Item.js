@@ -29,6 +29,7 @@ export default function Item() {
     const history = useHistory();
     const [reportModalVisible, setReportModalVisible] = useState(false);
     const { item, isGetItemLoading } = useSelector((state) => state.items);
+    const is_admin = user.is_admin;
     useEffect(() => {
         dispatch(getItem({ item_id }));
         dispatch(getCategories());
@@ -148,7 +149,7 @@ export default function Item() {
                         </thead>
                         <tbody>
                             {upcomingAuctions.map((a, i) => (
-                                <tr>
+                                <tr key={i}>
                                     <td>{moment(a.start_time * 1000).fromNow()}</td>
                                     <td>{moment(a.end_time * 1000).fromNow()}</td>
                                     <td>
@@ -177,22 +178,32 @@ export default function Item() {
                                 <th>View</th>
                             </tr>
                         </thead>
-                        {pastAuctions.map((a, i) => (
-                            <tr>
-                                <td>{moment(a.start_time * 1000).fromNow()}</td>
-                                <td>{moment(a.end_time * 1000).fromNow()}</td>
-                                <td>
-                                    <Button
-                                        size="sm"
-                                        onClick={() => history.push(`/auctions/${a.auction_id}`)}
-                                    >
-                                        View
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
+                        <tbody>
+                            {pastAuctions.map((a, i) => (
+                                <tr key={i}>
+                                    <td>{moment(a.start_time * 1000).fromNow()}</td>
+                                    <td>{moment(a.end_time * 1000).fromNow()}</td>
+                                    <td>
+                                        <Button
+                                            size="sm"
+                                            onClick={() =>
+                                                history.push(`/auctions/${a.auction_id}`)
+                                            }
+                                        >
+                                            View
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
                     </Table>
                 </Row>
+                <br />
+                {is_admin && item.item.isFlagged && (
+                    <Row>
+                        <h3>This item is flagged</h3>
+                    </Row>
+                )}
             </Container>
             <ReportModal
                 show={reportModalVisible}

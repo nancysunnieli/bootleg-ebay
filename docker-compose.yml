@@ -104,9 +104,9 @@ services:
 
   items-db:
     image: mongo:latest
-    restart: always
+    restart: on-failure
     ports:
-      - 27017:27017
+      - 27021:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: bootleg

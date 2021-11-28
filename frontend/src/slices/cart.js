@@ -102,7 +102,7 @@ const cartSlice = createSlice({
         [deleteItemFromCart.rejected]: (state, action) => {},
         [getItemsFromCart.pending]: (state, action) => {},
         [getItemsFromCart.fulfilled]: (state, action) => {
-            state.cartItems = action.payload.map((item) => ({ item, status: "succes" }));
+            state.cartItems = action.payload.map((item) => ({ item, status: "success" }));
         },
         [getItemsFromCart.rejected]: (state, action) => {},
         [emptyCart.pending]: (state, action) => {},

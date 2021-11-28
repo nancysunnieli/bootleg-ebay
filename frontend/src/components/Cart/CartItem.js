@@ -15,7 +15,8 @@ export default function CartItem({ item, handleDeleteItem }) {
         isFlagged,
         name,
         photos,
-        price,
+        item_price,
+        shipping_price,
         sellerID,
         watchlist,
     } = item.item;
@@ -39,12 +40,15 @@ export default function CartItem({ item, handleDeleteItem }) {
                             src={`data:image/png;base64, ${photos}`}
                         />
                     </Col>
-                    <Col md="8">
+                    <Col md="auto">
                         <Card.Text>{description}</Card.Text>
                     </Col>
-                    <Col>
+                    <Col md="auto">
                         <Row>
-                            <Card.Text>${price}</Card.Text>
+                            <Card.Text>Price ${item_price}</Card.Text>
+                        </Row>
+                        <Row>
+                            <Card.Text>Shipping ${shipping_price}</Card.Text>
                         </Row>
                     </Col>
                 </Row>

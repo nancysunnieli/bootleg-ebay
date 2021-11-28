@@ -80,6 +80,7 @@ export default function Auction() {
         item_id,
         seller_id,
         seller_username,
+        seller_rating,
         start_time,
         buy_now,
         buy_now_price,
@@ -115,6 +116,10 @@ export default function Auction() {
     if (bids.length) {
         maxBid = Math.max(...bids.map((bid) => bid.price)) || 0;
     }
+
+    const handleEndAuctionEarly = () => {
+        window.alert("TODO");
+    };
 
     const getActionBody = () => (
         <div>
@@ -204,7 +209,9 @@ export default function Auction() {
                         </h1>
                         <h4>{description}</h4>
                         <h5>Shipping fee ${shipping}</h5>
-                        <h6>Sold by {seller_username}</h6>
+                        <h6>
+                            Sold by {seller_username} {seller_rating}★
+                        </h6>
 
                         <Row>
                             {category.map((c, i) => (
@@ -224,6 +231,20 @@ export default function Auction() {
                                         onClick={() => setEditAuctionModalVisible(true)}
                                     >
                                         Edit
+                                    </Button>
+                                </Row>
+                                <br />
+                            </div>
+                        )}
+                        {user.is_admin === 1 && (
+                            <div>
+                                <br />
+                                <Row>
+                                    <Button
+                                        variant="warning"
+                                        onClick={() => handleEndAuctionEarly()}
+                                    >
+                                        End Auction Early
                                     </Button>
                                 </Row>
                                 <br />
