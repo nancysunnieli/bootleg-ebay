@@ -243,9 +243,14 @@ def view_current_auctions():
     """
 
     time = current_time()
-    query = {"start_time": {"$lte": time}, 
-            "end_time": {"$gte": time}}
 
+    query = {
+        "$and": [
+            {"start_time": {"$lte": time}, "end_time": {"$gte": time}}, 
+            {"completed": False}
+        ]
+    }
+    
     return _get_auctions_by_query(query)
 
 def remove_auction(auction_id) -> None:
