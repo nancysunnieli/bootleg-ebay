@@ -157,7 +157,6 @@ class ItemsDBManager:
         """
         With this function, I can modify the item
         that matches the given id.
-
         I can modify the name, description, category,
         photos, and price
         """
@@ -711,9 +710,7 @@ if __name__ == '__main__':
     """
     print("Add User To Watchlist Test: ")
     print(add_user_to_watch_list("618af8fde27c0181a0bc9bac", "example_user"))
-
     
-
     
     print("Report Item Test/ Add Flagged Item Test: ")
     print(report_item("618af8fde27c0181a0bc9bac", "counterfeit"))
@@ -721,11 +718,9 @@ if __name__ == '__main__':
     
     print("Get Item Test: ")
     print(get_item("618af8fde27c0181a0bc9bac"))
-
     
     print("Modify Item Test: ")
     print(modify_item("618af8fde27c0181a0bc9bac", "lemon bars"))
-
     
     print("Edit Categories Test: ")
     print(edit_categories("618af8fde27c0181a0bc9bac", ["potato"]))
@@ -741,4 +736,3 @@ if __name__ == '__main__':
     print("Remove Item From Items List Test: ")
     print(remove_item("618af8fde27c0181a0bc9bac"))
     """
-    
