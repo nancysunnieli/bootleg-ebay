@@ -86,6 +86,7 @@ auctions_api = Blueprint('auctions', __name__)
 @auctions_api.route("/auction", methods = ['POST'])
 @expects_json(_create)
 def create_auction():
+    # create the auction
     socket_url = (AUCTIONS_URL + "/auction")
     r = get_and_request(socket_url, 'post')
     
@@ -97,10 +98,12 @@ def create_auction():
     start_time = datetime.datetime.fromtimestamp(r_json['start_time'])
     end_time = datetime.datetime.fromtimestamp(r_json['end_time'])
 
+    # alert when the auction ends
     result = current_app.celery.send_task(
         'celery_tasks.end_auction_actions',args=[r_json['auction_id'],],
         eta=end_time)
 
+    # alert those on the watch list
     result = current_app.celery.send_task(
         'celery_tasks.watch_list_alert',args=[r_json['auction_id'],],
         eta=start_time)
@@ -116,11 +119,9 @@ def create_auction():
     time_strs = ['One Day', 'One Hour', 'One Minute', 'One Second']
 
     for i, time_ in enumerate(times):
-        # print("PRE_ALERT")
         eta = end_time - time_
         if eta < start_time:
             continue
-        # print("ALERTING", time_strs[i])
         result = current_app.celery.send_task(
             'celery_tasks.alert_auction',args=[r_json['auction_id'], time_strs[i]],
             eta=eta)

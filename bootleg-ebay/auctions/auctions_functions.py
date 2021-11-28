@@ -130,6 +130,16 @@ def create_auction(auction_info):
 
     if auction_info['end_time'] <= auction_info['start_time']:
         raise BadInputError('The end time must be greater than the start time.')
+
+    # check that we don't have an auction running with the same item
+    current_auctions = json.loads(view_current_auctions())
+
+    for a in current_auctions:
+        if a['completed']:
+            continue
+
+        if a['item_id'] == auction_info['item_id']:
+            raise BadInputError('We already have an auction running for this item: {}'.format(auction_info['item_id']))
         
     auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
     
