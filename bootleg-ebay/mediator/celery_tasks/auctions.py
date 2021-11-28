@@ -149,8 +149,23 @@ def watch_list_alert(auction_id):
         return Response(response=r.text, status=r.status_code)
 
     # send email out to everyone on the item watch list
-    user_ids = r.json()['watchlist']
-    for user_id in user_ids:
+    watchlist = r.json()['watchlist']
+    for user_info in watchlist:
+        user_id = user_info['user_id']
+
+        # don't send notifications if the buy now price or the starting price is higher 
+        # than the user's max price
+        buy_now_price = auction_info['buy_now_price']
+        starting_price = auction_info['starting_price']
+
+        if buy_now_price is not None:
+            if buy_now_price > user_info['max_price']: 
+                continue
+
+        if starting_price is not None:
+            if starting_price > user_info['max_price']: 
+                continue
+
         socket_url = USERS_URL + "/user/{}".format(user_id)
         r = requests.get(url=socket_url, json=None)
         if not r.ok:
