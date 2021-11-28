@@ -67,11 +67,13 @@ class TestCart(TestCase):
             'buy_now': True,
             'buy_now_price': 25.0,
             'starting_price': 5.0,
+            'completed': False,
             "bids": []
         }
 
         url = MEDIATOR_LINK + "/auctions/auction"
         output = requests.post(url=url, json=auction_info)
+        auction_id = output.json()['auction_id']
         self.assertTrue(output.ok)
 
 
@@ -81,4 +83,9 @@ class TestCart(TestCase):
         # remove cart completely
         url = self.base_url + "remove_cart"
         output = requests.post(url = url, json = user)
+        self.assertTrue(output.ok)
+
+        # delete auction successfully
+        url = MEDIATOR_LINK + "/auctions/auction/{}".format(auction_id)
+        output = requests.delete(url=url, json=None)
         self.assertTrue(output.ok)
