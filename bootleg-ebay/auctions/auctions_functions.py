@@ -141,6 +141,9 @@ def create_auction(auction_info):
         if a['item_id'] == auction_info['item_id']:
             raise BadInputError('We already have an auction running for this item: {}'.format(auction_info['item_id']))
         
+    # set default values
+    auction_info['completed'] = False
+
     auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
     
     if len(AuctionDBManager.query_collection({"_id": auction_id})) > 0:
