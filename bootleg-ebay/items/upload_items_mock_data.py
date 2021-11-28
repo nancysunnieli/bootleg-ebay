@@ -53,7 +53,7 @@ def create_flagged_items_database(data_file_path, collection = flagged_items_col
     for row in csvreader:
         flagged_item = {"_id": None, "itemID": None, "FlagReason": None}
         flagged_item["_id"] = ObjectId(row[0])
-        flagged_item["itemID"] = row[1]
+        flagged_item["itemID"] = ObjectId(row[1])
         flagged_item["FlagReason"] = row[2]
         all_entries.append(flagged_item)
     file.close()
