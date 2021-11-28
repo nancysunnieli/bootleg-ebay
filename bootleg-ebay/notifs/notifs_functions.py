@@ -79,13 +79,13 @@ def fetch_messages():
     pop_conn.pass_("bootleg1234!")
 
     num_messages = len(pop_conn.list()[1])
-    print(num_messages)
 
     # each email will be an array that has from, subject, and message
     all_emails = []
     for i in range(0, num_messages):
         raw_email = b"\n".join(pop_conn.retr(i+1)[1])
         parsed_email = email.message_from_bytes(raw_email)
+        message = None
         if "google" not in parsed_email["From"]:
             if parsed_email.is_multipart():
                 parts = []
@@ -94,7 +94,8 @@ def fetch_messages():
                 message = " ".join(parts)
             else:
                 message = parsed_email.get_payload()
-        all_emails.append([parsed_email["From"], parsed_email["Subject"], message])
+        if message:
+            all_emails.append([parsed_email["From"], parsed_email["Subject"], message])
     return json.dumps(all_emails)
 
 
