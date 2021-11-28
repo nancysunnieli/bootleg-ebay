@@ -101,6 +101,7 @@ class TestAuction(TestCase):
             'buy_now': True,
             'buy_now_price': 25.0,
             'starting_price': 5.0,
+            'completed': False,
             "bids": []
         }
 
@@ -212,10 +213,12 @@ class TestAuction(TestCase):
         new_shipping_cost = 11.2
         new_buy_now = True
         new_buy_now_price = 612312.1
+        new_completed = True
         data = {
             'shipping': new_shipping_cost,
             'buy_now': new_buy_now,
             'buy_now_price': new_buy_now_price,
+            'completed': new_completed
         }
         output = requests.put(url=url, json=data)
         self.assertTrue(output.ok)

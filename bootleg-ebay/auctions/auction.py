@@ -143,7 +143,9 @@ class Auction:
             'shipping': None,
             'buy_now': None,
             'buy_now_price': None,
-            'starting_price': None
+            'starting_price': None,
+
+            'completed': None
         }
 
         for k in auction_info.keys():
@@ -279,6 +281,7 @@ class Auction:
             'shipping',
             'buy_now',
             'buy_now_price',
+            'completed',
         ]
 
         for k in auction_info.keys():

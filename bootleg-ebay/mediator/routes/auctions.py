@@ -40,6 +40,7 @@ _modify = {
         'shipping': {'type': 'number'},
         'buy_now': {'type': 'boolean'},
         'buy_now_price': {'type': 'number'},
+        'completed': {'type': 'boolean'},
     },
     'required': []
 }
