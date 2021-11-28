@@ -121,11 +121,6 @@ class TestAuction(TestCase):
         self.assertGreaterEqual(len(output_json), 1)
         self.assertTrue(output.ok)
         
-
-        # view auction metrics
-        url = self.base_url + "auction_metrics"
-        output = requests.post(url=url, json={'start': start_time, 'end': start_time + 1000000000})
-        self.assertTrue(output.ok)
         
         # create sucessful bids
         buyer1_num_bids = 3
@@ -225,6 +220,16 @@ class TestAuction(TestCase):
         output_json = output.json()
         self.assertEqual(new_shipping_cost, output_json['shipping'])
         self.assertEqual(new_buy_now_price, output_json['buy_now_price'])
+        self.assertEqual(new_completed, output_json['completed'])
+
+
+        # view auction metrics
+        url = self.base_url + "auction_metrics"
+        output = requests.post(url=url, json={'start': start_time, 'end': start_time + 1000000000})
+        output_json = output.json()
+        self.assertTrue(output.ok)
+        # check that we are getting some metrics
+        self.assertNotEqual(output_json['average_auction_time'], -1)
 
 
         # delete auction successfully

@@ -19,16 +19,13 @@ class BadInputError(APIError):
     description = "Bad input Error"
 
 class ItemsDBManager:
+
     @classmethod
-    def _init_items_collection(cls):
+    def _create_client(cls):
         hostname = os.getenv('ITEMSDBHOST', "localhost")
         client = MongoClient("mongodb://root:bootleg@" + hostname + ":27017")
-        db = client["items"]
-        items_collection = db["items"]
-        flagged_items_collection = db["flagged_items"]
-        photos_collection = db["photos"]
-        categories_collection = db["categories"]
-        return items_collection, flagged_items_collection, photos_collection, categories_collection
+        return client
+
     
     @classmethod
     def view_all_items(cls, limit = None):
@@ -36,72 +33,84 @@ class ItemsDBManager:
         This returns back all available items
         in sorted order
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"quantity" : {"$gte": 0}}
-        results = list(items_collection.find(query))
-        if limit:
-            return results[:limit]
-        else:
-            return results
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            query = {"quantity" : {"$gte": 0}}
+            results = list(items_collection.find(query))
+            if limit:
+                return results[:limit]
+            else:
+                return results
 
     @classmethod
     def view_flagged_items(cls, limit = None):
         """
         This returns all the flagged items
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"isFlagged": "True"}
+        with cls._create_client() as client:
+            collections = client["items"] 
 
-        results = list(items_collection.find(query))
-        to_return = []
-        for result in results:
-            new_item = result
-            item_id = result[0]
-            query = {"itemID": item_id}
-            flagged = list(flagged_items_collection.find(query))
-            reasons = []
-            for flag in flagged:
-                reasons.append(flag["FlagReason"])
-            new_item["FlagReason"] = reasons
-            to_return.append(new_item)
-        if limit:
+            items_collection, flagged_items_collection = collections['items'], collections["flagged_items"]
+            query = {"isFlagged": "True"}
 
-            return to_return[:limit]
-        else:
-            return to_return
+            results = list(items_collection.find(query))
+            to_return = []
+            for result in results:
+                new_item = result
+                item_id = result[0]
+                query = {"itemID": item_id}
+                flagged = list(flagged_items_collection.find(query))
+                reasons = []
+                for flag in flagged:
+                    reasons.append(flagged["FlagReason"])
+                new_item["FlagReason"] = reasons
+                to_return.append(new_item)
+            if limit:
+
+                return to_return[:limit]
+            else:
+                return to_return
     
     @classmethod
     def get_all_items(cls):
         """
         This gets all the items from the items collection
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        items = list(items_collection.find({}))
-        return items
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            items = list(items_collection.find({}))
+            return items
     
     @classmethod
     def get_item(cls, id):
         """
         this gets an item from the items collection
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"_id": id}
-        results = list(items_collection.find(query))
-        return results
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            query = {"_id": id}
+            results = list(items_collection.find(query))
+            return results
 
     @classmethod
     def edit_categories(cls, item_id, updated_categories):
         """
         This edits the categories for an item
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"_id": item_id}
-        new_categories = { "$set": { "category": updated_categories } }
-        result = items_collection.update_one(query, new_categories)
-        if result.modified_count > 0:
-            return "Change was Successful!"
-        else:
-            raise BadInputError("Change was not Successful. Please Try Again.")
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+
+            query = {"_id": item_id}
+            new_categories = { "$set": { "category": updated_categories } }
+            result = items_collection.update_one(query, new_categories)
+            if result.modified_count > 0:
+                return "Change was Successful!"
+            else:
+                raise BadInputError("Change was not Successful. Please Try Again.")
     
     @classmethod
     def add_item(cls, name, description, category, photos, 
@@ -109,34 +118,37 @@ class ItemsDBManager:
         """
         This adds an item to the items collection
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            photos_collection = collections["photos"]
 
-        # first upload photo to photos_collection
-        photo_id = ObjectId()
-        new_photo = {"_id": photo_id, "photo": photos}
-        result = photos_collection.insert_one(new_photo)
+            # first upload photo to photos_collection
+            photo_id = ObjectId()
+            new_photo = {"_id": photo_id, "photo": photos}
+            result = photos_collection.insert_one(new_photo)
 
 
-        item = {"name": None, "description": None,
-                "category": None, "photos": None, "sellerID": None,
-                "isFlagged": False, "watchlist": None, "quantity": None}
-        item["_id"] = ObjectId()
-        item["name"] = name
-        item["description"] = description
-        item["category"] = category
-        item["photos"] = photo_id
-        item["sellerID"] = sellerID
-        item["watchlist"] = []
-        item["quantity"] = quantity
-        result = items_collection.insert_one(item)
+            item = {"name": None, "description": None,
+                    "category": None, "photos": None, "sellerID": None,
+                    "isFlagged": False, "watchlist": None, "quantity": None}
+            item["_id"] = ObjectId()
+            item["name"] = name
+            item["description"] = description
+            item["category"] = category
+            item["photos"] = photo_id
+            item["sellerID"] = sellerID
+            item["watchlist"] = []
+            item["quantity"] = quantity
+            result = items_collection.insert_one(item)
 
-        if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
-            item = list(items_collection.find({ "_id": item["_id"]}))
-            item[0]["_id"] = str(item[0]["_id"])
-            item[0]["photos"] = photos
-            return item[0]
-        else:
-            raise BadInputError("Item was not successfully inserted. Please Try Again.")
+            if len(list(items_collection.find({ "_id": item["_id"]}))) == 1:
+                item = list(items_collection.find({ "_id": item["_id"]}))
+                item[0]["_id"] = str(item[0]["_id"])
+                item[0]["photos"] = photos
+                return item[0]
+            else:
+                raise BadInputError("Item was not successfully inserted. Please Try Again.")
 
     @classmethod
     def modify_item(cls, id, name = None, description = None,
@@ -145,51 +157,52 @@ class ItemsDBManager:
         """
         With this function, I can modify the item
         that matches the given id.
-
         I can modify the name, description, category,
         photos, and price
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
 
-        query = {"_id": id}
-        modifications = []
-        if name:
-            new_name = { "$set": { "name": name } }
-            modifications.append(new_name)
-        if description:
-            new_description = { "$set": { "description": description } }
-            modifications.append(new_description)
-        if category:
-            new_categories = { "$set": { "category": category } }
-            modifications.append(new_categories)
-        if photos:
-            new_photos = { "$set": { "photos": photos } }
-            modifications.append(new_photos)
-        if watchlist:
-            new_watchlist = { "$set": { "watchlist": watchlist } }
-            modifications.append(new_watchlist)
-        if quantity:
-            new_quantity = {"$set": {"quantity": quantity}}
-            modifications.append(new_quantity)
-        success = []
-        failure = []
-        for modification in modifications:
-            result = items_collection.update_one(query, modification)
-            if result.modified_count > 0:
-                for key, value in modification["$set"].items():
-                    success.append(key)
-            else:
-                for key, value in modification["$set"].items():
-                    failure.append(key)
+            query = {"_id": id}
+            modifications = []
+            if name:
+                new_name = { "$set": { "name": name } }
+                modifications.append(new_name)
+            if description:
+                new_description = { "$set": { "description": description } }
+                modifications.append(new_description)
+            if category:
+                new_categories = { "$set": { "category": category } }
+                modifications.append(new_categories)
+            if photos:
+                new_photos = { "$set": { "photos": photos } }
+                modifications.append(new_photos)
+            if watchlist:
+                new_watchlist = { "$set": { "watchlist": watchlist } }
+                modifications.append(new_watchlist)
+            if quantity:
+                new_quantity = {"$set": {"quantity": quantity}}
+                modifications.append(new_quantity)
+            success = []
+            failure = []
+            for modification in modifications:
+                result = items_collection.update_one(query, modification)
+                if result.modified_count > 0:
+                    for key, value in modification["$set"].items():
+                        success.append(key)
+                else:
+                    for key, value in modification["$set"].items():
+                        failure.append(key)
 
-        string_to_return = ""
-        if len(success) > 0:
-            string_to_return += ("Successfully changed %s fields" % ", ".join(success))
-        if len(failure) > 0:
-            if string_to_return != "":
-                string_to_return += " "
-            string_to_return += ("Failure to change %s fields." % ", ".join(failure))
-        return string_to_return
+            string_to_return = ""
+            if len(success) > 0:
+                string_to_return += ("Successfully changed %s fields" % ", ".join(success))
+            if len(failure) > 0:
+                if string_to_return != "":
+                    string_to_return += " "
+                string_to_return += ("Failure to change %s fields." % ", ".join(failure))
+            return string_to_return
 
     @classmethod
     def convert_to_item_objects(cls, items):
@@ -198,29 +211,32 @@ class ItemsDBManager:
         and uploads them into objects of the items class
         and returns back an array of these items.
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        all_items = []
-        for item in items:
-            id = item["_id"]
-            name = item["name"]
-            description = item["description"]
-            category = item["category"]
-            photos = item["photos"]
-            sellerID = item["sellerID"]
-            isFlagged = item["isFlagged"]
-            FlaggedReason = []
-            if isFlagged == True:
-                query = {"itemID" : id}
-                results = list(flagged_items_collection.find(query))
-                for result in results:
-                    FlaggedReason.append(result["FlagReason"])
-                flags = {}
-            watchlist = item["watchlist"]
-            quantity = item["quantity"]
-            all_items.append(items.Item(name, description, category, photos,
-                        sellerID, isFlagged, FlaggedReason,
-                        watchlist, quantity, id))
-        return all_items
+        with cls._create_client() as client:
+            collections = client["items"] 
+            flagged_items_collection = collections["flagged_items"]
+
+            all_items = []
+            for item in items:
+                id = item["_id"]
+                name = item["name"]
+                description = item["description"]
+                category = item["category"]
+                photos = item["photos"]
+                sellerID = item["sellerID"]
+                isFlagged = item["isFlagged"]
+                FlaggedReason = []
+                if isFlagged == True:
+                    query = {"itemID" : id}
+                    results = list(flagged_items_collection.find(query))
+                    for result in results:
+                        FlaggedReason.append(result["FlagReason"])
+                    flags = {}
+                watchlist = item["watchlist"]
+                quantity = item["quantity"]
+                all_items.append(items.Item(name, description, category, photos,
+                            sellerID, isFlagged, FlaggedReason,
+                            watchlist, quantity, id))
+            return all_items
 
 
     @classmethod
@@ -228,15 +244,18 @@ class ItemsDBManager:
         """
         This adds a new flag to the database
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        item = {"itemID": item_id, "FlagReason": flag_reason}
-        inserted_item = flagged_items_collection.insert_one(item)
+        with cls._create_client() as client:
+            collections = client["items"] 
+            flagged_items_collection = collections["flagged_items"]
+
+            item = {"itemID": item_id, "FlagReason": flag_reason}
+            inserted_item = flagged_items_collection.insert_one(item)
 
 
-        if len(list(flagged_items_collection.find({"itemID" : item_id, "FlagReason": flag_reason}))) > 0:
-            return "Flag Successfully Added!"
-        else:
-            raise BadInputError("Flag Failure. Please Try Again.")
+            if len(list(flagged_items_collection.find({"itemID" : item_id, "FlagReason": flag_reason}))) > 0:
+                return "Flag Successfully Added!"
+            else:
+                raise BadInputError("Flag Failure. Please Try Again.")
 
 
     @classmethod
@@ -244,54 +263,63 @@ class ItemsDBManager:
         """
         This flags an item, and gives the flag reason
         """
-        # updates item database
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"_id": id}
-        flag = {"$set" : {"isFlagged" : "True" }}
-        update_result = items_collection.update_one(query, flag)
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
 
-        
-        # updates flagged items database
-        result = cls.add_flagged_item(id, flag_reason)
-        if (result == "Flag Successfully Added!"):
-            return "Item Reported Successfully!"
-        else:
-            raise BadInputError("Item Report Failed. Please Try Again.")
+            # updates item database
+            query = {"_id": id}
+            flag = {"$set" : {"isFlagged" : "True" }}
+            update_result = items_collection.update_one(query, flag)
+
+            
+            # updates flagged items database
+            result = cls.add_flagged_item(id, flag_reason)
+            if (result == "Flag Successfully Added!"):
+                return "Item Reported Successfully!"
+            else:
+                raise BadInputError("Item Report Failed. Please Try Again.")
 
     @classmethod
     def remove_item(cls, id):
         """
         This removes an item
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        find_item = {"_id": id}
-        items_collection.delete_one(find_item)
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            flagged_items_collection = collections["flagged_items"]
+            find_item = {"_id": id}
+            items_collection.delete_one(find_item)
 
-        find_flags = {"itemID": id}
-        flagged_items_collection.delete_many(find_flags)
+            find_flags = {"itemID": id}
+            flagged_items_collection.delete_many(find_flags)
 
-        if (len(list(items_collection.find(find_item))) == 0
-            and len(list(flagged_items_collection.find(find_flags))) == 0):
-            return "Item Successfully Deleted."
-        else:
-            raise BadInputError("Item Was Not Deleted! Please Try Again.")
+            if (len(list(items_collection.find(find_item))) == 0
+                and len(list(flagged_items_collection.find(find_flags))) == 0):
+                return "Item Successfully Deleted."
+            else:
+                raise BadInputError("Item Was Not Deleted! Please Try Again.")
 
     @classmethod
     def add_user_to_watch_list(cls, id, watchlist_item):
         """
         This adds a user to the watchlist
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = { "_id": id }
-        modification = { "$addToSet": {"watchlist" : watchlist_item }}
-        result = items_collection.update_one(query, modification)
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
 
-        if len(list(items_collection.find(query))) == 0:
-            raise BadInputError("Item was not in the database.")
-        if result.modified_count > 0:
-            return "Successfully added user to Watchlist."
-        else:
-            raise BadInputError("Addition Failed, or User was already in Watchlist. Please try again.")
+            query = { "_id": id }
+            modification = { "$addToSet": {"watchlist" : watchlist_item }}
+            result = items_collection.update_one(query, modification)
+
+            if len(list(items_collection.find(query))) == 0:
+                raise BadInputError("Item was not in the database.")
+            if result.modified_count > 0:
+                return "Successfully added user to Watchlist."
+            else:
+                raise BadInputError("Addition Failed, or User was already in Watchlist. Please try again.")
 
     @classmethod
     def search_item(cls, keywords, category):
@@ -301,34 +329,36 @@ class ItemsDBManager:
         input:
         keywords (array of strings)
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
 
 
-        if keywords and category:
-            main_query = {"$and": []}
-            query = { "$or": []}
-            for word in keywords:
-                query["$or"].append({ "name" : {'$regex': word}})
-                query["$or"].append({ "description" : {'$regex': word}})
+            if keywords and category:
+                main_query = {"$and": []}
+                query = { "$or": []}
+                for word in keywords:
+                    query["$or"].append({ "name" : {'$regex': word}})
+                    query["$or"].append({ "description" : {'$regex': word}})
 
-            main_query["$and"].append(query)
-            query = {"category": { '$in' : category }}
-            main_query["$and"].append(query)
-            results = list(items.collection.find(main_query))
-            return results
+                main_query["$and"].append(query)
+                query = {"category": { '$in' : category }}
+                main_query["$and"].append(query)
+                results = list(items.collection.find(main_query))
+                return results
 
-        if keywords:
-            query = { "$or": []}
-            for word in keywords:
-                query["$or"].append({ "name" : {'$regex': word}})
-                query["$or"].append({ "description" : {'$regex': word}})
-            keyword_results = list(items.collection.find(query))
-            return keyword_results
+            if keywords:
+                query = { "$or": []}
+                for word in keywords:
+                    query["$or"].append({ "name" : {'$regex': word}})
+                    query["$or"].append({ "description" : {'$regex': word}})
+                keyword_results = list(items.collection.find(query))
+                return keyword_results
 
-        if category:
-            query = {"category": { '$in' : category }}
-            category_results = list(items_collection.find(query))
-            return category_results
+            if category:
+                query = {"category": { '$in' : category }}
+                category_results = list(items_collection.find(query))
+                return category_results
 
     @classmethod
     def modify_quantity(cls, item_id):
@@ -336,82 +366,95 @@ class ItemsDBManager:
         This adjusts the quantity of the item. If
         the quantity was successfully changed, it indicates it.
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"_id" : item_id}
-        item = list(items_collection.find(query))
-        quantity = item[0]["quantity"]
-        if quantity < 1:
-            raise BadInputError("Was unable to adjust quantity. Item is sold out.")
-        modification = { "$set": {"quantity" : quantity - 1 }}
-        result = items_collection.update_one(query, modification)
-        if result.modified_count > 0:
-            return "Successfully adjusted quantity."
-        else:
-            raise BadInputError("Was unable to adjust quantity. Item is sold out.")
+        with cls._create_client() as client:
+            collections = client["items"] 
+            items_collection = collections["items"]
+            query = {"_id" : item_id}
+            item = list(items_collection.find(query))
+            quantity = item[0]["quantity"]
+            if quantity < 1:
+                raise BadInputError("Was unable to adjust quantity. Item is sold out.")
+            modification = { "$set": {"quantity" : quantity - 1 }}
+            result = items_collection.update_one(query, modification)
+            if result.modified_count > 0:
+                return "Successfully adjusted quantity."
+            else:
+                raise BadInputError("Was unable to adjust quantity. Item is sold out.")
 
     @classmethod
     def get_flag_reasons(cls, item_id):
         """
         This returns back the flagged reasons for a particular id.
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        query = {"itemID" : item_id}
-        result = list(flagged_items_collection.find(query))
-        return result
+        with cls._create_client() as client:
+            collections = client["items"] 
+            flagged_items_collection = collections["flagged_items"]
+            query = {"itemID" : item_id}
+            result = list(flagged_items_collection.find(query))
+            return result
     
     @classmethod
     def get_photo(cls, photo_id):
         """
         This returns back the photo with the specified id
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        photo_id = ObjectId(photo_id)
-        query = {'_id': photo_id}
-        result = list(photos_collection.find(query))
-        if len(result) > 0:
-            return result[0]["photo"]
-        else:
-            return None
+        with cls._create_client() as client:
+            collections = client["items"] 
+            photos_collection = collections["photos"]
+            photo_id = ObjectId(photo_id)
+            query = {'_id': photo_id}
+            result = list(photos_collection.find(query))
+            if len(result) > 0:
+                return result[0]["photo"]
+            else:
+                return None
 
     @classmethod
     def get_categories(cls):
         """
         This returns back all the categories
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        result = list(categories_collection.find({}))
-        return result[0]["categories"]
+        with cls._create_client() as client:
+            collections = client["items"] 
+            categories_collection = collections["categories"]
+
+            result = list(categories_collection.find({}))
+            return result[0]["categories"]
     
     @classmethod
     def add_category(cls, category):
         """
         This adds a category to the existing list of categories
         """
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        result = list(categories_collection.find({}))
-        query = {'_id': result[0]["_id"]}
-        modification = { "$addToSet": {"categories" : category }}
-        result = categories_collection.update_one(query, modification)
-        if result.modified_count > 0:
-            return "Successfully added category!"
-        else:
-            raise BadInputError("Was unable to add category. The category either exists, or you should try again later.")
+        with cls._create_client() as client:
+            collections = client["items"] 
+            categories_collection = collections["categories"]
+            result = list(categories_collection.find({}))
+            query = {'_id': result[0]["_id"]}
+            modification = { "$addToSet": {"categories" : category }}
+            result = categories_collection.update_one(query, modification)
+            if result.modified_count > 0:
+                return "Successfully added category!"
+            else:
+                raise BadInputError("Was unable to add category. The category either exists, or you should try again later.")
     
     @classmethod
     def remove_category(cls, category):
-        items_collection, flagged_items_collection, photos_collection, categories_collection = cls._init_items_collection()
-        result = list(categories_collection.find({}))
-        query = {'_id': result[0]["_id"]}
-        current_categories = result[0]["categories"]
-        current_categories.remove(category)
+        with cls._create_client() as client:
+            collections = client["items"] 
+            categories_collection = collections["categories"]
+            result = list(categories_collection.find({}))
+            query = {'_id': result[0]["_id"]}
+            current_categories = result[0]["categories"]
+            current_categories.remove(category)
 
-        modification = { "$set": {"categories" : current_categories }}
+            modification = { "$set": {"categories" : current_categories }}
 
-        result = categories_collection.update_one(query, modification)
-        if result.modified_count > 0:
-            return "Successfully removed category!"
-        else:
-            raise BadInputError("Was unable to remove category. The category either exists, or you should try again later.")      
+            result = categories_collection.update_one(query, modification)
+            if result.modified_count > 0:
+                return "Successfully removed category!"
+            else:
+                raise BadInputError("Was unable to remove category. The category either exists, or you should try again later.")      
 
 
 
@@ -667,9 +710,7 @@ if __name__ == '__main__':
     """
     print("Add User To Watchlist Test: ")
     print(add_user_to_watch_list("618af8fde27c0181a0bc9bac", "example_user"))
-
     
-
     
     print("Report Item Test/ Add Flagged Item Test: ")
     print(report_item("618af8fde27c0181a0bc9bac", "counterfeit"))
@@ -677,11 +718,9 @@ if __name__ == '__main__':
     
     print("Get Item Test: ")
     print(get_item("618af8fde27c0181a0bc9bac"))
-
     
     print("Modify Item Test: ")
     print(modify_item("618af8fde27c0181a0bc9bac", "lemon bars"))
-
     
     print("Edit Categories Test: ")
     print(edit_categories("618af8fde27c0181a0bc9bac", ["potato"]))
@@ -697,4 +736,3 @@ if __name__ == '__main__':
     print("Remove Item From Items List Test: ")
     print(remove_item("618af8fde27c0181a0bc9bac"))
     """
-    

@@ -141,6 +141,9 @@ def create_auction(auction_info):
         if a['item_id'] == auction_info['item_id']:
             raise BadInputError('We already have an auction running for this item: {}'.format(auction_info['item_id']))
         
+    # set default values
+    auction_info['completed'] = False
+
     auction_id = AuctionDBManager.insert_one(auction_info).inserted_id
     
     if len(AuctionDBManager.query_collection({"_id": auction_id})) > 0:
@@ -154,18 +157,25 @@ def create_auction(auction_info):
 
 
 def get_auction_metrics(start, end):
-    """Examine the auctions that have been completed
+    """Examine the auctions that have been completed within a certain time frame.
     """
-    query = {"start_time": {"$lte": start}, 
-            "end_time": {"$gte": end}}
 
+    # get completed auctions
     time = current_time()
+    query = {
+        "$or": [
+            {"end_time": {"$lte": time}}, 
+            {"completed": True}
+        ]
+    }
     auctions_mongo = AuctionDBManager.query_collection(query)
 
     auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
 
-    # get the completed auctions
-    auctions = list(filter(lambda x: x.auction_info['end_time'] <= time, auctions))
+    # get auctions within a timeframe
+    auctions = list(filter(
+        lambda x: start <= x.auction_info['end_time'] and x.auction_info['end_time'] <= end, 
+        auctions))
 
     if len(auctions) == 0:
         metrics = {
@@ -233,9 +243,14 @@ def view_current_auctions():
     """
 
     time = current_time()
-    query = {"start_time": {"$lte": time}, 
-            "end_time": {"$gte": time}}
 
+    query = {
+        "$and": [
+            {"start_time": {"$lte": time}, "end_time": {"$gte": time}}, 
+            {"completed": False}
+        ]
+    }
+    
     return _get_auctions_by_query(query)
 
 def remove_auction(auction_id) -> None:
