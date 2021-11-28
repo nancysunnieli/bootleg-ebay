@@ -53,6 +53,7 @@ def create_auctions_collection(auctions_data_file_path, bids_data_file_path,
                     del bid["AuctionID"]
                     auction["bids"].append(bid)
         auction["_id"] = ObjectId(row[0])
+        auction["completed"] = False
 
         all_entries.append(auction)
     file.close()
