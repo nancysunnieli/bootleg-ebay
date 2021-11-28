@@ -1,21 +1,33 @@
-# bootleg-ebay
-Topics in Software Engineering Course Project.... Creating a Bootleg Ebay
+# Bootleg Ebay
+
+This is our Bootleg Ebay course project for the course MPCS 51205 (Topics in Software Engineering). The team members are Nancy Li, Yves Shum, and Jin Li.
+
+# Description
+
+Please see this [presentation](https://docs.google.com/presentation/d/11xmj2wEfghZHsrrXM-Mjprlc85pEcq2yGmSNwdGvGPA/edit?usp=sharing) for a description of our system.
+
+# Running The Code
+
+To run the code:
+
+1. Change into the directory that contains the `docker-compose.yml` file. 
+2. Run `docker-compose up`
 
 
-Test commit
+To shutdown the system:
+
+1. Ctrl+C to stop the docker containers
+2. Run `docker-compose down`
 
 
-# Some notes
+# Front end
 
-* Try to do type hinting for all interface functions. You don't need to have type hinting for non-interface functions.
+After starting the system, go to `http://localhost:3000` to view the front end.
 
 
 # Testing
-## Running tests
 
-We can put the tests within each microservice directory.
-
-Run something like:
+To run tests:
 
 ```
 cd tests/
@@ -26,12 +38,3 @@ python -m unittest discover -v
 # to run one file
 python -m unittest test_user
 ```
-
-## Writing Tests
-
-A few things to note for writing tests for mediator:
-
-* Make sure that all the tests run correctly before merging your branch with main. Or else someone else may have to debug the code that you write, which is much harder for the other person than it is for you
-    * Also, the point of the tests is to ensure that nothing breaks
-    * In real world software, the code manager is going to reject your code if it doesn't pass all the tests
-* Your tests should not assume the existence of objects. Create those objects if you need to and then delete them afterwards
