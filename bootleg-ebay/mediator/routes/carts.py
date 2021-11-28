@@ -229,19 +229,23 @@ def checkout():
         total_price = None
         for auction in auctions:
             if auction["auction_id"] not in seen_auctions:
-                if auction["end_time"] < current_time:
-                    most_recent_bid_time = 0
-                    most_recent_buyer = None
-                    most_recent_price = None
-                    for bid in auction["bids"]:
-                        if bid["bid_time"] > most_recent_bid_time:
-                            most_recent_bid_time = bid["bid_time"]
-                            most_recent_buyer = bid["buyer_id"]
-                            most_recent_price = bid["price"]
-                    if most_recent_buyer == user_id:
-                        seen_auctions.append(auction["auction_id"])
-                        total_price = auction["shipping"] + most_recent_price
-                        break
+                if auction["completed"] == False:
+                    if auction["end_time"] < current_time:
+                        most_recent_bid_time = 0
+                        most_recent_buyer = None
+                        most_recent_price = None
+                        for bid in auction["bids"]:
+                            if bid["bid_time"] > most_recent_bid_time:
+                                most_recent_bid_time = bid["bid_time"]
+                                most_recent_buyer = bid["buyer_id"]
+                                most_recent_price = bid["price"]
+                        if most_recent_buyer == user_id:
+                            seen_auctions.append(auction["auction_id"])
+                            total_price = auction["shipping"] + most_recent_price
+                            auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                            AUCTIONS_PORT + "/auction/" + auction["auction_id"])
+                            r = requests.post(url = auction_url, json = json.dumps({"completed": True}))
+                            break
 
         if not total_price:
             # also have to complete current auctions
@@ -250,7 +254,7 @@ def checkout():
                     total_price = float(auction["buy_now_price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
-                    r = requests.delete(url = auction_url)
+                    r = requests.post(url = auction_url, json = json.dumps({"completed": True}))
                     if not r.ok:
                         return Response(response=r.text, status=r.status_code)
                     break
