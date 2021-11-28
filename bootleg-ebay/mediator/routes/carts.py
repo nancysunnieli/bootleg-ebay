@@ -244,7 +244,7 @@ def checkout():
                         break
 
         if not total_price:
-            # also have to delete current auctions
+            # also have to complete current auctions
             for auction in auctions:
                 if auction["end_time"] >= current_time and auction["start_time"] <= current_time:
                     total_price = float(auction["buy_now_price"]) + float(auction["shipping"])
