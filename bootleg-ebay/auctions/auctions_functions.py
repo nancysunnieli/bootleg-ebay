@@ -154,25 +154,25 @@ def create_auction(auction_info):
 
 
 def get_auction_metrics(start, end):
-    """Examine the auctions that have been completed
+    """Examine the auctions that have been completed within a certain time frame.
     """
-    # query = {"start_time": {"$lte": start}, 
-    #         "end_time": {"$gte": end}}
 
+    # get completed auctions
+    time = current_time()
     query = {
         "$or": [
-            {"start_time": {"$lte": start}, "end_time": {"$gte": end}}, 
+            {"end_time": {"$lte": time}}, 
             {"completed": True}
         ]
     }
-
-    time = current_time()
     auctions_mongo = AuctionDBManager.query_collection(query)
 
     auctions = [Auction.from_mongodb_fmt(a) for a in auctions_mongo]
 
-    # get the completed auctions
-    auctions = list(filter(lambda x: x.auction_info['end_time'] <= time, auctions))
+    # get auctions within a timeframe
+    auctions = list(filter(
+        lambda x: start <= x.auction_info['end_time'] and x.auction_info['end_time'] <= end, 
+        auctions))
 
     if len(auctions) == 0:
         metrics = {
