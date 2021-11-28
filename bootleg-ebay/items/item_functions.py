@@ -61,7 +61,7 @@ class ItemsDBManager:
             flagged = list(flagged_items_collection.find(query))
             reasons = []
             for flag in flagged:
-                reasons.append(flagged["FlagReason"])
+                reasons.append(flag["FlagReason"])
             new_item["FlagReason"] = reasons
             to_return.append(new_item)
         if limit:
