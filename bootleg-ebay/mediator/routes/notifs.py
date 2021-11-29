@@ -60,7 +60,7 @@ def notifs_service_status():
 def email():
     socket_url = ("http://" + NOTIFS_SERVICE_HOST +
                     NOTIFS_PORT + "/email")
-    data = requests.get_json()
+    data = request.get_json()
     r = requests.post(url = socket_url, json = data)
     if not r.ok:
         return Response(response=r.text, status=r.status_code)

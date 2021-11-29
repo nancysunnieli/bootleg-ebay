@@ -12,7 +12,12 @@ class TestNotifs(TestCase):
     base_url = "{}/{}/".format(MEDIATOR_LINK, NOTIFS_NAME)
 
     def test_notifs(self):
-        return 
+        return
+        url = self.base_url + "email"
+        schema = {"recipient": "Nancy_Sunnie_li@yahoo.com", "subject": "test", "body": "test"}
+        output = requests.post(url=url, json=schema)
+        self.assertTrue(output.ok)
+        
         # send watchlist notifcations
         url = self.base_url + "watchlist"
         schema = {
