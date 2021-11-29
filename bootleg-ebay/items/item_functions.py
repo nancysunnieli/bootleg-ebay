@@ -574,6 +574,10 @@ def get_item(item_id):
     """
     item_id = ObjectId(item_id)
     new_item = ItemsDBManager.get_item(item_id)[0]
+    flags = ItemsDBManager.get_flag_reasons(item_id)
+    new_item["flagged_reasons"] = []
+    for flag in flags:
+        new_item["flagged_reasons"].append(flag["FlagReason"])
     photo = ItemsDBManager.get_photo(new_item["photos"])
     new_item["photos"] = photo
     new_item["_id"] = str(item_id)
