@@ -191,7 +191,8 @@ def get_auction_metrics(start, end):
         prices = []
         for a in auctions:
             auction_times.append(a.auction_info['end_time'] - a.auction_info['start_time'])
-            prices.append(a.bids[-1].price)
+            if len(a.bids) != 0:
+                prices.append(a.bids[-1].price)
 
         metrics = {
             'average_auction_time': sum(auction_times) / len(auction_times),
