@@ -225,7 +225,6 @@ def checkout():
         if not r.ok:
             return Response(response=r.text, status=r.status_code)
         auctions = json.loads(r.content)
-        
         total_price = None
         for auction in auctions:
             if auction["auction_id"] not in seen_auctions:
@@ -246,7 +245,7 @@ def checkout():
 
                             auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
-                            r = requests.post(url = auction_url, json = {"completed": True})
+                            r = requests.put(url = auction_url, json = {"completed": True})
                             if not r.ok:
                                 return Response(response=r.text, status=r.status_code)
                             break
@@ -254,12 +253,12 @@ def checkout():
         if not total_price:
             # also have to complete current auctions
             for auction in auctions:
-
                 if auction["end_time"] >= current_time and auction["start_time"] <= current_time:
                     total_price = float(auction["buy_now_price"]) + float(auction["shipping"])
                     auction_url = ("http://" + AUCTIONS_SERVICE_HOST +
                             AUCTIONS_PORT + "/auction/" + auction["auction_id"])
-                    r = requests.post(url = auction_url, json = {"completed": True})
+                    
+                    r = requests.put(url = auction_url, json = {"completed": True})
                     if not r.ok:
                         return Response(response=r.text, status=r.status_code)
                     break

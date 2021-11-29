@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"user":{"$numberInt":"1"},"db":{"$numberInt":"1"}},"name":"user_1_db_1","unique":true}],"uuid":"056bdfdfa4c2490eb75e93c2f801c4da","collectionName":"system.users","type":"collection"}
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"admin.system.users"},{"v":2,"unique":true,"key":{"user":1,"db":1},"name":"user_1_db_1","ns":"admin.system.users"}]}

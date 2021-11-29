@@ -4,7 +4,7 @@ import csv
 import re
 from bson.objectid import ObjectId
 
-client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27017")
+client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27021")
 db = client["items"]
 items_collection = db["items"]
 flagged_items_collection = db["flagged_items"]
