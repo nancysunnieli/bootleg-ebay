@@ -177,8 +177,9 @@ def get_auction_metrics(start, end):
         lambda x: start <= x.auction_info['end_time'] and x.auction_info['end_time'] <= end, 
         auctions))
 
+
     if len(auctions) == 0:
-        metrics = {
+         metrics = {
             'average_auction_time': -1,
             'longest_auction_time': -1,
             'shortest_auction_time': -1,
@@ -186,6 +187,7 @@ def get_auction_metrics(start, end):
             'highest_price': -1,
             'lowest_price': -1
         }
+        
     else:
         auction_times = []
         prices = []
@@ -194,13 +196,21 @@ def get_auction_metrics(start, end):
             if len(a.bids) != 0:
                 prices.append(a.bids[-1].price)
 
+
+        average_auction_time = sum(auction_times) / len(auction_times) if len(auction_times) > 0 else -1
+        longest_auction_time = max(auction_times) if len(auction_times) > 0 else -1
+        shortest_auction_time = min(auction_times) if len(auction_times) > 0 else -1
+        mean_price = sum(prices) / len(prices) if len(prices) > 0 else -1
+        highest_price = max(prices) if len(prices) > 0 else -1
+        lowest_price = min(prices) if len(prices) > 0 else -1
+
         metrics = {
-            'average_auction_time': sum(auction_times) / len(auction_times),
-            'longest_auction_time': max(auction_times),
-            'shortest_auction_time': min(auction_times),
-            'mean_price': sum(prices) / len(prices),
-            'highest_price': max(prices),
-            'lowest_price': min(prices)
+            'average_auction_time': average_auction_time,
+            'longest_auction_time': longest_auction_time,
+            'shortest_auction_time': shortest_auction_time,
+            'mean_price': mean_price,
+            'highest_price': highest_price,
+            'lowest_price': lowest_price
         }
 
     return json.dumps(metrics)
