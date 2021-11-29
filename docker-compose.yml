@@ -53,8 +53,8 @@ services:
       - ./bootleg-ebay/users/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3307:3306
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   users-api:
     # take the build from Dockerfile
@@ -76,8 +76,8 @@ services:
       - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3309:3306
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   payments-api:
     # take the build from Dockerfile
@@ -99,11 +99,11 @@ services:
       - ./bootleg-ebay/advertisements/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
     ports:
       - 3308:3306
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   items-db:
-    image: mongo:latest
+    image: mongo:3.4-xenial
     restart: on-failure
     ports:
       - 27021:27017
@@ -112,8 +112,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/items-db:/data/db
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   items-db-mongo-express:
     image: mongo-express
@@ -128,7 +128,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@items-db:27017/
 
   notifs-db:
-    image: mongo:latest
+    image: mongo:3.4-xenial
     restart: always
     ports:
       - 27018:27017
@@ -137,8 +137,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/notifs-db:/data/db
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   notifs-db-mongo-express:
     image: mongo-express
@@ -162,7 +162,7 @@ services:
       - notifs-db
 
   carts-db:
-    image: mongo:latest
+    image: mongo:3.4-xenial
     restart: always
     ports:
       - 27020:27017
@@ -171,8 +171,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/carts-db:/data/db
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   carts-db-mongo-express:
     image: mongo-express
@@ -187,7 +187,7 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
 
   auctions-db:
-    image: mongo:latest
+    image: mongo:3.4-xenial
     restart: always
     ports:
       - 27019:27017
@@ -196,8 +196,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: bootleg
     volumes:
       - ./data/auctions-db:/data/db
-    logging:
-      driver: none
+    # logging:
+    #   driver: none
 
   auctions-db-mongo-express:
     image: mongo-express

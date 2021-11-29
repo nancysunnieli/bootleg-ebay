@@ -26,6 +26,9 @@ def end_auction_actions(auction_id):
 
     output_json = output.json()
 
+    if output_json['completed']:
+        return
+
     socket_url = CARTS_URL + "/add_item_to_cart"
 
     user_id = max(output_json['bids'], key=lambda x: x['price'])['buyer_id']
@@ -51,6 +54,9 @@ def alert_auction(auction_id, time_left):
         return
 
     auction_info = output.json()
+
+    if auction_info['completed']:
+        return
 
     # get the buyer and seller ids
     ids = [auction_info["seller_id"]]
