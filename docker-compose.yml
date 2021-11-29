@@ -225,6 +225,10 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    volumes:
+      - ./bootleg-ebay/rabbitmq/:/rabbitmq/
+    environment:
+      - RABBITMQ_CONFIG_FILE=/rabbitmq/rabbitmq.conf
 # networking for the Redis container
 #networks:
 #  node_net:
