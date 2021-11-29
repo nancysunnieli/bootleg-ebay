@@ -72,26 +72,12 @@ class TestAuction(TestCase):
         self.assertTrue(output.ok)
 
     
-
-    def test_auction(self):
+    def _create_auction(self, item_id, seller_id, auction_duration, start_time):
         
-        # create seller
-        seller_id = self._create_user()
-
-        # create buyers
-        buyer_id1 = self._create_user()
-        buyer_id2 = self._create_user()
-
-
-        # create item id
-        item_id = self._create_item()
-
-        # duration of auction in terms of seconds
-        auction_duration = 10
 
         # create auction successfully
         url = self.base_url + "auction"
-        start_time = current_time()
+        
         auction_info = {
             "start_time": start_time,
             "end_time": start_time + auction_duration,
@@ -109,6 +95,29 @@ class TestAuction(TestCase):
         self.assertTrue(output.ok)
         id_ = output.json()['auction_id']
 
+        return id_
+
+    # @unittest.skip("Skipped because it runs correctly")
+    def test_auction(self):
+        
+        # duration of auction in terms of seconds
+        auction_duration = 10
+
+        start_time = current_time()
+
+        # create seller
+        seller_id = self._create_user()
+
+        # create buyers
+        buyer_id1 = self._create_user()
+        buyer_id2 = self._create_user()
+
+        # create item id
+        item_id = self._create_item()
+
+        # create auction
+        id_ = self._create_auction(item_id, seller_id, auction_duration, start_time)
+
         # view auction
         url = self.base_url + "auction/{}".format(id_)
         output = requests.get(url=url, json=None)
@@ -120,7 +129,6 @@ class TestAuction(TestCase):
         output_json = output.json()
         self.assertGreaterEqual(len(output_json), 1)
         self.assertTrue(output.ok)
-        
         
         # create sucessful bids
         buyer1_num_bids = 3
@@ -231,7 +239,6 @@ class TestAuction(TestCase):
         # check that we are getting some metrics
         self.assertNotEqual(output_json['average_auction_time'], -1)
 
-
         # delete auction successfully
         url = self.base_url + "auction/{}".format(id_)
         output = requests.delete(url=url, json=None)
@@ -241,3 +248,48 @@ class TestAuction(TestCase):
         self._delete_users([buyer_id1, buyer_id2, seller_id])
         self._delete_item(item_id)
 
+
+    def test_stop_auction_early(self):
+
+        # duration of auction in terms of seconds
+        auction_duration = 10
+
+        start_time = current_time()
+
+        # create seller
+        seller_id = self._create_user()
+
+        # create buyers
+        buyer_id1 = self._create_user()
+
+        # create item id
+        item_id = self._create_item()
+
+        # create auction
+        id_ = self._create_auction(item_id, seller_id, auction_duration, start_time)
+
+        # make a bid
+        url = self.base_url + "bid"
+        price = 10.3
+        bid_info = {
+            "price": price,
+            "auction_id": id_,
+            "buyer_id": buyer_id1
+        }
+        output = requests.post(url=url, json=bid_info)
+        self.assertTrue(output.ok)
+
+
+        # stop auction early
+        url = self.base_url + "auction/stop_early/{}".format(id_)
+        output = requests.put(url=url, json=None)
+        self.assertTrue(output.ok)
+
+        # delete auction successfully
+        url = self.base_url + "auction/{}".format(id_)
+        output = requests.delete(url=url, json=None)
+        self.assertTrue(output.ok)
+
+        # delete created objects
+        self._delete_users([buyer_id1, seller_id])
+        self._delete_item(item_id)

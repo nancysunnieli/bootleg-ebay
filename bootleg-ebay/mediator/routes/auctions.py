@@ -254,6 +254,29 @@ def remove_auction(auction_id):
 
     return r.content
 
+@auctions_api.route("/auction/stop_early/<auction_id>", methods = ['PUT'])
+def stop_auction_early(auction_id):
+    # set auctions to completed
+    socket_url = (AUCTIONS_URL + "/auction/{}".format(auction_id))
+    r = requests.put(url=socket_url, json={'completed': True})
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    socket_url = CARTS_URL + "/add_item_to_cart"
+
+    # send item to cart
+    auction_info = r.json()
+    user_id = max(auction_info['bids'], key=lambda x: x['price'])['buyer_id']
+    data = {
+        "item_id": auction_info['item_id'], 
+        'user_id': user_id
+    }
+    r = requests.post(url=socket_url, json=data)
+    if not r.ok:
+        return Response(response=r.text, status=r.status_code)
+
+    return r.content
+
 
 @auctions_api.route("/bids/<user_id>", methods = ['GET'])
 # @expects_json(_none_schema)
