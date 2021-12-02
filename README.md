@@ -26,6 +26,12 @@ To shutdown the system:
 2. Run `docker-compose down`
 
 
+# Important Notes
+
+TODO: Write some important notes here. For example, one important note is we can only auction one item at a time.
+
+
+
 # Front end
 
 After starting the system, go to `http://localhost:3000` to view the front end.
@@ -44,3 +50,9 @@ python -m unittest discover -v
 # to run one file
 python -m unittest test_user
 ```
+
+
+
+# Acknowledgements
+
+Thank you to professor Mark Shacklette and the TAs Alan Salkanović and John Hadidian-Bauger for their help and support.
