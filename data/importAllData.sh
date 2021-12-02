@@ -1,0 +1,2 @@
+./importAllMongoDatabase.sh
+./importAllSQLDatabase.sh

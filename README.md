@@ -11,7 +11,13 @@ Please see this [presentation](https://docs.google.com/presentation/d/11xmj2wEfg
 To run the code:
 
 1. Change into the directory that contains the `docker-compose.yml` file. 
-2. Run `docker-compose up`
+2. Run `docker-compose up`. Please wait until all the services are up.
+3. If this is your first time running the system, you need to load in data to the database. Please run:
+
+```
+cd data/
+./importAllData.sh
+```
 
 
 To shutdown the system:
