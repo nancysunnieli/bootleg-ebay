@@ -1,234 +1,234 @@
 version: "3"
 
 services:
-  # carts-api:
-  #   build: ./bootleg-ebay/carts/
-  #   ports:
-  #     - 3211:3211
-  #   volumes:
-  #     - ./bootleg-ebay/carts/:/carts/
-  #   environment:
-  #     PORT: 3211
-  #     FLASK_DEBUG: 1
-  #   depends_on:
-  #     - carts-db
+  carts-api:
+    build: ./bootleg-ebay/carts/
+    ports:
+      - 3211:3211
+    volumes:
+      - ./bootleg-ebay/carts/:/carts/
+    environment:
+      PORT: 3211
+      FLASK_DEBUG: 1
+    depends_on:
+      - carts-db
 
-  # items-api:
-  #   build: ./bootleg-ebay/items/
-  #   ports:
-  #     - 8099:8099
-  #   volumes:
-  #     - ./bootleg-ebay/items/:/items/
-  #   environment:
-  #     PORT: 8099
-  #     FLASK_DEBUG: 1
-  #   depends_on:
-  #     - items-db
+  items-api:
+    build: ./bootleg-ebay/items/
+    ports:
+      - 8099:8099
+    volumes:
+      - ./bootleg-ebay/items/:/items/
+    environment:
+      PORT: 8099
+      FLASK_DEBUG: 1
+    depends_on:
+      - items-db
 
-  # mediator-api:
-  #   build: ./bootleg-ebay/mediator/
-  #   ports:
-  #     - 8011:8011
-  #   volumes:
-  #     - ./bootleg-ebay/mediator:/mediator/
-  #   environment:
-  #     PORT: 8011
-  #     FLASK_DEBUG: 1
-  #   depends_on:
-  #     - items-api
-  #     - carts-api
-  #     - payments-api
-  #     - notifs-api
-  #     - auctions-api
-  #     - rabbitmq-server
+  mediator-api:
+    build: ./bootleg-ebay/mediator/
+    ports:
+      - 8011:8011
+    volumes:
+      - ./bootleg-ebay/mediator:/mediator/
+    environment:
+      PORT: 8011
+      FLASK_DEBUG: 1
+    depends_on:
+      - items-api
+      - carts-api
+      - payments-api
+      - notifs-api
+      - auctions-api
+      - rabbitmq-server
 
-  # users-db:
-  #   image: mysql:8
-  #   restart: always
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=bootleg
-  #     - MYSQL_DATABASE=users
-  #   volumes:
-  #     - ./data/users-db:/var/lib/mysql
-  #     - ./bootleg-ebay/users/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
-  #   ports:
-  #     - 3307:3306
-  #   # logging:
-  #   #   driver: none
+  users-db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_DATABASE=users
+    volumes:
+      - ./data/users-db:/var/lib/mysql
+      - ./bootleg-ebay/users/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 3307:3306
+    # logging:
+    #   driver: none
 
-  # users-api:
-  #   # take the build from Dockerfile
-  #   build: ./bootleg-ebay/users/
-  #   tty: true
-  #   ports:
-  #     - 1001:1001
-  #   volumes:
-  #     - ./bootleg-ebay/users:/users
+  users-api:
+    # take the build from Dockerfile
+    build: ./bootleg-ebay/users/
+    tty: true
+    ports:
+      - 1001:1001
+    volumes:
+      - ./bootleg-ebay/users:/users
 
-  # payments-db:
-  #   image: mysql:8
-  #   restart: always
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=bootleg2
-  #     - MYSQL_DATABASE=payments
-  #   volumes:
-  #     - ./data/payments-db:/var/lib/mysql
-  #     - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
-  #   ports:
-  #     - 3309:3306
-  #   # logging:
-  #   #   driver: none
+  payments-db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=bootleg2
+      - MYSQL_DATABASE=payments
+    volumes:
+      - ./data/payments-db:/var/lib/mysql
+      - ./bootleg-ebay/payments/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 3309:3306
+    # logging:
+    #   driver: none
 
-  # payments-api:
-  #   # take the build from Dockerfile
-  #   build: ./bootleg-ebay/payments/
-  #   tty: true
-  #   ports:
-  #     - 1003:1003
-  #   volumes:
-  #     - ./bootleg-ebay/payments:/payments
+  payments-api:
+    # take the build from Dockerfile
+    build: ./bootleg-ebay/payments/
+    tty: true
+    ports:
+      - 1003:1003
+    volumes:
+      - ./bootleg-ebay/payments:/payments
 
-  # advertisements-db:
-  #   image: mysql:8
-  #   restart: always
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=bootleg
-  #     - MYSQL_DATABASE=advertisements
-  #   volumes:
-  #     - ./data/advertisements-db:/var/lib/mysql
-  #     - ./bootleg-ebay/advertisements/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
-  #   ports:
-  #     - 3308:3306
-  #   # logging:
-  #   #   driver: none
+  advertisements-db:
+    image: mysql:8
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=bootleg
+      - MYSQL_DATABASE=advertisements
+    volumes:
+      - ./data/advertisements-db:/var/lib/mysql
+      - ./bootleg-ebay/advertisements/db/sqlfile.sql:/docker-entrypoint-initdb.d/dump.sql
+    ports:
+      - 3308:3306
+    # logging:
+    #   driver: none
 
-  # items-db:
-  #   image: mongo:3.4-xenial
-  #   restart: on-failure
-  #   ports:
-  #     - 27021:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: bootleg
-  #   volumes:
-  #     - ./data/items-db:/data/db
-  #   # logging:
-  #   #   driver: none
+  items-db:
+    image: mongo:3.4-xenial
+    restart: on-failure
+    ports:
+      - 27021:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: bootleg
+    volumes:
+      - ./data/items-db:/data/db
+    # logging:
+    #   driver: none
 
-  # items-db-mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   depends_on:
-  #     - items-db
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@items-db:27017/
+  items-db-mongo-express:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - items-db
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@items-db:27017/
 
-  # notifs-db:
-  #   image: mongo:3.4-xenial
-  #   restart: always
-  #   ports:
-  #     - 27018:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: bootleg
-  #   volumes:
-  #     - ./data/notifs-db:/data/db
-  #   # logging:
-  #   #   driver: none
+  notifs-db:
+    image: mongo:3.4-xenial
+    restart: always
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: bootleg
+    volumes:
+      - ./data/notifs-db:/data/db
+    # logging:
+    #   driver: none
 
-  # notifs-db-mongo-express:
-  #   image: mongo-express
-  #   depends_on:
-  #     - notifs-db
-  #   restart: always
-  #   ports:
-  #     - 8082:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
+  notifs-db-mongo-express:
+    image: mongo-express
+    depends_on:
+      - notifs-db
+    restart: always
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@notifs-db:27017/
 
-  # notifs-api:
-  #   build: ./bootleg-ebay/notifs/
-  #   ports:
-  #     - 8012:8012
-  #   volumes:
-  #     - ./bootleg-ebay/notifs/:/notifs/
-  #   depends_on:
-  #     - notifs-db
+  notifs-api:
+    build: ./bootleg-ebay/notifs/
+    ports:
+      - 8012:8012
+    volumes:
+      - ./bootleg-ebay/notifs/:/notifs/
+    depends_on:
+      - notifs-db
 
-  # carts-db:
-  #   image: mongo:3.4-xenial
-  #   restart: always
-  #   ports:
-  #     - 27020:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: bootleg
-  #   volumes:
-  #     - ./data/carts-db:/data/db
-  #   # logging:
-  #   #   driver: none
+  carts-db:
+    image: mongo:3.4-xenial
+    restart: always
+    ports:
+      - 27020:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: bootleg
+    volumes:
+      - ./data/carts-db:/data/db
+    # logging:
+    #   driver: none
 
-  # carts-db-mongo-express:
-  #   image: mongo-express
-  #   depends_on:
-  #     - carts-db
-  #   restart: always
-  #   ports:
-  #     - 8084:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
+  carts-db-mongo-express:
+    image: mongo-express
+    depends_on:
+      - carts-db
+    restart: always
+    ports:
+      - 8084:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@carts-db:27017/
 
-  # auctions-db:
-  #   image: mongo:3.4-xenial
-  #   restart: always
-  #   ports:
-  #     - 27019:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: bootleg
-  #   volumes:
-  #     - ./data/auctions-db:/data/db
-  #   # logging:
-  #   #   driver: none
+  auctions-db:
+    image: mongo:3.4-xenial
+    restart: always
+    ports:
+      - 27019:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: bootleg
+    volumes:
+      - ./data/auctions-db:/data/db
+    # logging:
+    #   driver: none
 
-  # auctions-db-mongo-express:
-  #   image: mongo-express
-  #   depends_on:
-  #     - auctions-db
-  #   restart: always
-  #   ports:
-  #     - 8083:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
-  #     ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
+  auctions-db-mongo-express:
+    image: mongo-express
+    depends_on:
+      - auctions-db
+    restart: always
+    ports:
+      - 8083:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: bootleg
+      ME_CONFIG_MONGODB_URL: mongodb://root:bootleg@auctions-db:27017/
 
-  # auctions-api:
-  #   build: ./bootleg-ebay/auctions/
-  #   tty: true
-  #   ports:
-  #     - 1002:1002
-  #   volumes:
-  #     - ./bootleg-ebay/auctions:/auctions
+  auctions-api:
+    build: ./bootleg-ebay/auctions/
+    tty: true
+    ports:
+      - 1002:1002
+    volumes:
+      - ./bootleg-ebay/auctions:/auctions
 
-  # rabbitmq-server:
-  #   image: rabbitmq:latest
-  #   restart: always
-  #   ports:
-  #     - 5672:5672
-  #     - 15672:15672
-  #   volumes:
-  #     - ./bootleg-ebay/rabbitmq/:/rabbitmq/
-  #   environment:
-  #     - RABBITMQ_CONFIG_FILE=/rabbitmq/rabbitmq.conf
+  rabbitmq-server:
+    image: rabbitmq:latest
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./bootleg-ebay/rabbitmq/:/rabbitmq/
+    environment:
+      - RABBITMQ_CONFIG_FILE=/rabbitmq/rabbitmq.conf
   frontend:
     build: ./frontend
     ports:
