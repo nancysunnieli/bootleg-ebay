@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Nav from "react-bootstrap/Nav";
-import NavBar from "react-bootstrap/NavBar";
+import NavBar from "react-bootstrap/Navbar";
 import { useSelector } from "react-redux";
 import Container from "react-bootstrap/Container";
 import { Link } from "react-router-dom";
