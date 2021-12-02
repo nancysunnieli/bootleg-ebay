@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
+import ItemsService from "../services/items.service";
 import PaymentsService from "../services/payments.service";
 
 export const createPaymentCard = createAsyncThunk(
@@ -93,11 +94,36 @@ export const createTransaction = createAsyncThunk(
     }
 );
 
+export const getTransationsByUserId = createAsyncThunk(
+    "payments/getTransactionsByUserId",
+    async ({ user_id }, thunkAPI) => {
+        try {
+            const data = await PaymentsService.getTransationsByUserId(user_id);
+            let ret = await Promise.all(
+                data.map(async (transaction) => {
+                    console.log("t", transaction);
+                    let item = await ItemsService.getItem(transaction.item_id);
+                    return {
+                        ...transaction,
+                        item,
+                    };
+                })
+            );
+            return ret;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 const initialState = {
     paymentCard: null,
     getPaymentCardLoading: true,
     createPaymentCardLoading: true,
     cardModalVisible: false,
+    getTransactionsLoading: true,
+    transations: null,
 };
 
 const paymentsSlice = createSlice({
@@ -138,6 +164,17 @@ const paymentsSlice = createSlice({
         [paymentsDeleteAccount.fulfilled]: (state, action) => {
             toast.success("Succesfully deleted Payment Card");
             state.paymentCard = null;
+        },
+        [getTransationsByUserId.pending]: (state, action) => {
+            state.getTransactionsLoading = true;
+        },
+        [getTransationsByUserId.fulfilled]: (state, action) => {
+            state.getTransactionsLoading = false;
+            state.transactions = action.payload;
+        },
+        [getTransationsByUserId.rejected]: (state, action) => {
+            state.getTransactionsLoading = false;
+            toast.error("Error fetching transactions " + action.payload);
         },
     },
 });

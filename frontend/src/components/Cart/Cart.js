@@ -11,13 +11,10 @@ const Cart = () => {
     const { cartItems } = useSelector((state) => state.cart);
     const { paymentCard, getPaymentCardLoading } = useSelector((state) => state.payments);
     const dispatch = useDispatch();
-    const getCartItems = () => {
-        dispatch(getItemsFromCart());
-    };
     const { user } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        getCartItems();
+        dispatch(getItemsFromCart({ user_id: user.user_id }));
         dispatch(getPaymentCardByUserID({ user_id: user.user_id }));
     }, []);
 

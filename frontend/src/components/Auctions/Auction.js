@@ -86,6 +86,7 @@ export default function Auction() {
         buy_now_price,
         starting_price,
         shipping,
+        completed,
     } = auction.auction;
     const { _id, category, description, isFlagged, name, photos, sellerID, watchlist } =
         auction.item;
@@ -101,7 +102,7 @@ export default function Auction() {
     let isStarted = start_time * 1000 < new Date().getTime();
     let timeToStart = moment(start_time * 1000).fromNow();
     let remainingDuration = Math.min(end_time * 1000 - timeNow.getTime());
-    let isEnded = end_time * 1000 < new Date().getTime();
+    let isEnded = end_time * 1000 < new Date().getTime() || completed;
     let timeRemaining = moment.utc(remainingDuration).format("D [days,] HH:mm:ss");
 
     const tbody = bids.map((bid, i) => (
@@ -209,7 +210,7 @@ export default function Auction() {
                         </h1>
                         <h4>{description}</h4>
                         <h5>Shipping fee ${shipping}</h5>
-                        <h6>
+                        <h6 onClick={() => history.push(`/users/${seller_id}`)}>
                             Sold by {seller_username} {seller_rating}★
                         </h6>
 

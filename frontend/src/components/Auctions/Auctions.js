@@ -71,7 +71,6 @@ const Auctions = () => {
                 </Row>
 
                 <br />
-                <h3>Upcoming Auctions</h3>
             </div>
         </div>
     );

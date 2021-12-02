@@ -48,6 +48,12 @@ const getTransaction = async (transaction_id) => {
     return response.data;
 };
 
+const getTransationsByUserId = async (user_id) => {
+    const response = await axios.get(API_URL + `payments/transactions_by_user_id/${user_id}`);
+
+    return response.data;
+};
+
 const PaymentsService = {
     createPaymentCard,
     getPaymentCard,
@@ -55,6 +61,7 @@ const PaymentsService = {
     paymentsDeleteAccount,
     createTransaction,
     getTransaction,
+    getTransationsByUserId,
 };
 
 export default PaymentsService;

@@ -5,6 +5,7 @@ import Container from "react-bootstrap/esm/Container";
 import { useDispatch, useSelector } from "react-redux";
 import {
     getPaymentCardByUserID,
+    getTransationsByUserId,
     paymentsDeleteAccount,
     setCardModalVisible,
 } from "../../slices/payments";
@@ -12,19 +13,26 @@ import { deleteAccount, setEditModalVisible, suspendAccount } from "../../slices
 import Loading from "../Loading/Loading";
 import EditModalInfo from "./EditInfoModal";
 import AddCardModal from "./AddCardModal";
+import Table from "react-bootstrap/Table";
+import { useHistory } from "react-router-dom";
 
 const Profile = () => {
     const { user } = useSelector((state) => state.auth);
-    const { paymentCard, getPaymentCardLoading, cardModalVisible } = useSelector(
-        (state) => state.payments
-    );
+    const {
+        paymentCard,
+        getPaymentCardLoading,
+        cardModalVisible,
+        getTransactionsLoading,
+        transactions,
+    } = useSelector((state) => state.payments);
     const editModalVisible = useSelector((state) => state.profile.visible);
     const dispatch = useDispatch();
     const setShowEditModal = (visibility) => dispatch(setEditModalVisible(visibility));
     const setShowCardModal = (visibility) => dispatch(setCardModalVisible(visibility));
-
+    const history = useHistory();
     useEffect(() => {
         dispatch(getPaymentCardByUserID({ user_id: user.user_id }));
+        dispatch(getTransationsByUserId({ user_id: user.user_id }));
     }, []);
 
     const handleDelete = () => {
@@ -55,14 +63,49 @@ const Profile = () => {
         </Card>
     );
 
+    const renderTransactions = () => {
+        if (getTransactionsLoading) {
+            return <Loading />;
+        } else {
+            return (
+                <Table striped hover responsive="sm">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Total Cost</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.map((transaction, i) => (
+                            <tr key={i}>
+                                <td>{transaction.item.name}</td>
+                                <td>{transaction.money}</td>
+                                <td>
+                                    <Button
+                                        onClick={() =>
+                                            history.push(`/items/${transaction.item_id}`)
+                                        }
+                                    >
+                                        View
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            );
+        }
+    };
+
+    console.log("Transactions", transactions);
+
     return (
         <div>
             <div>
                 <h1>Profile</h1>
                 <h3>Hi {user.username}!</h3>
-                <h4>
-                    Your rating: {(user.total_rating / user.number_of_ratings || 0).toFixed(1)}★
-                </h4>
+                <h4>Your rating: 5.0★</h4>
                 <br />
                 <Card>
                     <Card.Body>
@@ -84,7 +127,8 @@ const Profile = () => {
                 <h2>Payment settings</h2>
                 {getPaymentCardLoading ? <Loading /> : renderPaymentCard()}
                 <br />
-                <h2>Your transactions</h2>
+                <h2>Your Transactions</h2>
+                {getTransactionsLoading ? <Loading /> : renderTransactions()}
             </div>
             <EditModalInfo show={editModalVisible} handleClose={() => setShowEditModal(false)} />
             <AddCardModal show={cardModalVisible} handleClose={() => setShowCardModal(false)} />

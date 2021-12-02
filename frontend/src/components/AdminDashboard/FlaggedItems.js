@@ -9,7 +9,7 @@ const FlaggedItems = () => {
     const { user } = useSelector((state) => state.auth);
     const { flaggedItems, isGetFlaggedItemsLoading } = useSelector((state) => state.items);
     const dispatch = useDispatch();
-
+    console.log("Flagged Items", flaggedItems);
     useEffect(() => {
         dispatch(getFlaggedItems());
     }, []);
