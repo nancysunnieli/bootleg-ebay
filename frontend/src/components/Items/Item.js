@@ -199,11 +199,14 @@ export default function Item() {
                     </Table>
                 </Row>
                 <br />
-                {is_admin && item.item.isFlagged && (
+                {is_admin && item.item.isFlagged ? (
                     <Row>
-                        <h3>This item is flagged</h3>
+                        <h3>This item is flagged for the following reasons below</h3>
+                        {item.item.flagged_reasons.map((reason, i) => (
+                            <p key={i}>- {reason}</p>
+                        ))}
                     </Row>
-                )}
+                ) : null}
             </Container>
             <ReportModal
                 show={reportModalVisible}

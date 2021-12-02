@@ -14,17 +14,28 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 // import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import { getAuctionMetrics } from "../../slices/auctions";
+import moment from "moment";
+import { getInbox } from "../../slices/notifs";
+import Card from "react-bootstrap/Card";
+import "./email.css";
+import ReplyModal from "./ReplyModal";
+
 export default function AdminDashboard() {
     const { categories } = useSelector((state) => state.items);
     const { getAuctionMetricsLoading, auctionMetrics } = useSelector((state) => state.auctions);
+    const { inbox, getInboxLoading } = useSelector((state) => state.notifs);
     const dispatch = useDispatch();
     const [selectedCategory, setSelectedCategory] = useState("");
     const [showModifyCategoryModal, setShowModifyCategoryModal] = useState(false);
     const [showCreateCategoryModal, setShowCreateCategoryModal] = useState(false);
     const [mode, setMode] = useState(null);
+    const [recipient, setRecipient] = useState("");
+    const [subject, setSubject] = useState("");
+    const [showReplyModal, setShowReplyModal] = useState(false);
 
     useEffect(() => {
         dispatch(getCategories());
+        dispatch(getInbox());
     }, []);
 
     const handleCategoryEdit = (category) => {
@@ -49,13 +60,20 @@ export default function AdminDashboard() {
         }
     };
 
-    console.log("metrics", auctionMetrics);
+    console.log("Inbox", inbox);
+
+    const handleReply = (recipient, subject) => {
+        setRecipient(recipient);
+        setSubject(subject);
+        setShowReplyModal(true);
+    };
+
     return (
         <div>
             <h1>Admin Dashboard</h1>
             <br />
             <h2>Flagged Items</h2>
-            {/* <FlaggedItems /> */}
+            <FlaggedItems />
 
             <br />
             <hr />
@@ -128,21 +146,94 @@ export default function AdminDashboard() {
                     </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
+            <br />
             {getAuctionMetricsLoading ? (
                 <Spinner animation="grow" variant="success" />
             ) : (
-                <p>{JSON.stringify(auctionMetrics)}</p>
+                auctionMetrics != null && (
+                    <ListGroup>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Average Auction Time:</Col>
+                                <Col md="auto">
+                                    {moment
+                                        .utc(auctionMetrics.average_auction_time * 1000)
+                                        .format("DD [days] HH [hours] mm [minutes]")}
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Highest Price:</Col>
+                                <Col md="auto">${auctionMetrics.highest_price}</Col>
+                            </Row>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Longest Auction Time:</Col>
+                                <Col md="auto">
+                                    {moment
+                                        .utc(auctionMetrics.longest_auction_time * 1000)
+                                        .format("DD [days] HH [hours] mm [minutes]")}
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Lowest Price:</Col>
+                                <Col md="auto">${auctionMetrics.lowest_price}</Col>
+                            </Row>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Mean Price:</Col>
+                                <Col md="auto">${auctionMetrics.mean_price.toFixed(2)}</Col>
+                            </Row>
+                        </ListGroup.Item>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>Shortest Auction Time:</Col>
+                                <Col md="auto">
+                                    {moment
+                                        .utc(auctionMetrics.shortest_auction_time * 1000)
+                                        .format("DD [days] HH [hours] mm [minutes]")}
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
+                    </ListGroup>
+                )
             )}
 
             <br />
             <hr />
             <br />
+
             <h2>Customer Support Emails</h2>
             <br />
 
-            {/* View auction metrics */}
-            {/* Examine emails received by customer support */}
-            {/*  */}
+            {getInboxLoading ? (
+                <Spinner animation="grow" variant="success" />
+            ) : (
+                inbox.map((email) => (
+                    <Card>
+                        <Card.Body>
+                            <Card.Title>{email[0]}</Card.Title>
+                            <Card.Text>Subject: {email[1]}</Card.Text>
+                            <span dangerouslySetInnerHTML={{ __html: email[2] }}></span>
+                            <br />
+                            <Button onClick={() => handleReply(email[0], email[1])}>Reply</Button>
+                        </Card.Body>
+                    </Card>
+                ))
+            )}
+
+            <ReplyModal
+                show={showReplyModal}
+                handleClose={() => setShowReplyModal(false)}
+                recipient={recipient}
+                subject={subject}
+            />
+
             <br />
         </div>
     );

@@ -6,6 +6,7 @@ import auctionsReducer from "./slices/auctions";
 import cartReducer from "./slices/cart";
 import paymentsReducer from "./slices/payments";
 import usersReducer from "./slices/users";
+import notifsReducer from "./slices/notifs";
 
 const reducer = {
     auth: authReducer,
@@ -15,6 +16,7 @@ const reducer = {
     cart: cartReducer,
     payments: paymentsReducer,
     users: usersReducer,
+    notifs: notifsReducer,
 };
 
 const store = configureStore({

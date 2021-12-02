@@ -229,6 +229,10 @@ services:
       - ./bootleg-ebay/rabbitmq/:/rabbitmq/
     environment:
       - RABBITMQ_CONFIG_FILE=/rabbitmq/rabbitmq.conf
+  frontend:
+    build: ./frontend
+    ports:
+      - 8000:80
 # networking for the Redis container
 #networks:
 #  node_net:
