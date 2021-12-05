@@ -47,6 +47,15 @@ const notifsSlice = createSlice({
             state.getInboxLoading = false;
             toast.error("Error on retrieving inbox " + action.payload);
         },
+        [sendEmail.pending]: (state, action) => {
+            toast("Sending Email...");
+        },
+        [sendEmail.fulfilled]: (state, action) => {
+            toast.success("Succesfully sent email");
+        },
+        [sendEmail.rejected]: (state, action) => {
+            toast.error("Failed to send email " + action.payload);
+        },
     },
 });
 
