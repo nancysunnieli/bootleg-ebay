@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import CartService from "../services/cart.service";
 import { toast } from "react-toastify";
-import { current } from "immer";
+import CartService from "../services/cart.service";
 const initialState = {
     cartItems: [],
     isLoading: true,
@@ -78,7 +77,7 @@ const cartSlice = createSlice({
         },
         [addItemToCart.fulfilled]: (state, action) => {
             for (let cartItem of state.cartItems) {
-                if (cartItem.item._id == action.meta.arg.item._id) {
+                if (cartItem.item._id === action.meta.arg.item._id) {
                     cartItem.status = "success";
                 }
             }
@@ -86,7 +85,7 @@ const cartSlice = createSlice({
         },
         [addItemToCart.rejected]: (state, action) => {
             for (let cartItem of state.cartItems) {
-                if (cartItem.item._id == action.meta.arg.item._id) {
+                if (cartItem.item._id === action.meta.arg.item._id) {
                     cartItem.status = "error";
                 }
             }
@@ -120,6 +119,6 @@ const cartSlice = createSlice({
         },
     },
 });
-export const {} = cartSlice.actions;
+// export const {} = cartSlice.actions;
 
 export default cartSlice.reducer;

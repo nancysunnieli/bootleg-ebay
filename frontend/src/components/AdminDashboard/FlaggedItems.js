@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getFlaggedItems, getItemsBySeller } from "../../slices/items";
 import Spinner from "react-bootstrap/Spinner";
-import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
+import { ScrollMenu } from "react-horizontal-scrolling-menu";
+import { useDispatch, useSelector } from "react-redux";
+import { getFlaggedItems } from "../../slices/items";
 import ItemCard from "../Items/ItemCard";
 
 const FlaggedItems = () => {

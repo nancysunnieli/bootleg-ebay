@@ -24,7 +24,7 @@ class TestCart(TestCase):
 
         # add item, get cart, then remove it
         url = self.base_url + "addition"
-        item = {'user_id': 1, 'item_id': "619538ad26e831839aaa22c1"}
+        item = {'user_id': 1, 'item_id': "61ad2913b0d5703410eccf9a"}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
 
@@ -47,7 +47,7 @@ class TestCart(TestCase):
 
         # add item to cart successfully
         url = self.base_url + "addition"
-        item = {'item_id': "619538ad26e831839aaa22c1",
+        item = {'item_id': "61ad2913b0d5703410eccf9a",
                 'user_id': 1}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
@@ -61,7 +61,7 @@ class TestCart(TestCase):
         auction_info = {
             "start_time": int(start_time),
             "end_time": int(current_time() + 10000),
-            "item_id": "619538ad26e831839aaa22c1",
+            "item_id": "61ad2913b0d5703410eccf9a",
             "seller_id": 7,
             'shipping': 10.0,
             'buy_now': True,
@@ -91,7 +91,7 @@ class TestCart(TestCase):
 
          # add item to cart successfully
         url = self.base_url + "addition"
-        item = {'item_id': "619538ad26e831839aaa22c1",
+        item = {'item_id': "61ad2913b0d5703410eccf9a",
                 'user_id': 1}
         output = requests.post(url = url, json = item)
         self.assertTrue(output.ok)
@@ -102,7 +102,7 @@ class TestCart(TestCase):
         auction_info = {
             "start_time": int(start_time),
             "end_time": int(current_time()) - 1000,
-            "item_id": "619538ad26e831839aaa22c1",
+            "item_id": " 61ad2913b0d5703410eccf9a",
             "seller_id": 7,
             'shipping': 10.0,
             'buy_now': True,

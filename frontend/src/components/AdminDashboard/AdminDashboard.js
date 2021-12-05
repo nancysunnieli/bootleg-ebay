@@ -1,23 +1,21 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getCategories, getFlaggedItems, removeCategory } from "../../slices/items";
-import Spinner from "react-bootstrap/Spinner";
-import ListGroup from "react-bootstrap/ListGroup";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
+import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
-import ModifyCategoryModal from "./ModifyCategoryModal";
-import CreateCategoryModal from "../Items/CreateCategoryModal";
-import FlaggedItems from "./FlaggedItems";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
 // import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
+import ListGroup from "react-bootstrap/ListGroup";
+import Row from "react-bootstrap/Row";
+import Spinner from "react-bootstrap/Spinner";
+import { useDispatch, useSelector } from "react-redux";
 import { getAuctionMetrics } from "../../slices/auctions";
-import moment from "moment";
+import { getCategories, removeCategory } from "../../slices/items";
 import { getInbox } from "../../slices/notifs";
-import Card from "react-bootstrap/Card";
+import CreateCategoryModal from "../Items/CreateCategoryModal";
 import "./email.css";
+import FlaggedItems from "./FlaggedItems";
+import ModifyCategoryModal from "./ModifyCategoryModal";
 import ReplyModal from "./ReplyModal";
 
 export default function AdminDashboard() {
@@ -34,9 +32,12 @@ export default function AdminDashboard() {
     const [showReplyModal, setShowReplyModal] = useState(false);
 
     useEffect(() => {
-        dispatch(getCategories());
-        dispatch(getInbox());
-    }, []);
+        function init() {
+            dispatch(getCategories());
+            dispatch(getInbox());
+        }
+        init();
+    }, [dispatch]);
 
     const handleCategoryEdit = (category) => {
         setSelectedCategory(category);
@@ -214,8 +215,8 @@ export default function AdminDashboard() {
             {getInboxLoading ? (
                 <Spinner animation="grow" variant="success" />
             ) : (
-                inbox.map((email) => (
-                    <Card>
+                inbox.map((email, i) => (
+                    <Card key={i}>
                         <Card.Body>
                             <Card.Title>{email[0]}</Card.Title>
                             <Card.Text>Subject: {email[1]}</Card.Text>
