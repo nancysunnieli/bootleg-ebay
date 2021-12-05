@@ -34,6 +34,7 @@ To shutdown the system:
 - When creating an item, the only format of photos that you are able to upload are PNGs
 - If you want to have two users at the same time, you should open up an incognito tab.
 - Reporting an item is the same as flagging an item
+- An admin is basically a user with special priviledges. So that admin can create items and buy / bid on things.
 
 # Front end
 
