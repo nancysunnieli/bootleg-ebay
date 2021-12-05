@@ -41,6 +41,7 @@ To shutdown the system:
 ## Users
 
 - If you want to have two users at the same time, you should open up an incognito tab.
+- A suspended user cannot login.
 
 ## Other
 
