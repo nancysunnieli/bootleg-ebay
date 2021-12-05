@@ -32,7 +32,7 @@ const SellerItems = () => {
             />
             <ScrollMenu>
                 {sellerItems.map((item, index) => (
-                    <div style={{ width: "20vw", marginRight: "1rem" }}>
+                    <div key={index} style={{ width: "20vw", marginRight: "1rem" }}>
                         <ItemCard item={item} key={index} />
                     </div>
                 ))}

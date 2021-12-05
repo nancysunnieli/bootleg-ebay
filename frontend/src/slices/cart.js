@@ -14,7 +14,7 @@ export const addItemToCart = createAsyncThunk(
             const data = await CartService.addItemToCart(user_id, item._id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -28,7 +28,7 @@ export const deleteItemFromCart = createAsyncThunk(
             const data = await CartService.deleteItemFromCart(user_id, item._id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -42,7 +42,7 @@ export const getItemsFromCart = createAsyncThunk(
             console.log("GetItemsFromCart", data);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -53,7 +53,7 @@ export const emptyCart = createAsyncThunk("cart/emptyCart", async ({ user_id }, 
         const data = await CartService.emptyCart(user_id);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -63,7 +63,7 @@ export const checkOut = createAsyncThunk("cart/checkOut", async ({ user_id }, th
         const data = await CartService.checkOut(user_id);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });

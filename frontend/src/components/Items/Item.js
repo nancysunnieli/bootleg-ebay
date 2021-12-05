@@ -151,7 +151,11 @@ export default function Item() {
                             {upcomingAuctions.map((a, i) => (
                                 <tr key={i}>
                                     <td>{moment(a.start_time * 1000).fromNow()}</td>
-                                    <td>{moment(a.end_time * 1000).fromNow()}</td>
+                                    <td>
+                                        {a.completed
+                                            ? "Auction Completed"
+                                            : moment(a.end_time * 1000).fromNow()}
+                                    </td>
                                     <td>
                                         <Button
                                             size="sm"

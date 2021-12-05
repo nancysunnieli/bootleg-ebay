@@ -18,7 +18,7 @@ export const modifyProfile = createAsyncThunk(
             thunkAPI.dispatch(setEditModalVisible(false));
             return { user: data };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -31,7 +31,7 @@ export const deleteAccount = createAsyncThunk("profile/deleteAccount", async (id
         window.location.reload();
         return result;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -45,7 +45,7 @@ export const suspendAccount = createAsyncThunk(
             thunkAPI.dispatch(setUser(data));
             return { user: data };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -60,7 +60,7 @@ export const unsuspendAccount = createAsyncThunk(
             thunkAPI.dispatch(setUser(data));
             return { user: data };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }

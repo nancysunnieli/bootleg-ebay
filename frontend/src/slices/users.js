@@ -10,7 +10,7 @@ export const getUser = createAsyncThunk("users/getUser", async ({ user_id }, thu
         const data = await UserService.getUserInfo(user_id);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -20,7 +20,7 @@ export const getUserBids = createAsyncThunk("users/getUserBids", async ({ user_i
         const data = await AuctionsService.getUserBids(user_id);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -33,7 +33,7 @@ export const suspendAccount = createAsyncThunk(
             const data = await UserService.suspendAccount(user_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -46,7 +46,7 @@ export const unsuspendAccount = createAsyncThunk(
             const data = await UserService.unsuspendAccount(user_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }

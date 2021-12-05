@@ -13,7 +13,7 @@ export const register = createAsyncThunk(
             //   thunkAPI.dispatch(setMessage(response.data.message));
             return { user: data };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             //   thunkAPI.dispatch(setMessage(message));
             return thunkAPI.rejectWithValue(message);
         }

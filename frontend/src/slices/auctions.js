@@ -24,7 +24,7 @@ export const getCurrentAuctions = createAsyncThunk(
             });
             return auctionItems;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -46,7 +46,7 @@ export const getAuction = createAsyncThunk(
                 item,
             };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -59,7 +59,7 @@ export const getAuctionBids = createAsyncThunk(
             const auction = await AuctionsService.getAuction(auction_id);
             return auction.bids;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -76,7 +76,7 @@ export const getAuctionByItemID = createAsyncThunk(
                 item,
             };
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -89,7 +89,7 @@ export const getAuctionMetrics = createAsyncThunk(
             const data = await AuctionsService.getAuctionMetrics(start, end);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -102,7 +102,7 @@ export const removeAuction = createAsyncThunk(
             const data = await AuctionsService.removeAuction(auction_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -121,7 +121,7 @@ export const modifyAuction = createAsyncThunk(
             console.log("modify", data);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -134,7 +134,7 @@ export const getUserBids = createAsyncThunk(
             const data = await AuctionsService.getUserBids(user_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -149,8 +149,7 @@ export const createBid = createAsyncThunk(
             console.log("Created bid", data);
             return data;
         } catch (error) {
-            const message = error.toString();
-            console.log("Error found", error);
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -188,7 +187,7 @@ export const createAuction = createAsyncThunk(
             history.push(`/auctions/${data.auction_id}`);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -201,7 +200,7 @@ export const stopAuctionEarly = createAsyncThunk(
             const data = await AuctionsService.stopAuctionEarly(auction_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.reject(message);
         }
     }

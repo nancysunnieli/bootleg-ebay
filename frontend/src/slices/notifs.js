@@ -8,7 +8,7 @@ export const getInbox = createAsyncThunk("notifs/inbox", async (_, thunkAPI) => 
         data = data.filter((email) => !email[1].includes("Re:"));
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -20,7 +20,7 @@ export const sendEmail = createAsyncThunk(
             const data = await NotifsService.sendEmail(recipient, subject, body);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }

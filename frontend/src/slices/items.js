@@ -9,7 +9,7 @@ export const getAllItems = createAsyncThunk("items/getAllItems", async (limit, t
         const data = await ItemsService.getAllItems(limit);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -26,7 +26,7 @@ export const getItem = createAsyncThunk("items/getItem", async ({ item_id }, thu
 
         return { item: data, auction: itemAuction };
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -36,7 +36,7 @@ export const getFlaggedItems = createAsyncThunk("items/getFlaggedItems", async (
         const data = await ItemsService.getFlaggedItems();
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -48,7 +48,7 @@ export const searchItem = createAsyncThunk(
             const data = await ItemsService.searchItem(keywords, category);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -61,7 +61,7 @@ export const addUserToWatchlist = createAsyncThunk(
             const data = await ItemsService.addUserToWatchlist(user_id, item_id, max_price);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -75,7 +75,7 @@ export const removeItem = createAsyncThunk(
             history.push("/home");
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -88,7 +88,7 @@ export const reportItem = createAsyncThunk(
             const data = await ItemsService.reportItem(item_id, reason);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -113,7 +113,7 @@ export const modifyItem = createAsyncThunk(
             history.go(0);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -124,7 +124,7 @@ export const getCategories = createAsyncThunk("items/getCategories", async (_, t
         const data = await ItemsService.getCategories();
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -135,7 +135,7 @@ export const addCategory = createAsyncThunk("items/addCategory", async ({ catego
         console.log("Data", data);
         return data;
     } catch (error) {
-        const message = error.toString();
+        const message = error.response?.data?.message || error.toString();
         return thunkAPI.rejectWithValue(message);
     }
 });
@@ -147,7 +147,7 @@ export const removeCategory = createAsyncThunk(
             const data = await ItemsService.removeCategory(category);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -169,7 +169,7 @@ export const createItem = createAsyncThunk(
             history.push(`/items/${data._id}`);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -183,7 +183,7 @@ export const getItemsBySeller = createAsyncThunk(
             const data = await ItemsService.getItemsBySeller(seller_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }

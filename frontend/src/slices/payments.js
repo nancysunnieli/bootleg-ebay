@@ -17,7 +17,7 @@ export const createPaymentCard = createAsyncThunk(
 
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -30,7 +30,7 @@ export const getPaymentCard = createAsyncThunk(
             const data = await PaymentsService.getPaymentCard(payment_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -43,7 +43,7 @@ export const getPaymentCardByUserID = createAsyncThunk(
             const data = await PaymentsService.getPaymentCardByUserID(user_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -56,7 +56,7 @@ export const paymentsDeleteAccount = createAsyncThunk(
             const data = await PaymentsService.paymentsDeleteAccount(payment_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -69,7 +69,7 @@ export const getTransaction = createAsyncThunk(
             const data = await PaymentsService.getTransaction(transaction_id);
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -88,7 +88,7 @@ export const createTransaction = createAsyncThunk(
             );
             return data;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -111,7 +111,7 @@ export const getTransationsByUserId = createAsyncThunk(
             );
             return ret;
         } catch (error) {
-            const message = error.toString();
+            const message = error.response?.data?.message || error.toString();
             return thunkAPI.rejectWithValue(message);
         }
     }
