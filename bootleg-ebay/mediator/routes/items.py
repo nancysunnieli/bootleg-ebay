@@ -185,9 +185,9 @@ def remove_item():
     
     # getting auction name
     # commenting this out until auctions starts running
+    
     data_content = request.get_json()
     item_id = data_content["item_id"]
-
     socket_url = ("http://" + AUCTIONS_SERVICE_HOST + AUCTIONS_PORT + "/current_auctions")
     r = get_and_request(socket_url, 'get')
     auction_id = None
@@ -200,6 +200,7 @@ def remove_item():
         r = get_and_request(socket_url, 'get')
         if len(r.content) != 0:
             return "There are already bids on this item! It cannot be deleted"
+
     data_content = request.get_json()
     socket_url = ("http://" + ITEMS_SERVICE_HOST +
                      ITEMS_PORT + "/remove_item")
@@ -208,6 +209,18 @@ def remove_item():
 
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
+
+    # remove all associated auctions
+    socket_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                     AUCTIONS_PORT + "/auctions_by_item/" + item_id)
+    auctions = json.loads(requests.get(url = socket_url).content)
+
+    
+    for auction in auctions:
+        socket_url = ("http://" + AUCTIONS_SERVICE_HOST +
+                     AUCTIONS_PORT + "/auction/" + auction["auction_id"])
+        remove_auction = requests.delete(url=socket_url)
+
     return r.content
 
 

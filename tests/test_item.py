@@ -19,7 +19,7 @@ class TestItem(TestCase):
             "name": "test",
             "description": "test",
             "category": ["Women's Clothing", "Shoes"],
-            "photos": "6195389726e831839aaa22a3",
+            "photos": "61ad2913b0d5703410eccf9a",
             "sellerID": 1,
             "quantity": 6}
         
@@ -27,6 +27,7 @@ class TestItem(TestCase):
         self.assertTrue(output.ok)
         id_ = output.json()['_id']
         
+
 
         # view item 
         url = self.base_url + "item"
