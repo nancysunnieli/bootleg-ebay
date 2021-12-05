@@ -156,6 +156,9 @@ def login(username, password) -> UserInfo:
     if user.password != password:
         raise BadInputError('Wrong password!')
 
+    if user.user_info["suspended"]:
+        raise BadInputError("You are suspended and cannot login! ")
+
     return user.to_json()
     
 
