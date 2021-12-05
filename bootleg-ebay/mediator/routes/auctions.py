@@ -5,6 +5,7 @@ import datetime
 
 from flask_expects_json import expects_json
 from flask import Response, request, Blueprint, current_app
+from flask_cors import  cross_origin
 
 from utils import get_and_request
 from config import *

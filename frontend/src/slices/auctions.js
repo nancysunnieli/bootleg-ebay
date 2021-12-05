@@ -108,6 +108,25 @@ export const removeAuction = createAsyncThunk(
     }
 );
 
+export const modifyAuction = createAsyncThunk(
+    "auctions/modifyAuction",
+    async ({ auction_id, shipping, buy_now, buy_now_price }, thunkAPI) => {
+        try {
+            const data = await AuctionsService.modifyAuction(
+                auction_id,
+                shipping,
+                buy_now,
+                buy_now_price
+            );
+            console.log("modify", data);
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 export const getUserBids = createAsyncThunk(
     "auctions/getUserBids",
     async ({ user_id }, thunkAPI) => {
@@ -259,6 +278,16 @@ const auctionsSlice = createSlice({
         [getAuctionMetrics.rejected]: (state, action) => {
             state.getAuctionMetricsLoading = false;
             toast.error("Error on fetching auction metrics " + action.payload);
+        },
+        [modifyAuction.pending]: (state, action) => {
+            toast("Modifying auction..");
+        },
+        [modifyAuction.fulfilled]: (state, action) => {
+            toast.success("Succesfully modified auction");
+            window.location.reload();
+        },
+        [modifyAuction.rejected]: (state, action) => {
+            toast.error("Error on modifying auction " + action.payload);
         },
     },
 });

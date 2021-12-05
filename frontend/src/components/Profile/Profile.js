@@ -114,7 +114,7 @@ const Profile = () => {
             <div>
                 <h1>Profile</h1>
                 <h3>Hi {user.username}!</h3>
-                <h4>Your rating: 5.0★</h4>
+                <h4>Your rating: {user.rating}★</h4>
                 <br />
                 <Card>
                     <Card.Body>

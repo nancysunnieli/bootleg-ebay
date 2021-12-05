@@ -23,7 +23,16 @@ const getAuctionMetrics = async (start, end) => {
 };
 
 const removeAuction = async (auction_id) => {
-    const resp = await axios.delete(API_URL + `auctions/${auction_id}`);
+    const resp = await axios.delete(API_URL + `auctions/auction/${auction_id}`);
+    return resp.data;
+};
+
+const modifyAuction = async (auction_id, shipping, buy_now, buy_now_price) => {
+    const resp = await axios.put(API_URL + `auctions/auction/${auction_id}`, {
+        shipping,
+        buy_now,
+        buy_now_price,
+    });
     return resp.data;
 };
 
@@ -69,6 +78,7 @@ const AuctionsService = {
     getAuctionByItemID,
     getAuctionMetrics,
     removeAuction,
+    modifyAuction,
     getUserBids,
     createBid,
     createAuction,
