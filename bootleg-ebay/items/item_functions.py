@@ -474,7 +474,7 @@ def view_flagged_items(limit = None):
 
         new_item = items.Item()
         new_item.from_mongo(item, flags, photo)
-        if new_item.isFlagged:
+        if new_item.isFlagged == "True":
             new_dict = new_item.to_mongo()
             new_item.Flagged_Reason
             new_dict["_id"] = str(item_id)
