@@ -27,15 +27,17 @@ To shutdown the system:
 
 
 # Important Notes
+
+
 - Our system only allows for one auction to take place for each item at a given time
 - When inputting information into forms on the front end, make sure to fill in all the fields, otherwise the API will not allow you to move forward
 - When creating an item, the only format of photos that you are able to upload are PNGs
-
+- If you want to have two users at the same time, you should open up an incognito tab.
 
 
 # Front end
 
-After starting the system, go to `http://localhost:3000` to view the front end.
+After starting the system, go to `http://localhost:8000` to view the front end.
 
 
 # Testing
