@@ -29,6 +29,7 @@ To shutdown the system:
 # Important Notes
 - Our system only allows for one auction to take place for each item at a given time
 - When inputting information into forms on the front end, make sure to fill in all the fields, otherwise the API will not allow you to move forward
+- When creating an item, the only format of photos that you are able to upload are PNGs
 
 
 
