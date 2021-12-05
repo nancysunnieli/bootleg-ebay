@@ -114,7 +114,9 @@ const Profile = () => {
             <div>
                 <h1>Profile</h1>
                 <h3>Hi {user.username}!</h3>
-                <h4>Your rating: {user.rating}★</h4>
+                <h4>
+                    Your rating: {(user.total_rating / user.number_of_ratings || 0).toFixed(1)}★
+                </h4>
                 <br />
                 <Card>
                     <Card.Body>

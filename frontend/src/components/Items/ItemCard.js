@@ -29,7 +29,7 @@ const ItemCard = ({ item }) => {
                 <Card.Img
                     variant="top"
                     // src={`data:image/png;base64, ${photos}`}
-                    src={`https://picsum.photos/500?${_id}`}
+                    src={`data:image/png;base64, ${photos}`}
                 />
                 <Card.Body>
                     <Card.Title>{name}</Card.Title>

@@ -71,7 +71,7 @@ export default function Item() {
                 <Row>
                     <Col>
                         <Image
-                            src="https://picsum.photos/1000"
+                            src={`data:image/png;base64, ${photos}`}
                             style={{
                                 width: "30em",
                                 height: "auto",
