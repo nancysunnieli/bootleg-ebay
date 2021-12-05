@@ -151,6 +151,8 @@ def login(username, password) -> UserInfo:
     
     user = UserDBManager.get_user_by_username(username)
 
+    if user is None:
+        raise BadInputError('No existing username: {}'.format(username))
     if user.password != password:
         raise BadInputError('Wrong password!')
 
