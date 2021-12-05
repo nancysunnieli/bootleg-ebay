@@ -66,6 +66,7 @@ const authSlice = createSlice({
             state.isAdmin = action.payload.user.is_admin;
         },
         [register.rejected]: (state, action) => {
+            toast.error("Registration failed, error: " + action.payload);
             state.isLoggedIn = false;
         },
         [login.fulfilled]: (state, action) => {
