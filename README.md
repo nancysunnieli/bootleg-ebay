@@ -19,6 +19,8 @@ cd data/
 ./importAllData.sh
 ```
 
+4. After starting the system, go to `http://localhost:8000` to view the front end.
+
 To shutdown the system:
 
 1. Ctrl+C to stop the docker containers
@@ -49,10 +51,6 @@ To shutdown the system:
 
 
 
-
-# Front end
-
-After starting the system, go to `http://localhost:8000` to view the front end.
 
 # Testing
 
