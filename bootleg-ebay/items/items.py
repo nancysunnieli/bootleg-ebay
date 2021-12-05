@@ -109,12 +109,12 @@ class Item(object):
                 "watchlist": self.watchlist, "quantity": self.quantity, "_id": self._id}
 
     def modify_item(self,
-                    new_name = None,
-                    new_description = None,
-                    new_photos = None,
-                    new_categories = None,
-                    new_watchlist = None,
-                    quantity = None):
+                    new_name,
+                    new_description,
+                    new_photos,
+                    new_categories,
+                    new_watchlist,
+                    quantity):
         """
         This modifies the specified attributes.
         The attributes that can be modified by this

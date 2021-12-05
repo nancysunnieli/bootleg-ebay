@@ -623,6 +623,7 @@ def modify_item(item_id, name = None, description = None,
     else:
         new_quantity = None
 
+
     return json.dumps(ItemsDBManager.modify_item(item_id, new_name, new_description,
                                         new_category, new_photos,
                                         new_watchlist, new_quantity))
