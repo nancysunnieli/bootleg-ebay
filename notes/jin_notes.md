@@ -39,3 +39,6 @@ mysql -uroot -pbootleg users
 
 https://githubmemory.com/repo/docker/for-mac/issues/5785
 https://github.com/docker-library/mongo/issues/485#issuecomment-891991814
+
+
+rm -rf advertisements-db/* auctions-db/* carts-db/* items-db/* notifs-db/* payments-db/* users-db/*
