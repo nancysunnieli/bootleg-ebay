@@ -263,10 +263,13 @@ def stop_auction_early(auction_id):
     if not r.ok:
         return Response(response=r.text, status=r.status_code)
 
-    socket_url = CARTS_URL + "/add_item_to_cart"
-
-    # send item to cart
     auction_info = r.json()
+
+    socket_url = CARTS_URL + "/add_item_to_cart"
+    if len(auction_info['bids']) == 0:
+        return r.content
+    
+    # send item to cart
     user_id = max(auction_info['bids'], key=lambda x: x['price'])['buyer_id']
     data = {
         "item_id": auction_info['item_id'], 
