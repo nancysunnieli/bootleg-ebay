@@ -8,7 +8,7 @@ import uuid
 from PIL import Image
 import io
 from bson.objectid import ObjectId
-
+import time
 import base64
 
 
@@ -211,7 +211,7 @@ def auctions():
     for i in range(0, 30):
         id = generate_random_id()
         auctionstarttime = generate_random_date(datetime.datetime(2021, 10, 23, 0, 0), 
-                                    datetime.datetime(2021, 12, 31, 0, 0))
+                                    datetime.datetime(2021, 12, 5, 0, 0))
         auctiontime = random.randint(86400, 1814000)
         auctionendtime = str(int(auctionstarttime) + auctiontime)
         while (True):
@@ -303,7 +303,7 @@ def bids():
         timestamp = 0
         while int(timestamp) <= int(previous_timestamp):
             timestamp = generate_random_date(datetime.datetime.fromtimestamp(int(auctionstarttime)), 
-                                            datetime.datetime.fromtimestamp(int(auctionendtime)))
+                                            datetime.datetime.fromtimestamp(int(time.time())))
         amount = 0
         while amount <= previous_bid:
             amount = round(random.uniform(1.00, 100.99), 2)
@@ -506,19 +506,19 @@ def generate_all_data():
     """
     This generates the random data
     """
-    photos()
-    users()
-    items()
-    categories()
+    #photos()
+    #users()
+    #items()
+    #categories()
     auctions()
-    flagged_items()
+    #flagged_items()
     bids()
-    advertisers()
-    advertisements()
-    notifications()
-    cards()
-    carts()
-    watchlist()
+    #advertisers()
+    #advertisements()
+    #notifications()
+    #cards()
+    #carts()
+    #watchlist()
 
 if __name__ == '__main__':
     generate_all_data()
