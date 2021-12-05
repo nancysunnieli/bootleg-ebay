@@ -23,7 +23,6 @@ const CreateAuctionModal = ({ show, handleClose }) => {
 
     const dispatch = useDispatch();
     const history = useHistory();
-
     const close = () => {
         handleClose();
     };
