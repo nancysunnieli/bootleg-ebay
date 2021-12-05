@@ -59,6 +59,6 @@ const notifsSlice = createSlice({
     },
 });
 
-export const {} = notifsSlice.actions;
+// export const {} = notifsSlice.actions;
 
 export default notifsSlice.reducer;

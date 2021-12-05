@@ -47,7 +47,7 @@ const modifyItem = async (item_id, name, description, category, photos, sellerID
         sellerID,
         quantity,
     };
-    if (photos != null && photos.length != 0) {
+    if (photos != null && photos.length !== 0) {
         payload[photos] = photos;
     }
     const resp = await axios.post(API_URL + "items/modification", payload);
@@ -67,8 +67,8 @@ const createItem = async (name, description, category, photos, sellerID, quantit
 };
 
 // TODO: Not sure why this is needed
-const editItemCategories = async () => {};
-const modifyItemQuantity = async () => {};
+// const editItemCategories = async () => {};
+// const modifyItemQuantity = async () => {};
 
 const getCategories = async () => {
     const resp = await axios.get(API_URL + "items/all_categories");
@@ -100,7 +100,6 @@ const ItemsService = {
     reportItem,
     modifyItem,
     createItem,
-    editItemCategories,
     getCategories,
     addCategory,
     removeCategory,

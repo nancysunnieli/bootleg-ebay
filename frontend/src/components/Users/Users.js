@@ -19,8 +19,11 @@ export default function Users() {
     const dispatch = useDispatch();
     const history = useHistory();
     useEffect(() => {
-        dispatch(getUser({ user_id }));
-        dispatch(getUserBids({ user_id }));
+        const init = () => {
+            dispatch(getUser({ user_id }));
+            dispatch(getUserBids({ user_id }));
+        };
+        init();
     }, []);
 
     if (isGetUserLoading) return <Loading />;

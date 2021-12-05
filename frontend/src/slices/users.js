@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { FaUserSlash } from "react-icons/fa";
+import { current } from "immer";
 import { toast } from "react-toastify";
 import AuctionsService from "../services/auctions.service";
 import UserService from "../services/user.service";
-import { setUser } from "./auth";
-import { current } from "immer";
 export const getUser = createAsyncThunk("users/getUser", async ({ user_id }, thunkAPI) => {
     try {
         const data = await UserService.getUserInfo(user_id);
@@ -110,6 +108,6 @@ const usersSlice = createSlice({
         },
     },
 });
-export const {} = usersSlice.actions;
+// export const {} = usersSlice.actions;
 
 export default usersSlice.reducer;

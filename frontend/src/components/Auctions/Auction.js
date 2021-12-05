@@ -233,7 +233,7 @@ export default function Auction() {
                                 </Col>
                             ))}
                         </Row>
-                        {isSeller && (
+                        {isSeller && !isEnded && (
                             <div>
                                 <br />
                                 <Row>
