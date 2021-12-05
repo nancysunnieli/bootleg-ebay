@@ -43,6 +43,11 @@ export default function Navbar() {
                                 Auctions
                             </Nav.Link>,
                         ]}
+                        {showAdminBoard && (
+                            <Nav.Link as={Link} to="/admin">
+                                Admin
+                            </Nav.Link>
+                        )}
                         {isLoggedIn ? (
                             <Nav.Link as={Link} to="/logout">
                                 Logout
@@ -56,11 +61,6 @@ export default function Navbar() {
                                     Register
                                 </Nav.Link>,
                             ]
-                        )}
-                        {showAdminBoard && (
-                            <Nav.Link as={Link} to="/admin">
-                                Admin
-                            </Nav.Link>
                         )}
                     </Nav>
                     {currentUser && (
