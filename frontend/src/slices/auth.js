@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 import AuthService from "../services/auth.service";
 import { getItemsFromCart } from "./cart";
@@ -74,11 +75,13 @@ const authSlice = createSlice({
         },
         [login.rejected]: (state, action) => {
             console.log("login failed");
+            toast.error("Login failed, error: " + action.payload);
             state.isLoggedIn = false;
             state.user = null;
         },
         [logout.fulfilled]: (state, action) => {
             state.isLoggedIn = false;
+            toast.success("Login success!");
             state.user = null;
         },
     },
