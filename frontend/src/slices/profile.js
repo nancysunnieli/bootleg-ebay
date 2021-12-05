@@ -9,7 +9,7 @@ const initialState = {
 };
 
 export const modifyProfile = createAsyncThunk(
-    "auth/modifyProfile",
+    "profile/modifyProfile",
     async ({ id, email, password }, thunkAPI) => {
         console.log("Modify profile");
         try {
@@ -24,7 +24,7 @@ export const modifyProfile = createAsyncThunk(
     }
 );
 
-export const deleteAccount = createAsyncThunk("auth/deleteAccount", async (id, thunkAPI) => {
+export const deleteAccount = createAsyncThunk("profile/deleteAccount", async (id, thunkAPI) => {
     console.log("Delete account");
     try {
         const result = await UserService.deleteAccount(id);
@@ -37,10 +37,26 @@ export const deleteAccount = createAsyncThunk("auth/deleteAccount", async (id, t
 });
 
 export const suspendAccount = createAsyncThunk(
-    "auth/suspendAccount",
+    "profile/suspendAccount",
     async ({ user_id }, thunkAPI) => {
         try {
             const data = await UserService.suspendAccount(user_id);
+            console.log("Susspend account data", data);
+            thunkAPI.dispatch(setUser(data));
+            return { user: data };
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
+export const unsuspendAccount = createAsyncThunk(
+    "profile/unsuspendAccount",
+    async ({ user_id }, thunkAPI) => {
+        try {
+            const data = await UserService.unsuspendAccount(user_id);
+            console.log("Unsuspend account data", data);
             thunkAPI.dispatch(setUser(data));
             return { user: data };
         } catch (error) {

@@ -28,8 +28,11 @@ To shutdown the system:
 
 # Important Notes
 
-TODO: Write some important notes here. For example, one important note is we can only auction one item at a time.
 
+- Our system only allows for one auction to take place for each item at a given time
+- When inputting information into forms on the front end, make sure to fill in all the fields, otherwise the API will not allow you to move forward
+- When creating an item, the only format of photos that you are able to upload are PNGs
+- If you want to have two users at the same time, you should open up an incognito tab.
 
 
 # Front end

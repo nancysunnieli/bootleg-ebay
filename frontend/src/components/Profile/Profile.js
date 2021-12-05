@@ -9,7 +9,12 @@ import {
     paymentsDeleteAccount,
     setCardModalVisible,
 } from "../../slices/payments";
-import { deleteAccount, setEditModalVisible, suspendAccount } from "../../slices/profile";
+import {
+    deleteAccount,
+    setEditModalVisible,
+    suspendAccount,
+    unsuspendAccount,
+} from "../../slices/profile";
 import Loading from "../Loading/Loading";
 import EditModalInfo from "./EditInfoModal";
 import AddCardModal from "./AddCardModal";
@@ -40,7 +45,11 @@ const Profile = () => {
     };
 
     const handleSuspend = () => {
-        dispatch(suspendAccount({ id: user.user_id, suspended: user.suspended === 0 ? 1 : 0 }));
+        if (user.suspended === 1) {
+            dispatch(unsuspendAccount({ user_id: user.user_id }));
+        } else {
+            dispatch(suspendAccount({ user_id: user.user_id }));
+        }
     };
 
     const handlePaymentDelete = () => {

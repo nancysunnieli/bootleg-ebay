@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import AuctionsService from "../services/auctions.service";
 import UserService from "../services/user.service";
 import { setUser } from "./auth";
-
+import { current } from "immer";
 export const getUser = createAsyncThunk("users/getUser", async ({ user_id }, thunkAPI) => {
     try {
         const data = await UserService.getUserInfo(user_id);
@@ -26,9 +26,10 @@ export const getUserBids = createAsyncThunk("users/getUserBids", async ({ user_i
 });
 
 export const suspendAccount = createAsyncThunk(
-    "auth/suspendAccount",
+    "users/suspendAccount",
     async ({ user_id }, thunkAPI) => {
         try {
+            console.log("User suspend account called");
             const data = await UserService.suspendAccount(user_id);
             return data;
         } catch (error) {
@@ -39,7 +40,7 @@ export const suspendAccount = createAsyncThunk(
 );
 
 export const unsuspendAccount = createAsyncThunk(
-    "auth/unsuspendAccount",
+    "users/unsuspendAccount",
     async ({ user_id }, thunkAPI) => {
         try {
             const data = await UserService.unsuspendAccount(user_id);
@@ -90,6 +91,8 @@ const usersSlice = createSlice({
         },
         [suspendAccount.fulfilled]: (state, action) => {
             toast.success("Suspended user");
+            console.log("Action payload", action.payload);
+            console.log(current(state));
             state.user.suspended = 1;
         },
         [suspendAccount.rejected]: (state, action) => {

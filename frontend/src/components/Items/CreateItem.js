@@ -65,15 +65,21 @@ export default function CreateItem() {
             <h1>Create Item</h1>
             <Form>
                 <Form.Group className="mb-3">
-                    <Form.Label>Item Name</Form.Label>
+                    <Form.Label>
+                        Item Name<span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control onChange={(e) => setName(e.target.value)} />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Description</Form.Label>
+                    <Form.Label>
+                        Description<span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control onChange={(e) => setDescription(e.target.value)} />
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Category</Form.Label>
+                    <Form.Label>
+                        Category<span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Row>
                         <Col>
                             <Form.Control
@@ -106,7 +112,9 @@ export default function CreateItem() {
                 <Form.Group className="mb-3">
                     <Row>
                         <Col xs={1}>
-                            <Form.Label>Photos</Form.Label>
+                            <Form.Label>
+                                Photos<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                         </Col>
                         <Col md="auto">
                             <p>{photoName}</p>
@@ -127,7 +135,9 @@ export default function CreateItem() {
                     <Row xs={6}></Row>
                 </Form.Group>
                 <Form.Group className="mb-3">
-                    <Form.Label>Quantity</Form.Label>
+                    <Form.Label>
+                        Quantity<span style={{ color: "red" }}>*</span>
+                    </Form.Label>
                     <Form.Control onChange={(e) => setQuantity(e.target.value)} />
                 </Form.Group>
                 <Button onClick={handleSubmit}>Create</Button>
