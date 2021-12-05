@@ -28,12 +28,17 @@ To shutdown the system:
 
 # Important Notes
 
+## Admin
+- An admin is basically a user with special priviledges. So that admin can create items and buy / bid on things.
+- If an admin wants to suspend a user, he has to go to a specific auction and then click on the user name. There, he can suspend or unsuspend a user.
 
+## Other
 - Our system only allows for one auction to take place for each item at a given time
 - When inputting information into forms on the front end, make sure to fill in all the fields, otherwise the API will not allow you to move forward
 - When creating an item, the only format of photos that you are able to upload are PNGs
 - If you want to have two users at the same time, you should open up an incognito tab.
 - Reporting an item is the same as flagging an item
+
 
 # Front end
 

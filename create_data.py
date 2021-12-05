@@ -12,6 +12,17 @@ from bson.objectid import ObjectId
 import base64
 
 
+
+import os
+import json
+import random
+import imghdr
+import sys
+import urllib.request
+import urllib.parse
+
+csv.field_size_limit(sys.maxsize)
+
 def convert_image_to_string(image_directory):
     image = Image.open(image_directory)
     output = io.BytesIO()
@@ -106,7 +117,7 @@ def items():
         name = get_random_words(3, " ")
         description = get_random_words(30, " ")
         categories = get_random_categories(3)
-        photos = random.choice(all_photos)
+        photos = all_photos[i]
         seller_id = random.choice(list(range(1, 31)))
         
         isFlagged = False
@@ -393,7 +404,7 @@ def photos():
     """
     all_photos = []
     for i in range(0, 30):
-        with open("sample1.png", "rb") as img_file:
+        with open("sample_photos/sample" + str(i) + ".png", "rb") as img_file:
             my_string = base64.b64encode(img_file.read())
         id = generate_random_id()
         all_photos.append([id, my_string.decode('utf-8')])
@@ -403,6 +414,8 @@ def photos():
         writer = csv.writer(f)
         writer.writerows(all_photos)
     f.close()
+
+
 
 def cards():
     """
@@ -493,18 +506,18 @@ def generate_all_data():
     """
     This generates the random data
     """
-    #photos()
-    #users()
-    #items()
-    #categories()
-    #auctions()
-    #flagged_items()
-    #bids()
-    #advertisers()
-    #advertisements()
-    #notifications()
-    #cards()
-    #carts()
+    photos()
+    users()
+    items()
+    categories()
+    auctions()
+    flagged_items()
+    bids()
+    advertisers()
+    advertisements()
+    notifications()
+    cards()
+    carts()
     watchlist()
 
 if __name__ == '__main__':

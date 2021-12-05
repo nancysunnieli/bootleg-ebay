@@ -8,6 +8,7 @@ import CreditCardInput from "react-credit-card-input";
 import { createPaymentCard } from "../../slices/payments";
 import moment from "moment";
 import { addCategory } from "../../slices/items";
+import { modifyAuction } from "../../slices/auctions";
 
 const EditAuctionModal = ({ show, handleClose }) => {
     const { auction, getAuctionLoading } = useSelector((state) => state.auctions);
@@ -23,8 +24,14 @@ const EditAuctionModal = ({ show, handleClose }) => {
     };
 
     const handleSave = () => {
-        window.alert("TODO");
-        dispatch();
+        dispatch(
+            modifyAuction({
+                auction_id: auction.auction.auction_id,
+                shipping: parseFloat(shipping),
+                buy_now,
+                buy_now_price: parseFloat(buy_now_price),
+            })
+        );
         handleClose();
     };
 
@@ -47,7 +54,8 @@ const EditAuctionModal = ({ show, handleClose }) => {
                         <Form.Check
                             type="checkbox"
                             onChange={(e) => setBuyNow(e.target.checked)}
-                            defaultValue={auction.auction.buy_now}
+                            // defaultValue={auction.auction.buy_now}
+                            checked={buy_now}
                         />
                     </Form.Group>
                     {buy_now && (
