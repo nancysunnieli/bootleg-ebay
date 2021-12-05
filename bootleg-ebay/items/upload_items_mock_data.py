@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import csv
 import re
 from bson.objectid import ObjectId
+import sys
 
 client = pymongo.MongoClient("mongodb://root:bootleg@localhost:27021")
 db = client["items"]
@@ -10,6 +11,8 @@ items_collection = db["items"]
 flagged_items_collection = db["flagged_items"]
 photos_collection = db["photos"]
 categories_collection = db["categories"]
+
+csv.field_size_limit(sys.maxsize)
 
 def reformat_list_csv(array):
     """
