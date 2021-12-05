@@ -27,8 +27,7 @@ To shutdown the system:
 
 
 # Important Notes
-
-TODO: Write some important notes here. For example, one important note is we can only auction one item at a time.
+- Our system only allows for one auction to take place for each item at a given time
 
 
 
