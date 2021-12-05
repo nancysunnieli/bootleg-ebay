@@ -33,7 +33,7 @@ To shutdown the system:
 - When inputting information into forms on the front end, make sure to fill in all the fields, otherwise the API will not allow you to move forward
 - When creating an item, the only format of photos that you are able to upload are PNGs
 - If you want to have two users at the same time, you should open up an incognito tab.
-
+- Reporting an item is the same as flagging an item
 
 # Front end
 
