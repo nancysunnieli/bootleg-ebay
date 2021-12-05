@@ -20,7 +20,8 @@ const CreateCategoryModal = ({ show, handleClose }) => {
         handleClose();
     };
 
-    const handleSave = () => {
+    const handleSave = (e) => {
+        e.preventDefault();
         dispatch(
             addCategory({
                 category,
