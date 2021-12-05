@@ -26,6 +26,8 @@ const Auctions = () => {
     let _auctions = [...auctions];
     if (isSortedDesc) {
         _auctions.sort((a, b) => a.auction.end_time - b.auction.end_time);
+    } else {
+        _auctions.sort((a, b) => b.auction.end_time - a.auction.end_time);
     }
 
     let auctionCards = _auctions.map(({ auction, item }, i) => {
