@@ -20,8 +20,7 @@ const CreateCategoryModal = ({ show, handleClose }) => {
         handleClose();
     };
 
-    const handleSave = (e) => {
-        e.preventDefault();
+    const handleSave = () => {
         dispatch(
             addCategory({
                 category,
@@ -36,7 +35,7 @@ const CreateCategoryModal = ({ show, handleClose }) => {
                 <Modal.Title>Add Category</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                <Form onSubmit={(e) => e.preventDefault()}>
                     <Form.Control onChange={(e) => setCategory(e.target.value)} />
                 </Form>
             </Modal.Body>
