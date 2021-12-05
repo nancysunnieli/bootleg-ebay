@@ -55,7 +55,9 @@ const CreateAuctionModal = ({ show, handleClose }) => {
                 <Form>
                     <Form.Group className="mb-3">
                         <Row>
-                            <Form.Label>Start Time</Form.Label>
+                            <Form.Label>
+                                Start Time<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                         </Row>
                         <Row>
                             <DateTimePicker onChange={setStartTime} value={start_time} />
@@ -63,18 +65,24 @@ const CreateAuctionModal = ({ show, handleClose }) => {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Row>
-                            <Form.Label>End Time</Form.Label>
+                            <Form.Label>
+                                End Time<span style={{ color: "red" }}>*</span>
+                            </Form.Label>
                         </Row>
                         <Row>
                             <DateTimePicker onChange={setEndTime} value={end_time} />
                         </Row>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Shipping Fee</Form.Label>
+                        <Form.Label>
+                            Shipping Fee<span style={{ color: "red" }}>*</span>
+                        </Form.Label>
                         <Form.Control onChange={(e) => setShipping(e.target.value)} />
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Buy Now?</Form.Label>
+                        <Form.Label>
+                            Buy Now?<span style={{ color: "red" }}>*</span>
+                        </Form.Label>
                         <Form.Check type="checkbox" onChange={(e) => setBuyNow(e.target.checked)} />
                     </Form.Group>
                     {buy_now && (
@@ -84,7 +92,9 @@ const CreateAuctionModal = ({ show, handleClose }) => {
                         </Form.Group>
                     )}
                     <Form.Group className="mb-3">
-                        <Form.Label>Bid Starting Price</Form.Label>
+                        <Form.Label>
+                            Bid Starting Price<span style={{ color: "red" }}>*</span>
+                        </Form.Label>
                         <Form.Control onChange={(e) => setStartingPrice(e.target.value)} />
                     </Form.Group>
                 </Form>

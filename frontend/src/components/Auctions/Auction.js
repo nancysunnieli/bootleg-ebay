@@ -103,7 +103,7 @@ export default function Auction() {
     let timeToStart = moment(start_time * 1000).fromNow();
     let remainingDuration = Math.min(end_time * 1000 - timeNow.getTime());
     let isEnded = end_time * 1000 < new Date().getTime() || completed;
-    let timeRemaining = moment.utc(remainingDuration).format("D [days,] HH:mm:ss");
+    let timeRemaining = moment.utc(remainingDuration).format("D [day(s),] HH:mm:ss");
 
     const tbody = bids.map((bid, i) => (
         <tr key={i}>
