@@ -194,6 +194,19 @@ export const createAuction = createAsyncThunk(
     }
 );
 
+export const stopAuctionEarly = createAsyncThunk(
+    "auctions/stopAuctionEarly",
+    async (auction_id, thunkAPI) => {
+        try {
+            const data = await AuctionsService.stopAuctionEarly(auction_id);
+            return data;
+        } catch (error) {
+            const message = error.toString();
+            return thunkAPI.reject(message);
+        }
+    }
+);
+
 const initialState = {
     auctions: [],
     auction: null,
@@ -288,6 +301,16 @@ const auctionsSlice = createSlice({
         },
         [modifyAuction.rejected]: (state, action) => {
             toast.error("Error on modifying auction " + action.payload);
+        },
+        [stopAuctionEarly.pending]: (state, action) => {
+            toast("Ending auction early..");
+        },
+        [stopAuctionEarly.fulfilled]: (state, action) => {
+            toast.success("Succesfully ended auction early");
+            window.location.reload();
+        },
+        [stopAuctionEarly.rejected]: (state, action) => {
+            toast.error("Error on stop auction early " + action.payload);
         },
     },
 });

@@ -43,7 +43,7 @@ const Auction = ({ auction, item, isBuyNowDisabled }) => {
     let timeRemaining = moment.utc(remainingDuration).format("D [days,] HH:mm:ss");
     return (
         <Col>
-            <Card>
+            <Card onClick={bidNow} style={{ zIndex: 1 }}>
                 <Card.Img
                     variant="top"
                     src={`data:image/png;base64, ${photos}`}
@@ -68,7 +68,12 @@ const Auction = ({ auction, item, isBuyNowDisabled }) => {
                         >
                             Buy Now ${price}
                         </Button>
-                        <Button variant="info" disabled={remainingDuration === 0} onClick={bidNow}>
+                        <Button
+                            style={{ zIndex: 100 }}
+                            variant="info"
+                            disabled={remainingDuration === 0}
+                            onClick={bidNow}
+                        >
                             Bid ({bids.length} bids)
                         </Button>
                     </div>

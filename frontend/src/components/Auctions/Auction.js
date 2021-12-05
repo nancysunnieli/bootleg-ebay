@@ -2,7 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
-import { clearAuction, createBid, getAuction, getAuctionBids } from "../../slices/auctions";
+import {
+    clearAuction,
+    createBid,
+    getAuction,
+    getAuctionBids,
+    stopAuctionEarly,
+} from "../../slices/auctions";
 import Loading from "../Loading/Loading";
 import NotFound from "../NotFound/NotFound";
 import Row from "react-bootstrap/Row";
@@ -123,7 +129,7 @@ export default function Auction() {
     }
 
     const handleEndAuctionEarly = () => {
-        window.alert("TODO");
+        dispatch(stopAuctionEarly(auction_id));
     };
 
     const getActionBody = () => (
@@ -200,7 +206,7 @@ export default function Auction() {
                 <Row>
                     <Col>
                         <Image
-                            src="https://picsum.photos/1000"
+                            src={`data:image/png;base64, ${photos}`}
                             style={{
                                 width: "30em",
                                 height: "auto",
@@ -241,7 +247,7 @@ export default function Auction() {
                                 <br />
                             </div>
                         )}
-                        {user.is_admin === 1 && (
+                        {user.is_admin === 1 && !isEnded && (
                             <div>
                                 <br />
                                 <Row>
@@ -255,6 +261,7 @@ export default function Auction() {
                                 <br />
                             </div>
                         )}
+                        <br />
                         {isEnded ? <h5>This auction has ended</h5> : getActionBody()}
                     </Col>
                 </Row>

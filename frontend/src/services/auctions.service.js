@@ -72,6 +72,11 @@ const createAuction = async (
     return resp.data;
 };
 
+const stopAuctionEarly = async (auction_id) => {
+    const resp = await axios.put(API_URL + `auctions/auction/stop_early/${auction_id}`);
+    return resp.data;
+};
+
 const AuctionsService = {
     getCurrentAuctions,
     getAuction,
@@ -82,6 +87,7 @@ const AuctionsService = {
     getUserBids,
     createBid,
     createAuction,
+    stopAuctionEarly,
 };
 
 export default AuctionsService;
