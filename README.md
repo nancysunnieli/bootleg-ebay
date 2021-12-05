@@ -34,7 +34,7 @@ TODO: Write some important notes here. For example, one important note is we can
 
 # Front end
 
-After starting the system, go to `http://localhost:3000` to view the front end.
+After starting the system, go to `http://localhost:8000` to view the front end.
 
 
 # Testing
