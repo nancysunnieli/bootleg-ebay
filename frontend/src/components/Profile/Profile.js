@@ -86,7 +86,7 @@ const Profile = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {transactions.map((transaction, i) => (
+                        {(transactions || []).map((transaction, i) => (
                             <tr key={i}>
                                 <td>{transaction.item.name}</td>
                                 <td>{transaction.money}</td>
